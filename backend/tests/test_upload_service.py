@@ -10,6 +10,7 @@ from sqlmodel.pool import StaticPool
 from app.main import app
 from app.models.database import get_session
 from app.models import schemas # Import all models so SQLModel.metadata knows about them
+from app.core.config import STORAGE_DIR
 
 test_engine = create_engine(
     "sqlite://",
@@ -30,7 +31,7 @@ def client_fixture():
     SQLModel.metadata.drop_all(test_engine)
     app.dependency_overrides.clear()
     # Clean up test audio files in storage
-    storage_root = Path("backend/storage")
+    storage_root = STORAGE_DIR
     if storage_root.exists():
         for f in storage_root.glob("audio_*_test_*.flac"):
             try:
@@ -140,7 +141,7 @@ def test_chunked_upload_reassembly(client: TestClient):
     assert t_data["progress_percent"] == 0
     
     # Verify file content reassembled perfectly on disk
-    expected_path = Path("backend/storage") / f"audio_{meeting_id}_{filename}"
+    expected_path = STORAGE_DIR / f"audio_{meeting_id}_{filename}"
     assert expected_path.exists()
     
     with open(expected_path, "rb") as f:
@@ -153,5 +154,5 @@ def test_chunked_upload_reassembly(client: TestClient):
     assert res_audio.content == expected_full_audio
     
     # Verify staging chunk directory was cleaned up
-    staging_dir = Path("backend/storage/chunks") / upload_id
+    staging_dir = STORAGE_DIR / "chunks" / upload_id
     assert not staging_dir.exists()

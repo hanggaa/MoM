@@ -5,10 +5,11 @@ from pathlib import Path
 from typing import Optional, Tuple
 from sqlmodel import Session
 from app.models.schemas import Meeting
+from app.core.config import STORAGE_DIR
 
 ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a", ".aac", ".webm", ".ogg", ".flac"}
 
-STORAGE_ROOT = Path("backend/storage")
+STORAGE_ROOT = STORAGE_DIR
 CHUNKS_ROOT = STORAGE_ROOT / "chunks"
 
 

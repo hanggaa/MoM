@@ -6,6 +6,7 @@ from sqlmodel import Session
 from app.models.database import engine as default_engine
 from app.models.schemas import Task, Meeting
 from app.services.mom_synthesizer import synthesize_mom_sync
+from app.core.config import STORAGE_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ def run_stt_task(
                         
             # Step 3: Save generated transcript text to storage disk
             full_transcript = "\n".join(transcript_lines) if transcript_lines else "[No clear speech detected in audio recording.]"
-            storage_dir = Path("backend/storage")
+            storage_dir = STORAGE_DIR
             storage_dir.mkdir(parents=True, exist_ok=True)
             
             transcript_path = storage_dir / f"transcript_{meeting_id}.txt"

@@ -7,6 +7,7 @@ from sqlmodel.pool import StaticPool
 from app.models import schemas # ensure metadata loads tables
 from app.models.schemas import Meeting, Task
 from app.services.stt_worker import run_stt_task
+from app.core.config import STORAGE_DIR
 
 test_engine = create_engine(
     "sqlite://",
@@ -56,7 +57,7 @@ def setup_and_teardown_db():
     yield
     SQLModel.metadata.drop_all(test_engine)
     # Cleanup any generated transcript files
-    storage_root = Path("backend/storage")
+    storage_root = STORAGE_DIR
     if storage_root.exists():
         for f in storage_root.glob("transcript_*_test.txt"):
             try:
