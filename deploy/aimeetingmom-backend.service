@@ -1,0 +1,37 @@
+[Unit]
+Description=AIMeetingMoM FastAPI Backend Service (INT8 STT & Nemotron-3 Pipeline)
+After=network.target network-online.target systemd-sysctl.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/aimeetingmom/backend
+
+# Environment setup
+Environment="PATH=/opt/aimeetingmom/backend/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PYTHONUNBUFFERED=1"
+Environment="OMP_NUM_THREADS=4"
+Environment="MKL_NUM_THREADS=4"
+
+# Uvicorn execution with optimal concurrency for e2-standard-4 (4 vCPUs, 16GB RAM)
+# Using 1 worker process with asyncio loop since faster-whisper runs in internal thread pools
+ExecStart=/opt/aimeetingmom/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips="127.0.0.1"
+
+# Restart guidelines & fault tolerance
+Restart=always
+RestartSec=3s
+
+# Resource limits & security sandbox
+LimitNOFILE=65536
+MemoryMax=14G
+Nice=-2
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=aimeetingmom-backend
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+[1.0s - 30.0s] Hello PMs, welcome to the weekly sprint sync.
+[30.0s - 80.0s] Action item: Deploy Phase 2B async STT pipeline immediately.
+[80.0s - 95.0s] Meeting adjourned, thanks everyone.

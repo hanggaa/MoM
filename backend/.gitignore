@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+storage/*.db
+storage/*.mp3
+storage/*.wav
+storage/*.m4a
+storage/*.aac
+storage/*.webm
+.env
+.DS_Store
