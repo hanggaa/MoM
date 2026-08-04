@@ -14,6 +14,8 @@ Environment="PATH=/opt/aimeetingmom/backend/venv/bin:/usr/local/sbin:/usr/local/
 Environment="PYTHONUNBUFFERED=1"
 Environment="OMP_NUM_THREADS=4"
 Environment="MKL_NUM_THREADS=4"
+Environment="HF_HOME=/opt/aimeetingmom/backend/storage/hf_cache"
+Environment="XDG_CACHE_HOME=/opt/aimeetingmom/backend/storage/cache"
 
 # Uvicorn execution with optimal concurrency for e2-standard-4 (4 vCPUs, 16GB RAM)
 # Using 1 worker process with asyncio loop since faster-whisper runs in internal thread pools

@@ -6,6 +6,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 STORAGE_DIR = BASE_DIR / "storage"
 STORAGE_DIR.mkdir(parents=True, exist_ok=True)
 
+# Secure local cache directories for Whisper AI models (prevents /var/www/.cache permission error under www-data user)
+CACHE_DIR = STORAGE_DIR / "cache"
+HF_CACHE_DIR = STORAGE_DIR / "hf_cache"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+HF_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+os.environ.setdefault("HF_HOME", str(HF_CACHE_DIR))
+os.environ.setdefault("XDG_CACHE_HOME", str(CACHE_DIR))
+
 # Database
 DATABASE_FILE = STORAGE_DIR / "app.db"
 DATABASE_URL = f"sqlite:///{DATABASE_FILE}"
