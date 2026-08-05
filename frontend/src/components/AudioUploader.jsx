@@ -6,6 +6,8 @@ const CHUNK_SIZE = 25 * 1024 * 1024; // 25MB slices to bypass Cloudflare 100MB b
 const AudioUploader = ({ onUploadComplete }) => {
   const [file, setFile] = useState(null);
   const [meetingTitle, setMeetingTitle] = useState('');
+  const [outputLanguage, setOutputLanguage] = useState('Bahasa Indonesia (Formal Corporate)');
+  const [meetingStyle, setMeetingStyle] = useState('General Executive MoM');
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -79,6 +81,8 @@ const AudioUploader = ({ onUploadComplete }) => {
         formData.append('total_chunks', totalChunks.toString());
         formData.append('filename', file.name);
         formData.append('title', meetingTitle || 'Untitled Meeting');
+        formData.append('output_language', outputLanguage);
+        formData.append('meeting_style', meetingStyle);
         formData.append('file_chunk', chunkSlice);
 
         const response = await uploadAudioChunk(formData, (progressEvent) => {
@@ -183,18 +187,54 @@ const AudioUploader = ({ onUploadComplete }) => {
             )}
           </div>
 
-          <div className="mb-6">
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Meeting Title / Reference
-            </label>
-            <input
-              type="text"
-              disabled={uploading}
-              value={meetingTitle}
-              onChange={(e) => setMeetingTitle(e.target.value)}
-              placeholder="e.g. Q3 Sprint Planning & Architecture Review"
-              className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition text-sm disabled:opacity-50"
-            />
+          <div className="mb-6 space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Meeting Title / Reference
+              </label>
+              <input
+                type="text"
+                disabled={uploading}
+                value={meetingTitle}
+                onChange={(e) => setMeetingTitle(e.target.value)}
+                placeholder="e.g. Q3 Sprint Planning & Architecture Review"
+                className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition text-sm disabled:opacity-50"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+              <div>
+                <label className="block text-[11px] font-bold text-cyan-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <span>🌐 Output MoM Language</span>
+                </label>
+                <select
+                  disabled={uploading}
+                  value={outputLanguage}
+                  onChange={(e) => setOutputLanguage(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-400 transition text-xs disabled:opacity-50"
+                >
+                  <option value="Bahasa Indonesia (Formal Corporate)">🇮🇩 Bahasa Indonesia (Formal Corporate)</option>
+                  <option value="English (Executive Standard)">🇬🇧 English (Executive Standard)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <span>🎯 Synthesis Style Focus</span>
+                </label>
+                <select
+                  disabled={uploading}
+                  value={meetingStyle}
+                  onChange={(e) => setMeetingStyle(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-400 transition text-xs disabled:opacity-50"
+                >
+                  <option value="General Executive MoM">👔 General Executive (Strategic Insights)</option>
+                  <option value="Agile Sprint Retrospective">🚀 Agile Sprint Retro (Velocity & Blockers)</option>
+                  <option value="Technical Architecture Spec">🏗️ Tech Architecture Spec (API & Trade-offs)</option>
+                  <option value="Sales & Commercials">💼 Sales & Commercials (Pricing & SLAs)</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           {uploading && (

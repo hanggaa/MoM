@@ -1,18 +1,43 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File, BackgroundTasks
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File, BackgroundTasks, Query
 from fastapi.responses import FileResponse
-from sqlmodel import Session
+from sqlmodel import Session, select, desc, col
 
 from app.models.database import get_session
-from app.models.schemas import HealthResponse, BYOKSettingsRequest, BYOKSettingsResponse, ChunkUploadResponse, Task, TaskResponse, Meeting, MeetingResponse
+from app.models.schemas import (
+    HealthResponse, BYOKSettingsRequest, BYOKSettingsResponse,
+    ChunkUploadResponse, Task, TaskResponse, Meeting, MeetingResponse,
+    STTSettingsRequest, STTSettingsResponse, ActionResponse
+)
 from app.services.nim_client import get_byok_key, save_byok_key, mask_api_key, verify_nvidia_nim_connection
 from app.services.upload_service import save_chunk_and_try_assemble
 from app.services.stt_worker import run_stt_task
 from app.services.mom_synthesizer import synthesize_mom_async
+from app.services.settings_service import get_stt_settings, save_stt_settings
 
 api_router = APIRouter(prefix="/api")
+
+@api_router.get("/settings/stt", response_model=STTSettingsResponse)
+def read_stt_settings(session: Session = Depends(get_session)):
+    """Retrieve current local CPU STT resolution preferences and vocabulary biasing hints."""
+    opts = get_stt_settings(session)
+    return STTSettingsResponse(**opts, message="STT settings retrieved successfully.")
+
+@api_router.post("/settings/stt", response_model=STTSettingsResponse)
+def update_stt_settings(payload: STTSettingsRequest, session: Session = Depends(get_session)):
+    """Update STT resolution model and custom vocabulary biasing hints."""
+    save_stt_settings(
+        session=session,
+        model_size=payload.model_size,
+        custom_vocabulary=payload.custom_vocabulary or "",
+        default_language=payload.default_language or "English",
+        default_style=payload.default_style or "General Executive MoM"
+    )
+    opts = get_stt_settings(session)
+    return STTSettingsResponse(**opts, message="STT accuracy and vocabulary settings saved successfully.")
 
 @api_router.get("/health", response_model=HealthResponse)
 def get_health_status():
@@ -64,6 +89,8 @@ async def upload_audio_chunk(
     total_chunks: int = Form(...),
     filename: str = Form(...),
     title: str = Form(None),
+    output_language: str = Form("English"),
+    meeting_style: str = Form("General Executive MoM"),
     file_chunk: UploadFile = File(...),
     session: Session = Depends(get_session)
 ):
@@ -77,7 +104,9 @@ async def upload_audio_chunk(
             total_chunks=total_chunks,
             filename=filename,
             file_bytes=content_bytes,
-            title=title
+            title=title,
+            output_language=output_language,
+            meeting_style=meeting_style
         )
         
         task_id = None
@@ -117,6 +146,37 @@ def get_task_status(task_id: str, session: Session = Depends(get_session)):
         error_message=task.error_message
     )
 
+@api_router.get("/meetings", response_model=List[MeetingResponse])
+def list_meetings(search: Optional[str] = Query(None), session: Session = Depends(get_session)):
+    """Retrieve all processed meetings with optional real-time keyword search across titles and MoM summaries."""
+    query = select(Meeting).order_by(desc(Meeting.created_at))
+    meetings = session.exec(query).all()
+    
+    results = []
+    search_term = (search.strip().lower()) if search else ""
+    
+    for meeting in meetings:
+        # If keyword search is specified, filter matching titles or MoM text
+        if search_term:
+            title_match = search_term in (meeting.title or "").lower()
+            mom_match = search_term in (meeting.mom_data or "").lower()
+            if not (title_match or mom_match):
+                continue
+                
+        results.append(MeetingResponse(
+            id=meeting.id,
+            title=meeting.title,
+            status=meeting.status,
+            audio_file_path=meeting.audio_file_path,
+            transcript_text=None,  # keep list payload lightweight
+            mom_data=meeting.mom_data,
+            output_language=getattr(meeting, "output_language", "English") or "English",
+            meeting_style=getattr(meeting, "meeting_style", "General Executive MoM") or "General Executive MoM",
+            is_audio_archived=getattr(meeting, "is_audio_archived", False) or False,
+            created_at=meeting.created_at
+        ))
+    return results
+
 @api_router.get("/meetings/{meeting_id}", response_model=MeetingResponse)
 def get_meeting_details(meeting_id: int, session: Session = Depends(get_session)):
     """Retrieve full meeting details, transcript text, and generated MoM markdown."""
@@ -139,6 +199,9 @@ def get_meeting_details(meeting_id: int, session: Session = Depends(get_session)
         audio_file_path=meeting.audio_file_path,
         transcript_text=transcript_content,
         mom_data=meeting.mom_data,
+        output_language=getattr(meeting, "output_language", "English") or "English",
+        meeting_style=getattr(meeting, "meeting_style", "General Executive MoM") or "General Executive MoM",
+        is_audio_archived=getattr(meeting, "is_audio_archived", False) or False,
         created_at=meeting.created_at
     )
 
@@ -164,10 +227,59 @@ def stream_meeting_audio(meeting_id: int, session: Session = Depends(get_session
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Meeting #{meeting_id} not found.")
         
     if not meeting.audio_file_path or not os.path.exists(meeting.audio_file_path):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Audio file not found on server storage.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Audio file has been purged or is not found on server storage.")
         
     return FileResponse(
         path=meeting.audio_file_path,
         filename=os.path.basename(meeting.audio_file_path),
         media_type="audio/mpeg"
     )
+
+@api_router.delete("/meetings/{meeting_id}/audio_only", response_model=ActionResponse)
+def purge_meeting_audio(meeting_id: int, session: Session = Depends(get_session)):
+    """Smart Archive: Delete heavy raw audio file from disk to conserve server storage while preserving MoM text."""
+    meeting = session.get(Meeting, meeting_id)
+    if not meeting:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Meeting #{meeting_id} not found.")
+        
+    if meeting.audio_file_path and os.path.exists(meeting.audio_file_path):
+        try:
+            os.remove(meeting.audio_file_path)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Could not remove audio file: {str(e)}")
+            
+    meeting.is_audio_archived = True
+    meeting.audio_file_path = None
+    session.add(meeting)
+    session.commit()
+    
+    return ActionResponse(success=True, message="Audio file purged successfully. Disk space reclaimed!")
+
+@api_router.delete("/meetings/{meeting_id}", response_model=ActionResponse)
+def delete_entire_meeting(meeting_id: int, session: Session = Depends(get_session)):
+    """Permanently remove a meeting record and all associated disk files (audio and transcript)."""
+    meeting = session.get(Meeting, meeting_id)
+    if not meeting:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Meeting #{meeting_id} not found.")
+        
+    if meeting.audio_file_path and os.path.exists(meeting.audio_file_path):
+        try:
+            os.remove(meeting.audio_file_path)
+        except Exception:
+            pass
+            
+    if meeting.transcript_file_path and os.path.exists(meeting.transcript_file_path):
+        try:
+            os.remove(meeting.transcript_file_path)
+        except Exception:
+            pass
+            
+    # Remove associated tasks to keep DB clean
+    tasks = session.exec(select(Task).where(Task.meeting_id == meeting_id)).all()
+    for t in tasks:
+        session.delete(t)
+        
+    session.delete(meeting)
+    session.commit()
+    
+    return ActionResponse(success=True, message="Meeting record and all associated files deleted completely.")

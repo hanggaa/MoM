@@ -59,9 +59,9 @@ Do NOT modify these without explicit human approval:
 - **Workflow Discipline:** Pre-commit hooks must pass before commits (or ask before bypassing). If verification fails, fix it before continuing.
 
 ## Current State 📍
-**Last Updated:** 2026-08-04
-**Working On:** Complete (All phases verified and passing)
-**Recently Completed:** Phase 4: Launch (Security audit verification, zero API key leakage confirmation, production Nginx/Systemd deploy configs verified, and 100% passing E2E tests)
+**Last Updated:** 2026-08-05
+**Working On:** Phase 5: Product Evolution & Advanced Capabilities (STT Model Accuracy Selector, Custom Synthesis Controls, and Smart Archive & Disk Cleanup)
+**Recently Completed:** Phase 4: Launch & Production VM Fixes (Fixed systemd/www-data storage permissions, Nginx /api/ path stripping, and HuggingFace cache redirection)
 **Blocked By:** None
 
 ## Roadmap 🗺️
@@ -87,6 +87,13 @@ Do NOT modify these without explicit human approval:
 - [x] Security pass (see `REVIEW-CHECKLIST.md` — confirm zero key leakage in bundles)
 - [x] Deploy to production GCP VM (`e2-standard-4`) with Nginx reverse proxy and Systemd service (Verified configs in `deploy/`)
 - [x] Launch verification test with 2-hour sample meeting audio (`test_e2e_production_pipeline_verification` passing 100%)
+
+### Phase 5: Product Evolution & Advanced Capabilities
+- [ ] STT Model Accuracy Selector & Custom Vocabulary Optimization (`large-v3-turbo`, `medium`, `small`, `base` options + vocabulary biasing in `faster-whisper`)
+- [ ] Custom Synthesis Controls (Bilingual English/Indonesian output & meeting style prompts: General Executive, Agile Retro, Tech Spec, Commercials)
+- [ ] Smart Archive & Disk Cleanup (Audio file purge endpoint to free up disk space without losing MoMs, plus full meeting deletion)
+- [ ] Interactive Dashboard Upgrade (Settings STT resolution controls, upload custom format dropdowns, live keyword search & filter bar)
+- [ ] Automated verification & testing of Phase 5 features (100% passing tests)
 
 ## Context Files 📚
 Load these only when needed — progressive disclosure keeps context lean:

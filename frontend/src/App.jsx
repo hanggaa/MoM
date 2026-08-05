@@ -5,6 +5,7 @@ import BYOKSettingsModal from './components/BYOKSettingsModal';
 import AudioUploader from './components/AudioUploader';
 import TaskMonitor from './components/TaskMonitor';
 import MoMViewer from './components/MoMViewer';
+import MeetingsArchive from './components/MeetingsArchive';
 import { checkHealth, getBYOKStatus, getMeetingDetails } from './services/api';
 
 export default function App() {
@@ -129,6 +130,13 @@ export default function App() {
             />
           )}
         </section>
+
+        {/* Executive MoM Archive & Smart Disk Cleanup Dashboard */}
+        {!viewingMeeting && !activeTaskId && (
+          <section aria-label="Meetings Archive and Disk Cleanup">
+            <MeetingsArchive onSelectMeeting={(meeting) => setViewingMeeting(meeting)} />
+          </section>
+        )}
 
         {/* Phase Roadmap Status Grid - Hide when reading active MoM */}
         {!viewingMeeting && (

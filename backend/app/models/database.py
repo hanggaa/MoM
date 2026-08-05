@@ -23,6 +23,18 @@ def init_db():
             conn.execute(text("ALTER TABLE meeting ADD COLUMN mom_data VARCHAR"))
         except Exception:
             pass
+        try:
+            conn.execute(text("ALTER TABLE meeting ADD COLUMN output_language VARCHAR DEFAULT 'English'"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE meeting ADD COLUMN meeting_style VARCHAR DEFAULT 'General Executive MoM'"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE meeting ADD COLUMN is_audio_archived BOOLEAN DEFAULT 0"))
+        except Exception:
+            pass
 
 def get_session():
     """FastAPI dependency yielding database sessions."""

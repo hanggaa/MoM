@@ -22,6 +22,9 @@ class Meeting(SQLModel, table=True):
     transcript_file_path: Optional[str] = None
     mom_data: Optional[str] = None
     status: str = Field(default="QUEUED")  # QUEUED, PROCESSING, TRANSCRIBING, DONE, ERROR
+    output_language: str = Field(default="English")
+    meeting_style: str = Field(default="General Executive MoM")
+    is_audio_archived: bool = Field(default=False)
     created_at: datetime = Field(default_factory=get_utc_now)
 
 
@@ -74,4 +77,27 @@ class MeetingResponse(BaseModel):
     audio_file_path: Optional[str] = None
     transcript_text: Optional[str] = None
     mom_data: Optional[str] = None
+    output_language: str = "English"
+    meeting_style: str = "General Executive MoM"
+    is_audio_archived: bool = False
     created_at: datetime
+
+class STTSettingsRequest(BaseModel):
+    """Input payload for configuring local CPU STT model accuracy and vocabulary biasing hints."""
+    model_size: str = "large-v3-turbo"
+    custom_vocabulary: Optional[str] = ""
+    default_language: str = "English"
+    default_style: str = "General Executive MoM"
+
+class STTSettingsResponse(BaseModel):
+    """Output response for current STT model, vocabulary biasing, and synthesis preferences."""
+    model_size: str
+    custom_vocabulary: str
+    default_language: str
+    default_style: str
+    message: str
+
+class ActionResponse(BaseModel):
+    """Generic response for state mutations like purging audio files or deleting records."""
+    success: bool
+    message: str

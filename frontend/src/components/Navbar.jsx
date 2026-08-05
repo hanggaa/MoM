@@ -35,7 +35,7 @@ export const Navbar = ({ onOpenSettings, isByokSet, isServerOnline }) => {
             aria-label="Open BYOK NVIDIA API Settings"
           >
             <KeyRound size={15} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
-            <span>NVIDIA BYOK Settings</span>
+            <span>AI Engine & BYOK Settings</span>
             {isByokSet ? (
               <span className="flex items-center gap-1 text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-md font-medium">
                 <ShieldCheck size={12} /> Connected

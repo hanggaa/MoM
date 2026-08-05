@@ -35,7 +35,9 @@ async def save_chunk_and_try_assemble(
     total_chunks: int,
     filename: str,
     file_bytes: bytes,
-    title: Optional[str] = None
+    title: Optional[str] = None,
+    output_language: str = "English",
+    meeting_style: str = "General Executive MoM"
 ) -> Tuple[str, int, Optional[int], str]:
     """
     Saves an incoming audio chunk. When the final chunk arrives, reassembles the original
@@ -73,7 +75,12 @@ async def save_chunk_and_try_assemble(
     
     # Create preliminary meeting record to acquire ID
     meeting_title = title if title and title.strip() else f"Meeting ({safe_name})"
-    meeting = Meeting(title=meeting_title, status="QUEUED")
+    meeting = Meeting(
+        title=meeting_title,
+        status="QUEUED",
+        output_language=output_language or "English",
+        meeting_style=meeting_style or "General Executive MoM"
+    )
     db.add(meeting)
     db.commit()
     db.refresh(meeting)

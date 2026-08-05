@@ -25,7 +25,7 @@ class FakeInfo:
     duration = 100.0
 
 class FakeWhisperModel:
-    def transcribe(self, path, beam_size=5):
+    def transcribe(self, path, beam_size=5, **kwargs):
         segments = [
             FakeSegment(1.0, 30.0, "Hello PMs, welcome to the weekly sprint sync."),
             FakeSegment(30.0, 80.0, "Action item: Deploy Phase 2B async STT pipeline immediately."),

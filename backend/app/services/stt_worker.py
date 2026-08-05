@@ -43,16 +43,25 @@ def run_stt_task(
             if not meeting.audio_file_path or not os.path.exists(meeting.audio_file_path):
                 raise FileNotFoundError(f"Audio recording file missing at: {meeting.audio_file_path}")
             
-            # Step 2: Run faster-whisper INT8 local STT engine
-            logger.info(f"Starting local INT8 transcription for meeting {meeting_id} ({meeting.audio_file_path})")
+            # Step 2: Run faster-whisper INT8 local STT engine with dynamic accuracy selector and vocabulary biasing
+            from app.services.settings_service import get_stt_settings
+            stt_opts = get_stt_settings(db)
+            chosen_model = stt_opts.get("model_size", "large-v3-turbo")
+            vocab_hint = stt_opts.get("custom_vocabulary", "").strip()
+            
+            initial_prompt_str = (
+                f"Berikut adalah rekaman rapat bisnis Product Manager dengan daftar istilah teknis dan kosakata kunci: {vocab_hint}."
+                if vocab_hint else None
+            )
+            logger.info(f"Starting local INT8 transcription for meeting {meeting_id} using model '{chosen_model}' ({meeting.audio_file_path})")
             
             if mock_model:
-                segments, info = mock_model.transcribe(meeting.audio_file_path, beam_size=5)
+                segments, info = mock_model.transcribe(meeting.audio_file_path, beam_size=5, initial_prompt=initial_prompt_str)
             else:
                 from faster_whisper import WhisperModel
-                # INT8 quantization on CPU ensures total data privacy and keeps RAM usage well under 16GB
-                model = WhisperModel(model_size_or_path="base", device="cpu", compute_type="int8")
-                segments, info = model.transcribe(meeting.audio_file_path, beam_size=5)
+                # INT8 quantization on CPU ensures total data privacy and keeps RAM usage well under 16GB limit
+                model = WhisperModel(model_size_or_path=chosen_model, device="cpu", compute_type="int8")
+                segments, info = model.transcribe(meeting.audio_file_path, beam_size=5, initial_prompt=initial_prompt_str)
                 
             total_duration = getattr(info, "duration", 0) or 1
             transcript_lines = []

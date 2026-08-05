@@ -39,4 +39,10 @@ export const getMeetingDetails = (meetingId) => api.get(`/meetings/${meetingId}`
 export const synthesizeMeetingMoM = (meetingId) => api.post(`/meetings/${meetingId}/synthesize`, {}, { timeout: 60000 });
 export const getMeetingAudioUrl = (meetingId) => `/api/meetings/${meetingId}/audio`;
 
+export const getSTTSettings = () => api.get('/settings/stt');
+export const saveSTTSettings = (settings) => api.post('/settings/stt', settings);
+export const listMeetings = (search) => api.get('/meetings', { params: { search: search || undefined } });
+export const purgeMeetingAudio = (meetingId) => api.delete(`/meetings/${meetingId}/audio_only`);
+export const deleteMeeting = (meetingId) => api.delete(`/meetings/${meetingId}`);
+
 export default api;

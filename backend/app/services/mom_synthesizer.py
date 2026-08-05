@@ -11,8 +11,27 @@ from app.core.config import NVIDIA_NIM_BASE_URL, DEFAULT_NIM_MODEL
 
 logger = logging.getLogger(__name__)
 
-PM_MOM_SYSTEM_PROMPT = """You are an elite AI Executive Meeting Assistant and Lead Product Manager.
+def build_pm_mom_prompt(output_language: str = "English", meeting_style: str = "General Executive MoM") -> str:
+    lang_instruction = (
+        "CRITICAL LANGUAGE RULE: You MUST write the ENTIRE output (including summaries, discussion highlights, table contents, and risk analyses) in formal, professional corporate Bahasa Indonesia (Indonesian language). Keep markdown structure and section headers professional."
+        if "indonesia" in (output_language or "").lower()
+        else "You MUST write the ENTIRE output in clean, professional Executive English."
+    )
+
+    if "agile" in (meeting_style or "").lower():
+        style_instruction = "Focus heavily on Agile Scrum/Kanban metrics: identify sprint velocity impediments, user story blockers, release timelines, and retrospective action deliverables."
+    elif "technical" in (meeting_style or "").lower() or "spec" in (meeting_style or "").lower():
+        style_instruction = "Focus heavily on engineering architecture, API integration specs, data consistency trade-offs, system latency, security protocols, and scalability constraints."
+    elif "sales" in (meeting_style or "").lower() or "commercial" in (meeting_style or "").lower():
+        style_instruction = "Focus heavily on commercial terms, pricing margins, contract SLA clauses, customer requirements, client escalation matrices, and legal compliance checkpoints."
+    else:
+        style_instruction = "Focus on executive PM clarity, strategic alignment, cross-functional ownership, and operational milestones."
+
+    return f"""You are an elite AI Executive Meeting Assistant and Principal Product Manager.
 Analyze the provided meeting transcript and synthesize a clean, authoritative, and structured Executive Minutes of Meeting (MoM) formatted in professional Markdown.
+
+{lang_instruction}
+Meeting Analysis Focus ({meeting_style}): {style_instruction}
 
 Your response MUST strictly adhere to the following section hierarchy:
 
@@ -20,8 +39,8 @@ Your response MUST strictly adhere to the following section hierarchy:
 Provide a high-level executive overview of the meeting goals, core themes, and final conclusions in 2 to 4 concise sentences.
 
 # 💬 Discussion Highlights & Key Decisions
-- Bulleted list of critical architectural, technical, and strategic themes discussed.
-- Explicitly call out any firm decisions made, engineering trade-offs accepted, or specifications confirmed.
+- Bulleted list of critical themes discussed.
+- Explicitly call out any firm decisions made, architectural/commercial trade-offs accepted, or operational workflows confirmed.
 
 # ⚡ Action Items & Ownership
 Present all tasks, commitments, and assignments in a structured Markdown table with exact columns:
@@ -30,7 +49,7 @@ Present all tasks, commitments, and assignments in a structured Markdown table w
 (If specific PICs or due dates are implicit or unclear, make clear, professional PM estimations or note as "TBD - Action Required").
 
 # ⚠️ Risks, Constraints & Open Questions
-- Highlight any potential technical impediments, Cloudflare/Nginx infrastructure constraints, budget risks, or unanswered questions identified during the call.
+- Highlight any potential bottlenecks, infrastructure limitations, commercial risks, legal exposure, or unanswered questions identified during the call.
 - If zero risks are present, explicitly note "No immediate operational blockers identified."
 
 Style requirements:
@@ -75,12 +94,17 @@ def synthesize_mom_sync(
     else:
         client = OpenAI(api_key=byok_key, base_url=NVIDIA_NIM_BASE_URL, timeout=60.0)
 
+    system_prompt_text = build_pm_mom_prompt(
+        output_language=getattr(meeting, "output_language", "English") or "English",
+        meeting_style=getattr(meeting, "meeting_style", "General Executive MoM") or "General Executive MoM"
+    )
+
     for attempt in range(1, max_retries + 1):
         try:
             response = client.chat.completions.create(
                 model=DEFAULT_NIM_MODEL,
                 messages=[
-                    {"role": "system", "content": PM_MOM_SYSTEM_PROMPT},
+                    {"role": "system", "content": system_prompt_text},
                     {"role": "user", "content": f"Meeting Title: {meeting.title}\n\nTranscript Content:\n{transcript_text}"}
                 ],
                 temperature=0.2,
