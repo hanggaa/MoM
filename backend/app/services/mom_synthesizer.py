@@ -92,7 +92,7 @@ def synthesize_mom_sync(
     if mock_client:
         client = mock_client
     else:
-        client = OpenAI(api_key=byok_key, base_url=NVIDIA_NIM_BASE_URL, timeout=60.0)
+        client = OpenAI(api_key=byok_key, base_url=NVIDIA_NIM_BASE_URL, timeout=300.0)
 
     system_prompt_text = build_pm_mom_prompt(
         output_language=getattr(meeting, "output_language", "English") or "English",
