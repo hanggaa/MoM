@@ -89,12 +89,16 @@ Do NOT modify these without explicit human approval:
 - [x] Launch verification test with 2-hour sample meeting audio (`test_e2e_production_pipeline_verification` passing 100%)
 
 ### Phase 5: Product Evolution & Advanced Capabilities
-- [ ] STT Model Accuracy Selector & Custom Vocabulary Optimization (`large-v3-turbo`, `medium`, `small`, `base` options + vocabulary biasing in `faster-whisper`)
-- [ ] Custom Synthesis Controls (Bilingual English/Indonesian output & meeting style prompts: General Executive, Agile Retro, Tech Spec, Commercials)
-- [ ] Smart Archive & Disk Cleanup (Audio file purge endpoint to free up disk space without losing MoMs, plus full meeting deletion)
-- [ ] Interactive Dashboard Upgrade (Settings STT resolution controls, upload custom format dropdowns, live keyword search & filter bar)
-- [ ] Automated verification & testing of Phase 5 features (100% passing tests)
+- [x] STT Model Accuracy Selector & Custom Vocabulary Optimization (`large-v3-turbo`, `medium`, `small`, `base` options + vocabulary biasing in `faster-whisper`)
+- [x] Custom Synthesis Controls (Bilingual English/Indonesian output & meeting style prompts: General Executive, Agile Retro, Tech Spec, Commercials)
+- [x] Smart Archive & Disk Cleanup (Audio file purge endpoint to free up disk space without losing MoMs, plus full meeting deletion)
+- [x] Interactive Dashboard Upgrade (Settings STT resolution controls, upload custom format dropdowns, live keyword search & filter bar)
+- [x] Automated verification & testing of Phase 5 features (100% passing tests)
 
+### Phase 6: Intelligent PM Workspace
+- [x] ⏱️ Clickable Audio Timestamps (Nemotron output `[MM:SS](timestamp://MM:SS)` and ReactMarkdown audio seeking interception)
+- [x] 📝 Auto-Draft Next Agenda (Nemotron auto-generates follow-up agendas based on open questions and risks)
+- [x] 📊 Meeting Productivity & Sentiment Score (Nemotron provides a 1-100 score and narrative on efficiency and tangents)
 ## Context Files 📚
 Load these only when needed — progressive disclosure keeps context lean:
 - `agent_docs/tech_stack.md` — Stack details, libraries, setup commands

@@ -41,16 +41,26 @@ Provide a high-level executive overview of the meeting goals, core themes, and f
 # 💬 Discussion Highlights & Key Decisions
 - Bulleted list of critical themes discussed.
 - Explicitly call out any firm decisions made, architectural/commercial trade-offs accepted, or operational workflows confirmed.
+- INSTRUCTION: For every critical decision or major point, you MUST append a clickable timestamp from the raw transcript. Use EXACTLY this markdown link format: `[MM:SS](timestamp://MM:SS)` (e.g. `[01:15](timestamp://01:15)`). Convert the raw seconds `[10.5s - 12.0s]` into `[00:10](timestamp://00:10)`.
 
 # ⚡ Action Items & Ownership
 Present all tasks, commitments, and assignments in a structured Markdown table with exact columns:
 | Action Item & Deliverable | PIC (Person In Charge) | Due Date / Timeline | Priority (High / Med / Low) |
 |---|---|---|---|
-(If specific PICs or due dates are implicit or unclear, make clear, professional PM estimations or note as "TBD - Action Required").
+(If specific PICs or due dates are implicit or unclear, make clear, professional PM estimations or note as "TBD - Action Required"). 
+- INSTRUCTION: In the Action Item description, include the `[MM:SS](timestamp://MM:SS)` markdown link where the task was assigned.
 
 # ⚠️ Risks, Constraints & Open Questions
 - Highlight any potential bottlenecks, infrastructure limitations, commercial risks, legal exposure, or unanswered questions identified during the call.
+- Include `[MM:SS](timestamp://MM:SS)` markdown links for when the risk was raised.
 - If zero risks are present, explicitly note "No immediate operational blockers identified."
+
+# 📅 Proposed Next Meeting Agenda
+- Based on the unresolved issues and risks above, auto-draft a structured 3-point agenda for the follow-up meeting.
+
+# 📊 Meeting Productivity & Sentiment Score
+- Provide a "Health Score" (e.g., 85/100).
+- Write a 2-sentence analysis on the meeting's efficiency, emotional tone, and whether the discussion stayed on track or went on tangents.
 
 Style requirements:
 - Be lucid, accurate, and structured for executive reading.

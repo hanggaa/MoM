@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { 
   FileText, 
   Download, 
@@ -26,6 +26,14 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   const [copied, setCopied] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthError, setSynthError] = useState(null);
+  const audioRef = useRef(null);
+
+  const handleSeekAudio = (seconds) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = seconds;
+      audioRef.current.play().catch(e => console.log('Autoplay prevented:', e));
+    }
+  };
 
   const handleCopyMarkdown = async () => {
     if (!meeting?.mom_data) return;
@@ -286,6 +294,7 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
             </div>
           </div>
           <audio
+            ref={audioRef}
             controls
             src={getMeetingAudioUrl(meeting.id)}
             className="w-full sm:w-72 md:w-80 h-10 rounded-xl bg-slate-950/90 accent-indigo-500 shadow-inner border border-slate-800/80"
@@ -356,7 +365,28 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
               </div>
             ) : meeting?.mom_data ? (
               <div className="prose prose-invert prose-indigo prose-sm sm:prose-base max-w-none print:prose-neutral print:prose-sm">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    a: ({node, ...props}) => {
+                      if (props.href && props.href.startsWith('timestamp://')) {
+                        const timeStr = props.href.replace('timestamp://', '');
+                        const [mins, secs] = timeStr.split(':').map(Number);
+                        const totalSeconds = (mins * 60) + (secs || 0);
+                        return (
+                          <button 
+                            onClick={(e) => { e.preventDefault(); handleSeekAudio(totalSeconds); }}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 mx-1 rounded-md bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/40 border border-indigo-500/30 text-xs font-mono font-bold transition-all active:scale-95 cursor-pointer decoration-transparent print:hidden"
+                            title={`Play audio from ${timeStr}`}
+                          >
+                            <Clock className="w-3 h-3" /> {timeStr}
+                          </button>
+                        );
+                      }
+                      return <a {...props} className="text-indigo-400 hover:text-indigo-300 underline" />;
+                    }
+                  }}
+                >
                   {meeting.mom_data}
                 </ReactMarkdown>
               </div>
