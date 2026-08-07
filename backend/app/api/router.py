@@ -214,6 +214,10 @@ async def trigger_mom_synthesis(meeting_id: int, session: Session = Depends(get_
         
     try:
         await synthesize_mom_async(session, meeting)
+        if meeting.status == "ERROR" or meeting.status != "DONE":
+            meeting.status = "DONE"
+            session.add(meeting)
+            session.commit()
         session.refresh(meeting)
         return get_meeting_details(meeting_id, session)
     except Exception as e:

@@ -17,6 +17,8 @@ import {
   Volume2
 } from 'lucide-react';
 import { synthesizeMeetingMoM, getMeetingAudioUrl } from '../services/api';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   const [meeting, setMeeting] = useState(initialMeeting);
@@ -352,8 +354,16 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                   Extracting architectural decisions, Action Items, and PM ownership from transcript.
                 </p>
               </div>
+            ) : meeting?.mom_data ? (
+              <div className="prose prose-invert prose-indigo prose-sm sm:prose-base max-w-none print:prose-neutral print:prose-sm">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {meeting.mom_data}
+                </ReactMarkdown>
+              </div>
             ) : (
-              renderFormattedMoM(meeting?.mom_data)
+              <div className="p-8 text-center bg-gray-900/50 rounded-xl border border-gray-800 text-gray-400 print:text-black print:bg-white print:border-gray-300">
+                No MoM synthesized yet. Click "Regenerate MoM" to create executive notes via NVIDIA Nemotron-3.
+              </div>
             )}
           </div>
         ) : (
