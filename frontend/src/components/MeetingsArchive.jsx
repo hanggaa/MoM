@@ -2,6 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Trash2, HardDrive, Calendar, Loader2, CheckCircle2, Archive, AlertCircle } from 'lucide-react';
 import { listMeetings, purgeMeetingAudio, deleteMeeting, getMeetingDetails } from '../services/api';
 
+const getMoMPreview = (m) => {
+  if (!m.mom_data) return 'No MoM summary generated yet...';
+  try {
+    const parsed = typeof m.mom_data === 'string' ? JSON.parse(m.mom_data) : m.mom_data;
+    if (parsed && typeof parsed === 'object') {
+      const style = m.meeting_style || 'Executive Summary';
+      const content = parsed[style] || Object.values(parsed)[0] || '';
+      return String(content).replace(/#/g, '').replace(/\|/g, '').replace(/\*/g, '').substring(0, 150) + '...';
+    }
+  } catch (e) {
+    // Legacy markdown
+  }
+  return String(m.mom_data).replace(/#/g, '').replace(/\|/g, '').replace(/\*/g, '').substring(0, 150) + '...';
+};
+
 const MeetingsArchive = ({ onSelectMeeting }) => {
   const [meetings, setMeetings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -178,7 +193,7 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
 
                     {/* Snippet Preview */}
                     <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed font-normal mt-2">
-                      {m.mom_data ? m.mom_data.replace(/#/g, '').replace(/\|/g, '').trim() : 'No MoM summary generated yet...'}
+                      {getMoMPreview(m)}
                     </p>
                   </div>
 

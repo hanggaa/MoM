@@ -16,7 +16,7 @@ import {
   ArrowLeft,
   Volume2
 } from 'lucide-react';
-import { synthesizeMeetingMoM, getMeetingAudioUrl } from '../services/api';
+import { synthesizeMeetingMoM, getMeetingAudioUrl, getMeetingDetails } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -87,7 +87,17 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
     setIsSynthesizing(true);
     setSynthError(null);
     try {
-      const updatedMeeting = await synthesizeMeetingMoM(meeting.id, regenStyle);
+      let updatedMeeting = await synthesizeMeetingMoM(meeting.id, regenStyle);
+      
+      while (updatedMeeting.status === "SYNTHESIZING") {
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        updatedMeeting = await getMeetingDetails(meeting.id);
+      }
+
+      if (updatedMeeting.status === "ERROR") {
+        setSynthError("Background synthesis failed. Check server logs.");
+      }
+      
       setMeeting(updatedMeeting);
       setActiveTab(regenStyle);
     } catch (err) {

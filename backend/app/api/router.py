@@ -206,28 +206,48 @@ def get_meeting_details(meeting_id: int, session: Session = Depends(get_session)
     )
 
 @api_router.post("/meetings/{meeting_id}/synthesize", response_model=MeetingResponse)
-async def trigger_mom_synthesis(meeting_id: int, style: Optional[str] = Query(None, description="Optional style override for synthesis"), session: Session = Depends(get_session)):
-    """Manually trigger or retry NVIDIA Nemotron-3 executive MoM synthesis with an optional style."""
+async def trigger_mom_synthesis(
+    meeting_id: int, 
+    background_tasks: BackgroundTasks,
+    style: Optional[str] = Query(None, description="Optional style override for synthesis"), 
+    session: Session = Depends(get_session)
+):
+    """Manually trigger or retry NVIDIA Nemotron-3 executive MoM synthesis with an optional style in the background."""
     meeting = session.get(Meeting, meeting_id)
     if not meeting:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Meeting #{meeting_id} not found.")
         
-    try:
-        # Override meeting style for this synthesis if provided
-        if style:
-            meeting.meeting_style = style
-            session.add(meeting)
-            session.commit()
-            
-        await synthesize_mom_async(session, meeting)
-        if meeting.status == "ERROR" or meeting.status != "DONE":
-            meeting.status = "DONE"
-            session.add(meeting)
-            session.commit()
-        session.refresh(meeting)
-        return get_meeting_details(meeting_id, session)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Synthesis failed: {str(e)}")
+    # Override meeting style for this synthesis if provided
+    if style:
+        meeting.meeting_style = style
+    
+    meeting.status = "SYNTHESIZING"
+    session.add(meeting)
+    session.commit()
+    session.refresh(meeting)
+    
+    async def background_synthesis_task(m_id: int):
+        from app.models.database import engine
+        from sqlmodel import Session
+        import logging
+        
+        with Session(engine) as db:
+            bg_meeting = db.get(Meeting, m_id)
+            if not bg_meeting: return
+            try:
+                await synthesize_mom_async(db, bg_meeting)
+                if bg_meeting.status == "SYNTHESIZING":
+                    bg_meeting.status = "DONE"
+                    db.add(bg_meeting)
+                    db.commit()
+            except Exception as e:
+                logging.error(f"Background Synthesis Error: {e}")
+                bg_meeting.status = "ERROR"
+                db.add(bg_meeting)
+                db.commit()
+                
+    background_tasks.add_task(background_synthesis_task, meeting.id)
+    return get_meeting_details(meeting_id, session)
 
 @api_router.get("/meetings/{meeting_id}/audio", response_class=FileResponse)
 def stream_meeting_audio(meeting_id: int, session: Session = Depends(get_session)):
