@@ -3,7 +3,7 @@ import { MessageSquare, X, Send, Loader2, Bot, User, Sparkles } from 'lucide-rea
 import { chatWithMeetings } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 
-export const ChatWidget = () => {
+export const ChatWidget = ({ activeMeetingId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'Halo! Saya asisten AI Rapat Anda. Tanyakan apa saja tentang riwayat rapat Anda (mis. "Apa action item untuk saya?", "Kapan tenggat waktu proyek X?").' }
@@ -30,7 +30,7 @@ export const ChatWidget = () => {
     setLoading(true);
 
     try {
-      const response = await chatWithMeetings(userMessage);
+      const response = await chatWithMeetings(userMessage, activeMeetingId);
       setMessages(prev => [...prev, { role: 'assistant', content: response.answer }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'assistant', content: `**Error:** ${error.message || 'Gagal menyambung ke server.'}` }]);
@@ -62,7 +62,9 @@ export const ChatWidget = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-100">MoM Chat Assistant</h3>
-                <p className="text-[10px] text-emerald-400 font-mono">Local RAG Vector DB Active</p>
+                <p className="text-[10px] text-emerald-400 font-mono">
+                  {activeMeetingId ? `Context: Meeting #${activeMeetingId}` : 'Local RAG Vector DB Active'}
+                </p>
               </div>
             </div>
             <button

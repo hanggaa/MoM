@@ -116,3 +116,17 @@ Once live, execute this checklist directly in your web browser:
 5. **PDF Executive Export:** Click **Export PDF** to test formal print formatting with table borders and hidden UI controls.
 
 Your self-hosted AIMeetingMoM system is now fully production-operational! 🌟
+
+Silakan eksekusi ini di terminal GCP Anda untuk menarik perubahan terbaru:
+
+cd /opt/aimeetingmom
+sudo git pull origin main
+
+# Build UI terbaru untuk memunculkan Tab & Dropdown
+cd frontend
+npm install
+npm run build
+
+# Restart Backend agar kerangka Prompting baru aktif
+cd ../backend
+sudo systemctl restart aimeetingmom-backend

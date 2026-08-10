@@ -211,7 +211,7 @@ export default function App() {
         onSuccess={handleByokUpdated}
       />
       
-      <ChatWidget />
+      <ChatWidget activeMeetingId={activeMeetingId || viewingMeeting?.id} />
     </div>
   );
 }
