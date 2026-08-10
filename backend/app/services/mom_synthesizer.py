@@ -118,7 +118,7 @@ def synthesize_mom_sync(
                     {"role": "user", "content": f"Meeting Title: {meeting.title}\n\nTranscript Content:\n{transcript_text}"}
                 ],
                 temperature=0.2,
-                max_tokens=2048
+                max_tokens=4096
             )
             
             generated_mom = response.choices[0].message.content.strip()
