@@ -11,12 +11,20 @@ def get_chroma_client():
     global _client
     if _client is None:
         try:
+            # Fix for SQLite version on older Linux (GCP VMs)
+            try:
+                import pysqlite3
+                import sys
+                sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+            except ImportError:
+                pass
+
             import chromadb
             chroma_dir = STORAGE_DIR / "chroma"
             chroma_dir.mkdir(parents=True, exist_ok=True)
             _client = chromadb.PersistentClient(path=str(chroma_dir))
-        except ImportError:
-            logger.warning("chromadb not installed. Vector search is disabled.")
+        except Exception as e:
+            logger.error(f"Failed to initialize ChromaDB: {e}")
             return None
     return _client
 
@@ -92,11 +100,11 @@ def index_meeting(meeting_id: int, title: str, transcript: str, mom_text: str):
 
 def search_meetings(query: str, top_k: int = 5, meeting_id: Optional[int] = None) -> List[Dict[str, Any]]:
     """Search for relevant chunks across meetings."""
-    collection = get_meetings_collection()
-    if not collection:
-        return []
-        
     try:
+        collection = get_meetings_collection()
+        if not collection:
+            return []
+            
         where_clause = {"meeting_id": meeting_id} if meeting_id else None
         
         results = collection.query(
