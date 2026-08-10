@@ -86,11 +86,13 @@ def index_meeting(meeting_id: int, title: str, transcript: str, mom_text: str):
                 ids.append(f"m_{meeting_id}_ts_{i}")
                 
         if documents:
-            collection.add(
-                documents=documents,
-                metadatas=metadatas,
-                ids=ids
-            )
+            batch_size = 100
+            for i in range(0, len(documents), batch_size):
+                collection.add(
+                    documents=documents[i:i+batch_size],
+                    metadatas=metadatas[i:i+batch_size],
+                    ids=ids[i:i+batch_size]
+                )
             logger.info(f"Successfully indexed meeting {meeting_id} with {len(documents)} chunks.")
             
     except Exception as e:
