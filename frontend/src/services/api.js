@@ -36,7 +36,7 @@ export const uploadAudioChunk = (formData, onUploadProgress) =>
 
 export const getTaskStatus = (taskId) => api.get(`/tasks/${taskId}`);
 export const getMeetingDetails = (meetingId) => api.get(`/meetings/${meetingId}`);
-export const synthesizeMeetingMoM = (meetingId) => api.post(`/meetings/${meetingId}/synthesize`, {}, { timeout: 300000 });
+export const synthesizeMeetingMoM = (meetingId, style) => api.post(`/meetings/${meetingId}/synthesize`, null, { params: { style }, timeout: 300000 });
 export const getMeetingAudioUrl = (meetingId) => `/api/meetings/${meetingId}/audio`;
 
 export const getSTTSettings = () => api.get('/settings/stt');

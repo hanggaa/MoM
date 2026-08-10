@@ -23,7 +23,7 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 - 2026-08-04 — Completed RAM Performance Audit: Verified INT8 quantization limits inference RAM consumption to ~3.5 GB – 4.0 GB peak, utilizing only 28% of the 16 GB memory on GCP `e2-standard-4`, entirely eliminating OOM risks during 2-hour recordings.
 - 2026-08-04 — Added lightweight self-healing table schema checks (`ALTER TABLE ... ADD COLUMN`) inside `init_db()` in `database.py` to prevent OperationalErrors when running against developer physical SQLite DB files across schema evolutions.
 - 2026-08-04 — Scoped FastAPI dependency overrides (`app.dependency_overrides[get_session]`) and module mocks inside individual test fixtures rather than at module import time to ensure complete test suite isolation across multi-file pytest runs.
-
+- 2026-08-10 — Transitioned `meeting.mom_data` column from raw Markdown strings to JSON dictionary strings `{"style": "markdown"}` to support multi-style synthesis side-by-side in `MoMViewer.jsx` tabs without requiring SQLite schema migrations. Legacy raw markdown is gracefully handled and coerced into "General Executive MoM".
 ## 🐛 Known Issues & Quirks
 *(Log current bugs or weird workarounds here)*
 - Cloudflare Free/Pro enforces a strict 100MB HTTP request body limitation; frontend audio upload slices files into 25MB chunks and uploads sequentially to `/api/upload/chunk`. (SOLVED via `AudioUploader.jsx` & `upload_service.py`).

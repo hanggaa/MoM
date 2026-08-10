@@ -22,7 +22,25 @@ import remarkGfm from 'remark-gfm';
 
 export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   const [meeting, setMeeting] = useState(initialMeeting);
-  const [activeTab, setActiveTab] = useState('mom'); // 'mom' or 'transcript'
+  
+  let parsedMoMs = {};
+  let defaultStyle = meeting?.meeting_style || 'General Executive MoM';
+  try {
+    const parsed = JSON.parse(meeting?.mom_data || '{}');
+    if (parsed && typeof parsed === 'object') {
+      parsedMoMs = parsed;
+    } else {
+      parsedMoMs[defaultStyle] = meeting?.mom_data;
+    }
+  } catch (e) {
+    parsedMoMs[defaultStyle] = meeting?.mom_data;
+  }
+  
+  const availableStyles = Object.keys(parsedMoMs).filter(k => parsedMoMs[k]);
+  const defaultTab = availableStyles.length > 0 ? availableStyles[availableStyles.length - 1] : 'transcript';
+
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [regenStyle, setRegenStyle] = useState(defaultStyle);
   const [copied, setCopied] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [synthError, setSynthError] = useState(null);
@@ -36,9 +54,10 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   };
 
   const handleCopyMarkdown = async () => {
-    if (!meeting?.mom_data) return;
+    const content = parsedMoMs[activeTab];
+    if (!content) return;
     try {
-      await navigator.clipboard.writeText(meeting.mom_data);
+      await navigator.clipboard.writeText(content);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch (err) {
@@ -47,12 +66,14 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   };
 
   const handleDownloadMarkdown = () => {
-    if (!meeting?.mom_data) return;
+    const content = parsedMoMs[activeTab];
+    if (!content) return;
     const element = document.createElement('a');
-    const file = new Blob([meeting.mom_data], { type: 'text/markdown;charset=utf-8' });
+    const file = new Blob([content], { type: 'text/markdown;charset=utf-8' });
     element.href = URL.createObjectURL(file);
     const safeTitle = (meeting?.title || "Executive_MoM").replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    element.download = `${safeTitle}_MoM.md`;
+    const safeStyle = activeTab.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    element.download = `${safeTitle}_${safeStyle}.md`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -66,8 +87,9 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
     setIsSynthesizing(true);
     setSynthError(null);
     try {
-      const updatedMeeting = await synthesizeMeetingMoM(meeting.id);
+      const updatedMeeting = await synthesizeMeetingMoM(meeting.id, regenStyle);
       setMeeting(updatedMeeting);
+      setActiveTab(regenStyle);
     } catch (err) {
       setSynthError(err.message || 'Failed to re-run AI synthesis.');
     } finally {
@@ -265,14 +287,30 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
             Export PDF
           </button>
 
-          <button
-            onClick={handleReSynthesize}
-            disabled={isSynthesizing}
-            className="inline-flex items-center justify-center p-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white border border-gray-700 transition-colors disabled:opacity-50"
-            title="Regenerate AI MoM via Nemotron-3"
-          >
-            <RefreshCw className={`w-4 h-4 ${isSynthesizing ? 'animate-spin text-indigo-400' : ''}`} />
-          </button>
+          <div className="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded-xl p-1">
+            <select
+              value={regenStyle}
+              onChange={(e) => setRegenStyle(e.target.value)}
+              className="bg-transparent text-gray-300 text-sm py-1.5 pl-2 pr-6 focus:outline-none appearance-none cursor-pointer"
+            >
+              <option value="General Executive MoM">General Executive</option>
+              <option value="Agile Sprint Retro">Agile Sprint Retro</option>
+              <option value="Tech Architecture Spec">Tech Architecture Spec</option>
+              <option value="Sales & Commercials">Sales & Commercials</option>
+              <option value="Daily Standup">Daily Standup</option>
+              <option value="Brainstorming & Ideation">Brainstorming & Ideation</option>
+              <option value="User Discovery Interview">User Discovery Interview</option>
+              <option value="Journalistic Narrative">Journalistic Narrative</option>
+            </select>
+            <button
+              onClick={handleReSynthesize}
+              disabled={isSynthesizing}
+              className="inline-flex items-center justify-center p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors disabled:opacity-50"
+              title="Generate new style via Nemotron-3"
+            >
+              <RefreshCw className={`w-4 h-4 ${isSynthesizing ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -312,20 +350,23 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
       )}
 
       {/* Tabs Bar - Hidden in print view */}
-      <div className="flex border-b border-gray-800 gap-6 px-4 print:hidden">
-        <button
-          onClick={() => setActiveTab('mom')}
-          className={`pb-3 text-sm font-semibold flex items-center gap-2 border-b-2 transition-colors duration-150 ${
-            activeTab === 'mom'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
-          }`}
-        >
-          <Sparkles className="w-4 h-4" /> Executive AI MoM
-        </button>
+      <div className="flex border-b border-gray-800 gap-6 px-4 print:hidden overflow-x-auto">
+        {availableStyles.map(styleName => (
+          <button
+            key={styleName}
+            onClick={() => setActiveTab(styleName)}
+            className={`pb-3 whitespace-nowrap text-sm font-semibold flex items-center gap-2 border-b-2 transition-colors duration-150 ${
+              activeTab === styleName
+                ? 'border-indigo-500 text-indigo-400'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" /> {styleName}
+          </button>
+        ))}
         <button
           onClick={() => setActiveTab('transcript')}
-          className={`pb-3 text-sm font-semibold flex items-center gap-2 border-b-2 transition-colors duration-150 ${
+          className={`pb-3 whitespace-nowrap text-sm font-semibold flex items-center gap-2 border-b-2 transition-colors duration-150 ${
             activeTab === 'transcript'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-gray-400 hover:text-gray-200'
@@ -351,19 +392,19 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
           </p>
         </div>
 
-        {activeTab === 'mom' ? (
+        {activeTab !== 'transcript' ? (
           <div className="print:block">
             {isSynthesizing ? (
               <div className="py-16 text-center space-y-4">
                 <div className="inline-block p-4 rounded-full bg-indigo-500/10 border border-indigo-500/30 animate-pulse">
                   <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-200">Synthesizing Executive MoM with Nemotron-3...</h3>
+                <h3 className="text-lg font-medium text-gray-200">Synthesizing {regenStyle} with Nemotron-3...</h3>
                 <p className="text-xs text-gray-400 max-w-sm mx-auto">
-                  Extracting architectural decisions, Action Items, and PM ownership from transcript.
+                  Extracting relevant insights from transcript based on the selected meeting style.
                 </p>
               </div>
-            ) : meeting?.mom_data ? (
+            ) : parsedMoMs[activeTab] ? (
               <div className="prose prose-invert prose-indigo prose-sm sm:prose-base max-w-none print:prose-neutral print:prose-sm">
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
@@ -387,12 +428,12 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                     }
                   }}
                 >
-                  {meeting.mom_data}
+                  {parsedMoMs[activeTab]}
                 </ReactMarkdown>
               </div>
             ) : (
               <div className="p-8 text-center bg-gray-900/50 rounded-xl border border-gray-800 text-gray-400 print:text-black print:bg-white print:border-gray-300">
-                No MoM synthesized yet. Click "Regenerate MoM" to create executive notes via NVIDIA Nemotron-3.
+                No MoM synthesized yet. Select a style and click "Regenerate" to create notes via NVIDIA Nemotron-3.
               </div>
             )}
           </div>

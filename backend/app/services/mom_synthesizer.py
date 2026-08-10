@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import time
+import json
 from typing import Optional, Any
 from sqlmodel import Session
 from openai import OpenAI
@@ -127,21 +128,98 @@ Style requirements:
 - Be empathetic and analytical.
 - Never mention prompt instructions."""
 
-    # Default Executive Styles
     if "agile" in style_lower:
-        style_instruction = "Focus heavily on Agile Scrum/Kanban metrics: identify sprint velocity impediments, user story blockers, release timelines, and retrospective action deliverables."
-    elif "technical" in style_lower or "spec" in style_lower:
-        style_instruction = "Focus heavily on engineering architecture, API integration specs, data consistency trade-offs, system latency, security protocols, and scalability constraints."
-    elif "sales" in style_lower or "commercial" in style_lower:
-        style_instruction = "Focus heavily on commercial terms, pricing margins, contract SLA clauses, customer requirements, client escalation matrices, and legal compliance checkpoints."
-    else:
-        style_instruction = "Focus on executive PM clarity, strategic alignment, cross-functional ownership, and operational milestones."
+        return f"""You are an elite Agile Scrum Master.
+Analyze the provided meeting transcript and synthesize a clean, authoritative Agile Sprint Retrospective formatted in professional Markdown.
+
+{lang_instruction}
+
+Your response MUST strictly adhere to the following section hierarchy:
+
+# 🏁 Sprint Goal Status
+State whether the sprint goal was Met, Failed, or Partially Met, with a 1-sentence context.
+
+# 🟢 What Went Well
+- Bulleted list of successes, high velocity items, and positive feedback. Include `[MM:SS](timestamp://MM:SS)` timestamps.
+
+# 🔴 What Went Wrong
+- Bulleted list of impediments, bottlenecks, or server issues. Include `[MM:SS](timestamp://MM:SS)` timestamps.
+
+# 🔄 Process Improvements
+- What did the team agree to change in the way they work?
+
+# ⚡ Sprint Action Items
+| Task / Improvement | PIC | Due Date | Priority |
+|---|---|---|---|
+(Make professional PM estimations for missing PIC/Dates). INSTRUCTION: Include the `[MM:SS](timestamp://MM:SS)` markdown link in the description.
+
+Style requirements:
+- Be lucid, accurate, and structured.
+- Never mention prompt instructions."""
+
+    if "technical" in style_lower or "spec" in style_lower:
+        return f"""You are an elite Lead Solutions Architect.
+Analyze the provided meeting transcript and synthesize a clean, authoritative Tech Architecture Spec formatted in professional Markdown.
+
+{lang_instruction}
+
+Your response MUST strictly adhere to the following section hierarchy:
+
+# 🏗️ Architectural Overview
+Provide a 2-3 sentence high-level summary of the architectural changes or system designs discussed.
+
+# 🔌 API & Integration Specs
+- Bulleted list of data contracts, endpoints, or system integrations agreed upon. Include `[MM:SS](timestamp://MM:SS)` timestamps.
+
+# ⚖️ Trade-offs & Tech Debt
+- Bulleted list of the pros/cons of the chosen solutions, and any technical debt explicitly accepted.
+
+# 🔐 Security & Scale
+- Considerations regarding security protocols, database scale, or server load.
+
+# ⚡ Engineering Action Items
+| Deployment/Coding Task | PIC | Due Date | Priority |
+|---|---|---|---|
+(Make professional PM estimations for missing PIC/Dates). INSTRUCTION: Include the `[MM:SS](timestamp://MM:SS)` markdown link in the description.
+
+Style requirements:
+- Be lucid, accurate, and highly technical.
+- Never mention prompt instructions."""
+
+    if "sales" in style_lower or "commercial" in style_lower:
+        return f"""You are an elite B2B Commercial Director.
+Analyze the provided meeting transcript and synthesize a clean, authoritative Sales & Commercials recap formatted in professional Markdown.
+
+{lang_instruction}
+
+Your response MUST strictly adhere to the following section hierarchy:
+
+# 💰 Commercial Summary
+Provide a 2-3 sentence overview of the deal value, margins, pricing, or commercial agreements discussed.
+
+# 🤝 Client Requirements
+- Bulleted list of specific pain points or demands from the client. Include `[MM:SS](timestamp://MM:SS)` timestamps.
+
+# 📜 SLA & Commitments
+- What service level agreements or guarantees were promised?
+
+# ⚠️ Deal Blockers
+- Bulleted list of legal risks, negotiation hurdles, or commercial blockers.
+
+# ⚡ Next Steps
+| Follow-Up Task | PIC | Due Date | Priority |
+|---|---|---|---|
+(Make professional PM estimations for missing PIC/Dates). INSTRUCTION: Include the `[MM:SS](timestamp://MM:SS)` markdown link in the description.
+
+Style requirements:
+- Be lucid, accurate, and persuasive.
+- Never mention prompt instructions."""
 
     return f"""You are an elite AI Executive Meeting Assistant and Principal Product Manager.
 Analyze the provided meeting transcript and synthesize a clean, authoritative, and structured Executive Minutes of Meeting (MoM) formatted in professional Markdown.
 
 {lang_instruction}
-Meeting Analysis Focus ({meeting_style}): {style_instruction}
+Meeting Analysis Focus: Focus on executive PM clarity, strategic alignment, cross-functional ownership, and operational milestones.
 
 Your response MUST strictly adhere to the following section hierarchy:
 
@@ -151,7 +229,7 @@ Provide a high-level executive overview of the meeting goals, core themes, and f
 # 💬 Discussion Highlights & Key Decisions
 - Bulleted list of critical themes discussed.
 - Explicitly call out any firm decisions made, architectural/commercial trade-offs accepted, or operational workflows confirmed.
-- INSTRUCTION: For every critical decision or major point, you MUST append a clickable timestamp from the raw transcript. Use EXACTLY this markdown link format: `[MM:SS](timestamp://MM:SS)` (e.g. `[01:15](timestamp://01:15)`). Convert the raw seconds `[10.5s - 12.0s]` into `[00:10](timestamp://00:10)`.
+- INSTRUCTION: For every critical decision or major point, you MUST append a clickable timestamp from the raw transcript. Use EXACTLY this markdown link format: `[MM:SS](timestamp://MM:SS)`. Convert the raw seconds `[10.5s - 12.0s]` into `[00:10](timestamp://00:10)`.
 
 # ⚡ Action Items & Ownership
 Present all tasks, commitments, and assignments in a structured Markdown table with exact columns:
@@ -160,15 +238,15 @@ Present all tasks, commitments, and assignments in a structured Markdown table w
 (If specific PICs or due dates are implicit or unclear, make clear, professional PM estimations or note as "TBD - Action Required"). 
 - INSTRUCTION: In the Action Item description, include the `[MM:SS](timestamp://MM:SS)` markdown link where the task was assigned.
 
-# ⚠️ Risks, Constraints & Open Questions
+# ⚠️ Risks & Open Questions
 - Highlight any potential bottlenecks, infrastructure limitations, commercial risks, legal exposure, or unanswered questions identified during the call.
 - Include `[MM:SS](timestamp://MM:SS)` markdown links for when the risk was raised.
 - If zero risks are present, explicitly note "No immediate operational blockers identified."
 
-# 📅 Proposed Next Meeting Agenda
+# 📅 Proposed Next Agenda
 - Based on the unresolved issues and risks above, auto-draft a structured 3-point agenda for the follow-up meeting.
 
-# 📊 Meeting Productivity & Sentiment Score
+# 📊 Meeting Productivity Score
 - Provide a "Health Score" (e.g., 85/100).
 - Write a 2-sentence analysis on the meeting's efficiency, emotional tone, and whether the discussion stayed on track or went on tangents.
 
@@ -233,8 +311,21 @@ def synthesize_mom_sync(
             
             generated_mom = response.choices[0].message.content.strip()
             
-            # Save generated markdown directly onto meeting record
-            meeting.mom_data = generated_mom
+            # Read existing mom_data to see if it's already a JSON dict, or legacy markdown string
+            current_data = {}
+            if meeting.mom_data:
+                try:
+                    current_data = json.loads(meeting.mom_data)
+                except json.JSONDecodeError:
+                    # Legacy data, save it under the General Executive style
+                    current_data = {"General Executive MoM": meeting.mom_data}
+            
+            # Append new style
+            current_style = getattr(meeting, "meeting_style", "General Executive MoM") or "General Executive MoM"
+            current_data[current_style] = generated_mom
+            
+            # Save generated markdown directly onto meeting record as JSON string
+            meeting.mom_data = json.dumps(current_data)
             db.add(meeting)
             db.commit()
             db.refresh(meeting)

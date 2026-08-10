@@ -206,13 +206,19 @@ def get_meeting_details(meeting_id: int, session: Session = Depends(get_session)
     )
 
 @api_router.post("/meetings/{meeting_id}/synthesize", response_model=MeetingResponse)
-async def trigger_mom_synthesis(meeting_id: int, session: Session = Depends(get_session)):
-    """Manually trigger or retry NVIDIA Nemotron-3 executive MoM synthesis."""
+async def trigger_mom_synthesis(meeting_id: int, style: Optional[str] = Query(None, description="Optional style override for synthesis"), session: Session = Depends(get_session)):
+    """Manually trigger or retry NVIDIA Nemotron-3 executive MoM synthesis with an optional style."""
     meeting = session.get(Meeting, meeting_id)
     if not meeting:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Meeting #{meeting_id} not found.")
         
     try:
+        # Override meeting style for this synthesis if provided
+        if style:
+            meeting.meeting_style = style
+            session.add(meeting)
+            session.commit()
+            
         await synthesize_mom_async(session, meeting)
         if meeting.status == "ERROR" or meeting.status != "DONE":
             meeting.status = "DONE"

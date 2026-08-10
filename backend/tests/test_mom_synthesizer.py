@@ -56,7 +56,9 @@ def test_synthesize_mom_sync_success(tmp_path, client):
         
         result_mom = synthesize_mom_sync(db, meeting, mock_client=FakeNimClient())
         assert "# 📋 Executive Summary" in result_mom
-        assert meeting.mom_data == result_mom
+        import json
+        saved_data = json.loads(meeting.mom_data)
+        assert saved_data["General Executive MoM"] == result_mom
 
 def test_get_meeting_details_endpoint(tmp_path, client):
     transcript_file = tmp_path / "transcript_api.txt"
@@ -134,7 +136,9 @@ def test_synthesize_mom_sync_retry_success(tmp_path, client):
         )
         assert flaky_client.attempts == 3
         assert "Recovered after retries." in result_mom
-        assert meeting.mom_data == result_mom
+        import json
+        saved_data = json.loads(meeting.mom_data)
+        assert saved_data["General Executive MoM"] == result_mom
 
 def test_synthesize_mom_sync_retry_failure(tmp_path, client):
     transcript_file = tmp_path / "transcript_fail.txt"
