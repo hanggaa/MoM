@@ -60,7 +60,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-cyan-500/30">
+    <div className="min-h-screen flex flex-col">
       <Navbar
         onOpenSettings={() => setIsSettingsOpen(true)}
         isByokSet={byokStatus.is_set}
@@ -68,41 +68,40 @@ export default function App() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-        {/* Hero Welcome Banner - Hide when viewing MoM in print/detail mode */}
+        {/* Hero Welcome Banner */}
         {!viewingMeeting && (
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800 p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
-            {/* Subtle Accent Gradients */}
-            <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-12">
+            <div className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute -bottom-[300px] -left-[300px] w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="relative z-10 max-w-2xl space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-slate-950/80 text-cyan-400 border border-cyan-500/30 shadow-inner">
+            <div className="relative z-10 max-w-3xl space-y-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest bg-white/5 text-primary border border-primary/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
                 <Lock size={12} />
                 <span>100% Self-Hosted & Local Audio Privacy</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-100 leading-tight">
-                Executive STT & <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">AI MoM Synthesis</span>
+              <h1 className="text-4xl sm:text-6xl font-display font-bold tracking-tight text-white leading-[1.1]">
+                Executive STT & <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">AI MoM Synthesis</span>
               </h1>
 
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-                Automate multi-hour meeting documentation without sacrificing confidential company secrets. Local <code className="text-cyan-300 font-mono bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">faster-whisper INT8</code> transcription combined with your own NVIDIA Nemotron-3 executive reasoning.
+              <p className="text-base sm:text-lg text-zinc-400 leading-relaxed font-light max-w-2xl">
+                Automate multi-hour meeting documentation without sacrificing confidential company secrets. Local <code className="text-primary font-mono bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 text-sm">faster-whisper INT8</code> transcription combined with your own NVIDIA Nemotron-3 executive reasoning.
               </p>
 
-              <div className="pt-2 flex flex-wrap gap-4">
+              <div className="pt-4 flex flex-wrap gap-4">
                 {!byokStatus.is_set && (
                   <button
                     onClick={() => setIsSettingsOpen(true)}
-                    className="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-lg shadow-amber-500/20 active:scale-95 transition-all animate-pulse"
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider bg-primary text-zinc-950 shadow-glow hover:bg-amber-400 active:scale-95 transition-all animate-pulse"
                   >
-                    <AlertTriangle size={16} />
+                    <AlertTriangle size={18} />
                     <span>Configure NVIDIA BYOK Token to Unlock Phase 2</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={18} />
                   </button>
                 )}
                 {byokStatus.is_set && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                    <CheckCircle2 size={16} />
+                  <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-medium tracking-wide">
+                    <CheckCircle2 size={18} className="text-primary" />
                     <span>Phase 2 Engine Operational — Ready for Audio Upload & MoM Synthesis</span>
                   </div>
                 )}
@@ -139,60 +138,60 @@ export default function App() {
           </section>
         )}
 
-        {/* Phase Roadmap Status Grid - Hide when reading active MoM */}
+        {/* Phase Roadmap Status Grid */}
         {!viewingMeeting && (
-          <div className="space-y-4">
+          <div className="space-y-6 pt-8 border-t border-white/5">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-200 inline-flex items-center gap-2">
-                <Layers size={20} className="text-cyan-400" />
+              <h2 className="text-xl font-display font-semibold text-white inline-flex items-center gap-3">
+                <Layers size={24} className="text-primary" />
                 <span>System Architecture Readiness</span>
               </h2>
-              <span className="text-xs font-medium text-slate-400">AGENTS.md Roadmap Status</span>
+              <span className="text-sm font-medium text-muted tracking-wide uppercase">Roadmap Status</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Feature Card 1 */}
-              <div className="p-6 rounded-2xl bg-slate-900/50 backdrop-blur-md border border-slate-800/80 hover:border-slate-700 transition-all space-y-4">
-                <div className="p-3 w-fit rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  <Cpu size={22} />
+              <div className="p-6 rounded-2xl glass-panel hover:-translate-y-1 transition-transform duration-300 space-y-5">
+                <div className="p-3.5 w-fit rounded-xl bg-white/5 text-primary border border-white/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+                  <Cpu size={24} />
                 </div>
-                <h3 className="text-base font-bold text-slate-100">1. Monorepo Foundation & SQLite ORM</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Layered backend engine initialized with FastAPI, SQLModel tables (<code className="text-slate-300">AppSettings</code>, <code className="text-slate-300">Meeting</code>, <code className="text-slate-300">Task</code>), and secure server-side BYOK vault.
+                <h3 className="text-lg font-semibold text-zinc-100 font-display">1. Monorepo Foundation & SQLite ORM</h3>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  Layered backend engine initialized with FastAPI, SQLModel tables (<code className="text-zinc-300">AppSettings</code>, <code className="text-zinc-300">Meeting</code>), and secure server-side BYOK vault.
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] font-semibold text-emerald-400">
-                  <span className="inline-flex items-center gap-1"><CheckCircle2 size={13} /> Active & Verified</span>
-                  <span className="text-slate-500">Phase 1</span>
+                <div className="pt-4 mt-auto flex items-center justify-between text-xs font-semibold text-primary uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} /> Active & Verified</span>
+                  <span className="text-zinc-500">Phase 1</span>
                 </div>
               </div>
 
               {/* Feature Card 2 */}
-              <div className="p-6 rounded-2xl bg-slate-900/50 backdrop-blur-md border border-slate-800/80 hover:border-slate-700 transition-all space-y-4">
-                <div className="p-3 w-fit rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  <Mic size={22} />
+              <div className="p-6 rounded-2xl glass-panel hover:-translate-y-1 transition-transform duration-300 space-y-5">
+                <div className="p-3.5 w-fit rounded-xl bg-white/5 text-primary border border-white/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+                  <Mic size={24} />
                 </div>
-                <h3 className="text-base font-bold text-slate-100">2. 25MB Chunked Audio & STT Pipeline</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Resilient slice upload bypassing Cloudflare 100MB body limits, wired to asynchronous <code className="text-slate-300">faster-whisper INT8</code> worker in FastAPI BackgroundTasks.
+                <h3 className="text-lg font-semibold text-zinc-100 font-display">2. 25MB Chunked Audio & STT Pipeline</h3>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  Resilient slice upload bypassing Cloudflare 100MB body limits, wired to asynchronous <code className="text-zinc-300">faster-whisper INT8</code> worker in FastAPI.
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] font-semibold text-emerald-400">
-                  <span className="inline-flex items-center gap-1"><CheckCircle2 size={13} /> Active & Verified</span>
-                  <span className="text-slate-500">Phase 2A & 2B</span>
+                <div className="pt-4 mt-auto flex items-center justify-between text-xs font-semibold text-primary uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} /> Active & Verified</span>
+                  <span className="text-zinc-500">Phase 2</span>
                 </div>
               </div>
 
               {/* Feature Card 3 */}
-              <div className="p-6 rounded-2xl bg-slate-900/50 backdrop-blur-md border border-slate-800/80 hover:border-slate-700 transition-all space-y-4">
-                <div className="p-3 w-fit rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                  <FileText size={22} />
+              <div className="p-6 rounded-2xl glass-panel hover:-translate-y-1 transition-transform duration-300 space-y-5">
+                <div className="p-3.5 w-fit rounded-xl bg-white/5 text-primary border border-white/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+                  <FileText size={24} />
                 </div>
-                <h3 className="text-base font-bold text-slate-200">3. Nemotron-3 Executive MoM Engine</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <h3 className="text-lg font-semibold text-zinc-100 font-display">3. Nemotron-3 Executive MoM Engine</h3>
+                <p className="text-sm text-zinc-400 leading-relaxed">
                   AI synthesis extracting structured Action Items, PICs, and deadlines with one-click Markdown copy and PDF print stylesheet.
                 </p>
-                <div className="pt-2 flex items-center justify-between text-[11px] font-semibold text-emerald-400">
-                  <span className="inline-flex items-center gap-1"><CheckCircle2 size={13} /> Active & Verified</span>
-                  <span className="text-slate-500">Phase 2C & 3</span>
+                <div className="pt-4 mt-auto flex items-center justify-between text-xs font-semibold text-primary uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} /> Active & Verified</span>
+                  <span className="text-zinc-500">Phase 3</span>
                 </div>
               </div>
             </div>
@@ -200,7 +199,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="w-full border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md py-6 text-center text-xs font-medium text-slate-500 print:hidden">
+      <footer className="w-full border-t border-white/5 py-8 text-center text-sm font-medium text-muted print:hidden">
         AIMeetingMoM MVP &bull; Running locally on GCP e2-standard-4 architecture &bull; Zero External Audio Leakage Guaranteed
       </footer>
 
