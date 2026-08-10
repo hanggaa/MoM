@@ -7,6 +7,7 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
   
   // BYOK State
   const [apiKey, setApiKey] = useState('');
+  const [hfToken, setHfToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -34,8 +35,8 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
 
   const handleSaveBYOK = async (e) => {
     e.preventDefault();
-    if (!apiKey.trim()) {
-      setError('Please input a valid NVIDIA NIM API token starting with nvapi-');
+    if (!apiKey.trim() && !hfToken.trim()) {
+      setError('Please input at least one token to save.');
       return;
     }
 
@@ -44,7 +45,7 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
     setSuccessMsg('');
 
     try {
-      const response = await saveBYOKToken(apiKey);
+      const response = await saveBYOKToken(apiKey, hfToken);
       setSuccessMsg(response.message || 'NVIDIA NIM Key verified and secured!');
       setApiKey('');
       onSuccess(response);
@@ -147,9 +148,15 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                   Your token is encrypted in SQLite and never exposed to browser clients or third-party tracking.
                 </p>
                 <div className="pt-1 flex items-center gap-2 font-mono">
-                  <span className="text-slate-400">Token Status:</span>
+                  <span className="text-slate-400">NVIDIA Token:</span>
                   <span className={`px-2.5 py-0.5 rounded-full font-bold ${byokStatus?.is_set ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}`}>
                     {byokStatus?.is_set ? (byokStatus.preview || 'Connected') : 'Not Registered'}
+                  </span>
+                </div>
+                <div className="pt-1 flex items-center gap-2 font-mono">
+                  <span className="text-slate-400">HF Token (Diarization):</span>
+                  <span className={`px-2.5 py-0.5 rounded-full font-bold ${byokStatus?.hf_is_set ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}`}>
+                    {byokStatus?.hf_is_set ? (byokStatus.hf_preview || 'Connected') : 'Not Registered'}
                   </span>
                 </div>
               </div>
@@ -178,6 +185,32 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                     className="text-cyan-400 hover:text-cyan-300 underline inline-flex items-center gap-1 font-semibold"
                   >
                     Get token from build.nvidia.com <ExternalLink size={11} />
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="hfTokenInput" className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                  Enter HuggingFace Access Token
+                </label>
+                <input
+                  id="hfTokenInput"
+                  type="password"
+                  value={hfToken}
+                  onChange={(e) => setHfToken(e.target.value)}
+                  placeholder="hf_..................................."
+                  className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 font-mono text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  disabled={loading}
+                />
+                <div className="mt-2 flex justify-between items-center text-[11px] text-slate-400">
+                  <span>Required for Pyannote Speaker Diarization.</span>
+                  <a
+                    href="https://huggingface.co/settings/tokens"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-cyan-400 hover:text-cyan-300 underline inline-flex items-center gap-1 font-semibold"
+                  >
+                    Get token from huggingface.co <ExternalLink size={11} />
                   </a>
                 </div>
               </div>

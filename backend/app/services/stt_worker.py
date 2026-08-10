@@ -6,9 +6,30 @@ from sqlmodel import Session
 from app.models.database import engine as default_engine
 from app.models.schemas import Task, Meeting
 from app.services.mom_synthesizer import synthesize_mom_sync
+from app.services.nim_client import get_hf_token
 from app.core.config import STORAGE_DIR
 
 logger = logging.getLogger(__name__)
+
+def align_speakers(whisper_segments, pyannote_diarization):
+    aligned_lines = []
+    for seg in whisper_segments:
+        start = seg["start"]
+        end = seg["end"]
+        text = seg["text"]
+        
+        speaker_overlaps = {}
+        for turn, _, speaker in pyannote_diarization.itertracks(yield_label=True):
+            overlap = max(0, min(end, turn.end) - max(start, turn.start))
+            if overlap > 0:
+                speaker_overlaps[speaker] = speaker_overlaps.get(speaker, 0) + overlap
+                
+        dominant_speaker = "Speaker"
+        if speaker_overlaps:
+            dominant_speaker = max(speaker_overlaps.items(), key=lambda x: x[1])[0]
+            
+        aligned_lines.append(f"[{start:.1f}s - {end:.1f}s] {dominant_speaker}: {text}")
+    return aligned_lines
 
 def run_stt_task(
     task_id: str,
@@ -64,24 +85,51 @@ def run_stt_task(
                 segments, info = model.transcribe(meeting.audio_file_path, beam_size=5, initial_prompt=initial_prompt_str)
                 
             total_duration = getattr(info, "duration", 0) or 1
-            transcript_lines = []
+            raw_segments = []
             last_reported_progress = 10
             
             for segment in segments:
                 text = segment.text.strip()
                 if text:
-                    transcript_lines.append(f"[{segment.start:.1f}s - {segment.end:.1f}s] {text}")
+                    raw_segments.append({"start": segment.start, "end": segment.end, "text": text})
                 
-                # Calculate progress scaling between 10% and 90% during STT segment looping
+                # Calculate progress scaling between 10% and 60% during STT segment looping
                 if total_duration > 0:
-                    prog = int((segment.end / total_duration) * 80) + 10
-                    prog = min(90, max(10, prog))
-                    if prog >= last_reported_progress + 10:
+                    prog = int((segment.end / total_duration) * 50) + 10
+                    prog = min(60, max(10, prog))
+                    if prog >= last_reported_progress + 5:
                         task.progress_percent = prog
                         db.add(task)
                         db.commit()
                         last_reported_progress = prog
                         
+            transcript_lines = []
+            
+            # Step 2.5: Optional Speaker Diarization with pyannote
+            hf_token = get_hf_token(db)
+            if hf_token and raw_segments and not mock_model:
+                try:
+                    logger.info("Running Pyannote Speaker Diarization...")
+                    task.status = "DIARIZING"
+                    task.progress_percent = 70
+                    db.add(task)
+                    db.commit()
+                    
+                    from pyannote.audio import Pipeline
+                    pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=hf_token)
+                    
+                    # Convert device mapping safely (pyannote might prefer cpu)
+                    import torch
+                    pipeline.to(torch.device("cpu"))
+                    
+                    diarization = pipeline(meeting.audio_file_path)
+                    transcript_lines = align_speakers(raw_segments, diarization)
+                except Exception as py_err:
+                    logger.error(f"Pyannote diarization failed, falling back to raw: {py_err}")
+                    transcript_lines = [f"[{s['start']:.1f}s - {s['end']:.1f}s] {s['text']}" for s in raw_segments]
+            else:
+                transcript_lines = [f"[{s['start']:.1f}s - {s['end']:.1f}s] {s['text']}" for s in raw_segments]
+                
             # Step 3: Save generated transcript text to storage disk
             full_transcript = "\n".join(transcript_lines) if transcript_lines else "[No clear speech detected in audio recording.]"
             storage_dir = STORAGE_DIR

@@ -25,7 +25,7 @@ api.interceptors.response.use(
 
 export const checkHealth = () => api.get('/health');
 export const getBYOKStatus = () => api.get('/settings/byok');
-export const saveBYOKToken = (apiKey) => api.post('/settings/byok', { api_key: apiKey });
+export const saveBYOKToken = (apiKey, hfToken) => api.post('/settings/byok', { api_key: apiKey, hf_token: hfToken });
 
 export const uploadAudioChunk = (formData, onUploadProgress) =>
   api.post('/upload/chunk', formData, {

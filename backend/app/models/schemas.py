@@ -40,13 +40,16 @@ class Task(SQLModel, table=True):
 # ==================== API DTOs (Pydantic) ====================
 
 class BYOKSettingsRequest(BaseModel):
-    """Input payload for setting or testing the NVIDIA NIM API key."""
-    api_key: str
+    """Input payload for setting or testing the NVIDIA NIM API key and HF token."""
+    api_key: Optional[str] = None
+    hf_token: Optional[str] = None
 
 class BYOKSettingsResponse(BaseModel):
     """Output response for checking key presence without exposing raw token."""
     is_set: bool
     preview: Optional[str] = None
+    hf_is_set: bool = False
+    hf_preview: Optional[str] = None
     message: str
 
 class HealthResponse(BaseModel):

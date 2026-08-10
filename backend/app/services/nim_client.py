@@ -8,6 +8,7 @@ from openai import AsyncOpenAI, AuthenticationError, APIConnectionError
 from app.models.schemas import AppSettings
 from app.core.config import NVIDIA_NIM_BASE_URL, DEFAULT_NIM_MODEL, KEY_NVIDIA_API_KEY
 
+KEY_HF_TOKEN = "hf_token"
 logger = logging.getLogger(__name__)
 
 def mask_api_key(key: Optional[str]) -> Optional[str]:
@@ -33,6 +34,24 @@ def save_byok_key(session: Session, api_key: str) -> None:
         session.add(setting)
     else:
         setting.key_value = api_key
+        setting.updated_at = datetime.now(timezone.utc)
+    session.commit()
+
+def get_hf_token(session: Session) -> Optional[str]:
+    """Retrieve the stored HuggingFace token from SQLite."""
+    setting = session.exec(select(AppSettings).where(AppSettings.key_name == KEY_HF_TOKEN)).first()
+    if not setting:
+        return None
+    return setting.key_value
+
+def save_hf_token(session: Session, hf_token: str) -> None:
+    """Save or update the HuggingFace token in SQLite."""
+    setting = session.exec(select(AppSettings).where(AppSettings.key_name == KEY_HF_TOKEN)).first()
+    if not setting:
+        setting = AppSettings(key_name=KEY_HF_TOKEN, key_value=hf_token)
+        session.add(setting)
+    else:
+        setting.key_value = hf_token
         setting.updated_at = datetime.now(timezone.utc)
     session.commit()
 

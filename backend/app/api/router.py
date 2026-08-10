@@ -12,7 +12,7 @@ from app.models.schemas import (
     ChunkUploadResponse, Task, TaskResponse, Meeting, MeetingResponse,
     STTSettingsRequest, STTSettingsResponse, ActionResponse
 )
-from app.services.nim_client import get_byok_key, save_byok_key, mask_api_key, verify_nvidia_nim_connection
+from app.services.nim_client import get_byok_key, save_byok_key, mask_api_key, verify_nvidia_nim_connection, get_hf_token, save_hf_token
 from app.services.upload_service import save_chunk_and_try_assemble
 from app.services.stt_worker import run_stt_task
 from app.services.mom_synthesizer import synthesize_mom_async
@@ -47,18 +47,16 @@ def get_health_status():
 
 @api_router.get("/settings/byok", response_model=BYOKSettingsResponse)
 def check_byok_status(session: Session = Depends(get_session)):
-    """Check if a BYOK API key has been securely registered on the server."""
+    """Check if a BYOK API key and HF token have been securely registered on the server."""
     key = get_byok_key(session)
-    if key:
-        return BYOKSettingsResponse(
-            is_set=True,
-            preview=mask_api_key(key),
-            message="NVIDIA NIM BYOK token is actively registered."
-        )
+    hf_token = get_hf_token(session)
+    
     return BYOKSettingsResponse(
-        is_set=False,
-        preview=None,
-        message="No BYOK key configured. Please input your NVIDIA NIM API token."
+        is_set=bool(key),
+        preview=mask_api_key(key) if key else None,
+        hf_is_set=bool(hf_token),
+        hf_preview=mask_api_key(hf_token) if hf_token else None,
+        message="Settings retrieved successfully."
     )
 
 @api_router.post("/settings/byok", response_model=BYOKSettingsResponse)
@@ -66,19 +64,27 @@ async def update_byok_token(
     payload: BYOKSettingsRequest,
     session: Session = Depends(get_session)
 ):
-    """Validate and securely register a new NVIDIA NIM BYOK API token into server SQLite storage."""
-    api_key = payload.api_key.strip()
+    """Validate and securely register a new NVIDIA NIM BYOK API token and/or HF token into server SQLite storage."""
+    api_key = payload.api_key.strip() if payload.api_key else None
+    hf_token = payload.hf_token.strip() if payload.hf_token else None
     
     # Test valid connection before committing to persistent DB
-    await verify_nvidia_nim_connection(api_key)
-    
-    # Save securely
-    save_byok_key(session, api_key)
+    if api_key:
+        await verify_nvidia_nim_connection(api_key)
+        save_byok_key(session, api_key)
+        
+    if hf_token:
+        save_hf_token(session, hf_token)
+        
+    current_key = get_byok_key(session)
+    current_hf = get_hf_token(session)
     
     return BYOKSettingsResponse(
-        is_set=True,
-        preview=mask_api_key(api_key),
-        message="NVIDIA NIM token verified and saved securely."
+        is_set=bool(current_key),
+        preview=mask_api_key(current_key) if current_key else None,
+        hf_is_set=bool(current_hf),
+        hf_preview=mask_api_key(current_hf) if current_hf else None,
+        message="Tokens saved securely."
     )
 
 @api_router.post("/upload/chunk", response_model=ChunkUploadResponse)
