@@ -104,3 +104,11 @@ class ActionResponse(BaseModel):
     """Generic response for state mutations like purging audio files or deleting records."""
     success: bool
     message: str
+
+class ChatRequest(BaseModel):
+    query: str
+    meeting_id: Optional[int] = None
+    
+class ChatResponse(BaseModel):
+    answer: str
+    context_chunks_used: int

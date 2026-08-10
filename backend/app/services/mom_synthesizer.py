@@ -9,6 +9,7 @@ from openai import OpenAI
 from app.models.schemas import Meeting
 from app.services.nim_client import get_byok_key
 from app.core.config import NVIDIA_NIM_BASE_URL, DEFAULT_NIM_MODEL
+from app.services.vector_db import index_meeting
 
 logger = logging.getLogger(__name__)
 
@@ -324,11 +325,17 @@ def synthesize_mom_sync(
             current_style = getattr(meeting, "meeting_style", "General Executive MoM") or "General Executive MoM"
             current_data[current_style] = generated_mom
             
-            # Save generated markdown directly onto meeting record as JSON string
             meeting.mom_data = json.dumps(current_data)
             db.add(meeting)
             db.commit()
             db.refresh(meeting)
+            
+            # Step 5: Index in Vector DB for Semantic Search
+            try:
+                index_meeting(meeting.id, meeting.title, transcript_text, generated_mom)
+            except Exception as index_err:
+                logger.error(f"Vector indexing failed for meeting #{meeting.id}: {str(index_err)}")
+                
             logger.info(f"Successfully generated and persisted Executive MoM for meeting #{meeting.id} on attempt {attempt}")
             return generated_mom
             

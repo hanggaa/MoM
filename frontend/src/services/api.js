@@ -44,5 +44,6 @@ export const saveSTTSettings = (settings) => api.post('/settings/stt', settings)
 export const listMeetings = (search) => api.get('/meetings', { params: { search: search || undefined } });
 export const purgeMeetingAudio = (meetingId) => api.delete(`/meetings/${meetingId}/audio_only`);
 export const deleteMeeting = (meetingId) => api.delete(`/meetings/${meetingId}`);
+export const chatWithMeetings = (query, meetingId = null) => api.post('/chat', { query, meeting_id: meetingId });
 
 export default api;

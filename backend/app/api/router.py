@@ -10,14 +10,17 @@ from app.models.database import get_session
 from app.models.schemas import (
     HealthResponse, BYOKSettingsRequest, BYOKSettingsResponse,
     ChunkUploadResponse, Task, TaskResponse, Meeting, MeetingResponse,
-    STTSettingsRequest, STTSettingsResponse, ActionResponse
+    STTSettingsRequest, STTSettingsResponse, ActionResponse,
+    ChatRequest, ChatResponse
 )
 from app.services.nim_client import get_byok_key, save_byok_key, mask_api_key, verify_nvidia_nim_connection, get_hf_token, save_hf_token
 from app.services.upload_service import save_chunk_and_try_assemble
 from app.services.stt_worker import run_stt_task
 from app.services.mom_synthesizer import synthesize_mom_async
 from app.services.settings_service import get_stt_settings, save_stt_settings
-
+from app.services.vector_db import search_meetings
+from openai import AsyncOpenAI
+from app.core.config import NVIDIA_NIM_BASE_URL, DEFAULT_NIM_MODEL
 api_router = APIRouter(prefix="/api")
 
 @api_router.get("/settings/stt", response_model=STTSettingsResponse)
@@ -319,3 +322,43 @@ def delete_entire_meeting(meeting_id: int, session: Session = Depends(get_sessio
     session.commit()
     
     return ActionResponse(success=True, message="Meeting record and all associated files deleted completely.")
+
+@api_router.post("/chat", response_model=ChatResponse)
+async def chat_with_meetings(request: ChatRequest, session: Session = Depends(get_session)):
+    """RAG Chat endpoint: search vector db and synthesize an answer."""
+    byok_key = get_byok_key(session)
+    if not byok_key:
+        raise HTTPException(status_code=403, detail="NVIDIA NIM API key is not configured.")
+        
+    chunks = search_meetings(request.query, top_k=5, meeting_id=request.meeting_id)
+    
+    if not chunks:
+        return ChatResponse(
+            answer="Saya tidak menemukan informasi relevan dalam riwayat rapat untuk menjawab pertanyaan ini.",
+            context_chunks_used=0
+        )
+        
+    context_text = "\n\n".join([f"[Source: {c['metadata'].get('type', 'unknown')}] {c['document']}" for c in chunks])
+    
+    system_prompt = (
+        "You are an AI assistant for a Product Manager. Answer the user's question based strictly on the provided meeting excerpts context. "
+        "If the answer is not in the context, explicitly say you do not know. "
+        "Answer in formal, professional Bahasa Indonesia unless requested otherwise. "
+        "Use markdown formatting. Cite the source if helpful."
+    )
+    
+    try:
+        client = AsyncOpenAI(api_key=byok_key, base_url=NVIDIA_NIM_BASE_URL)
+        response = await client.chat.completions.create(
+            model=DEFAULT_NIM_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Context:\n{context_text}\n\nQuestion: {request.query}"}
+            ],
+            temperature=0.2,
+            max_tokens=1000
+        )
+        answer = response.choices[0].message.content.strip()
+        return ChatResponse(answer=answer, context_chunks_used=len(chunks))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate answer: {str(e)}")

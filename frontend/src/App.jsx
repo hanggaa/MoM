@@ -6,6 +6,7 @@ import AudioUploader from './components/AudioUploader';
 import TaskMonitor from './components/TaskMonitor';
 import MoMViewer from './components/MoMViewer';
 import MeetingsArchive from './components/MeetingsArchive';
+import { ChatWidget } from './components/ChatWidget';
 import { checkHealth, getBYOKStatus, getMeetingDetails } from './services/api';
 
 export default function App() {
@@ -209,6 +210,8 @@ export default function App() {
         byokStatus={byokStatus}
         onSuccess={handleByokUpdated}
       />
+      
+      <ChatWidget />
     </div>
   );
 }

@@ -5,8 +5,8 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 -->
 
 ## 🏗️ Active Phase & Goal
-**Current Task:** Phase 7: The Ultimate PM Workspace. Working on Bagian 1: Speaker Diarization.
-**Next Steps:** Proceed to Bagian 2: Chat with Your Meetings (RAG System) using ChromaDB.
+**Current Task:** Complete! Phase 7: The Ultimate PM Workspace (Speaker Diarization & Chat with Your Meetings RAG) is fully integrated.
+**Next Steps:** Wait for further user instructions or bug reports.
 
 ## 📂 Architectural Decisions
 *(Log specific choices made during the build here so future agents respect them)*
@@ -25,6 +25,7 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 - 2026-08-04 — Scoped FastAPI dependency overrides (`app.dependency_overrides[get_session]`) and module mocks inside individual test fixtures rather than at module import time to ensure complete test suite isolation across multi-file pytest runs.
 - 2026-08-10 — Transitioned `meeting.mom_data` column from raw Markdown strings to JSON dictionary strings `{"style": "markdown"}` to support multi-style synthesis side-by-side in `MoMViewer.jsx` tabs without requiring SQLite schema migrations. Legacy raw markdown is gracefully handled and coerced into "General Executive MoM".
 - 2026-08-10 — Integrated `pyannote.audio` CPU pipeline into `stt_worker.py` to perform Speaker Diarization after `faster-whisper`. Timestamps are heuristically merged. HuggingFace token required for Pyannote is stored safely in `AppSettings` alongside NVIDIA BYOK token.
+- 2026-08-10 — Built Local RAG system using `chromadb` and `sentence-transformers` for "Chat with your meetings" capability. Documents are chunked and inserted automatically after synthesis, empowering a React Chat Widget with conversational query features.
 ## 🐛 Known Issues & Quirks
 *(Log current bugs or weird workarounds here)*
 - Cloudflare Free/Pro enforces a strict 100MB HTTP request body limitation; frontend audio upload slices files into 25MB chunks and uploads sequentially to `/api/upload/chunk`. (SOLVED via `AudioUploader.jsx` & `upload_service.py`).
@@ -42,4 +43,4 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 - [x] Phase 4: Production deployment verification (Security audit pass, production Vite build, and 100% passing E2E tests)
 - [x] Phase 5: Product Evolution & Advanced Capabilities (STT resolution accuracy selector, custom technical vocabulary biasing, bilingual 🇮🇩/🇬🇧 MoM synthesis style controls, and real-time smart archive disk cleanup)
 - [x] Phase 6: Intelligent PM Workspace (Clickable markdown audio timestamps via ReactMarkdown interceptor, Nemotron-3 auto-drafted follow-up meeting agenda, and meeting productivity & sentiment scoring)
-- [ ] Phase 7: The Ultimate PM Workspace (Speaker Diarization, Local RAG Vector Search for Meetings)
+- [x] Phase 7: The Ultimate PM Workspace (Speaker Diarization via pyannote, Local RAG Vector Search for Meetings via chromadb)
