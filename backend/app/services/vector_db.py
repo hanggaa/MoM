@@ -24,7 +24,13 @@ def get_meetings_collection():
     client = get_chroma_client()
     if not client:
         return None
-    return client.get_or_create_collection(name="meeting_transcripts")
+    try:
+        from chromadb.utils import embedding_functions
+        emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+        return client.get_or_create_collection(name="meeting_transcripts", embedding_function=emb_fn)
+    except Exception as e:
+        logger.error(f"Failed to get/create meetings collection: {str(e)}")
+        return None
 
 def chunk_text(text: str, chunk_size: int = 500, overlap: int = 100) -> List[str]:
     """Simple character-based chunking with overlap."""
