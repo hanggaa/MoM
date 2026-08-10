@@ -338,7 +338,7 @@ async def chat_with_meetings(request: ChatRequest, session: Session = Depends(ge
             context_chunks_used=0
         )
         
-    context_text = "\n\n".join([f"[Source: {c['metadata'].get('type', 'unknown')}] {c['document']}" for c in chunks])
+    context_text = "\n\n".join([f"[Source: {(c.get('metadata') or {}).get('type', 'unknown')}] {c['document']}" for c in chunks])
     
     system_prompt = (
         "You are an AI assistant for a Product Manager. Answer the user's question based strictly on the provided meeting excerpts context. "

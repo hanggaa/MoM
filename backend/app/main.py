@@ -1,3 +1,11 @@
+# Fix for SQLite version on older Linux (GCP VMs) for ChromaDB
+try:
+    import pysqlite3
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI

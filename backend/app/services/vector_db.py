@@ -11,14 +11,6 @@ def get_chroma_client():
     global _client
     if _client is None:
         try:
-            # Fix for SQLite version on older Linux (GCP VMs)
-            try:
-                import pysqlite3
-                import sys
-                sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-            except ImportError:
-                pass
-
             import chromadb
             chroma_dir = STORAGE_DIR / "chroma"
             chroma_dir.mkdir(parents=True, exist_ok=True)

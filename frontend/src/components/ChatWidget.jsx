@@ -33,7 +33,8 @@ export const ChatWidget = ({ activeMeetingId }) => {
       const response = await chatWithMeetings(userMessage, activeMeetingId);
       setMessages(prev => [...prev, { role: 'assistant', content: response.answer }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `**Error:** ${error.message || 'Gagal menyambung ke server.'}` }]);
+      const errorDetail = error.response?.data?.detail || error.message || 'Gagal menyambung ke server.';
+      setMessages(prev => [...prev, { role: 'assistant', content: `**Error:** ${errorDetail}` }]);
     } finally {
       setLoading(false);
     }
