@@ -232,6 +232,10 @@ const AudioUploader = ({ onUploadComplete }) => {
                   <option value="Agile Sprint Retrospective">🚀 Agile Sprint Retro (Velocity & Blockers)</option>
                   <option value="Technical Architecture Spec">🏗️ Tech Architecture Spec (API & Trade-offs)</option>
                   <option value="Sales & Commercials">💼 Sales & Commercials (Pricing & SLAs)</option>
+                  <option value="Daily Standup">⏱️ Daily Standup (Yesterday, Today, Blockers)</option>
+                  <option value="Brainstorming & Ideation">💡 Brainstorming & Ideation (Raw Ideas & Votes)</option>
+                  <option value="User Discovery Interview">🗣️ User Discovery Interview (Pain Points & Quotes)</option>
+                  <option value="Journalistic Narrative">📰 Journalistic Narrative (Smooth 5W1H Summary)</option>
                 </select>
               </div>
             </div>
