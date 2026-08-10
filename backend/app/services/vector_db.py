@@ -27,7 +27,7 @@ def get_meetings_collection():
     try:
         from chromadb.utils import embedding_functions
         emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-        return client.get_or_create_collection(name="meeting_transcripts", embedding_function=emb_fn)
+        return client.get_or_create_collection(name="meetings_v2", embedding_function=emb_fn)
     except Exception as e:
         logger.error(f"Failed to get/create meetings collection: {str(e)}")
         return None
