@@ -248,60 +248,60 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn pb-12 print:max-w-none print:m-0 print:p-0">
       {/* Header Bar - Hidden in print view */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gray-900/90 border border-gray-800/80 rounded-2xl p-6 shadow-2xl backdrop-blur-xl print:hidden">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 glass-panel p-6 rounded-3xl print:hidden">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 flex-wrap">
             <button 
               onClick={onReset} 
-              className="p-2 mr-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium border border-transparent hover:border-gray-700"
+              className="p-2 mr-2 hover:bg-white/5 rounded-xl text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wider"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Upload
             </button>
-            <span className="inline-flex items-center gap-1.5 bg-emerald-500/15 text-emerald-400 text-xs px-3 py-1 rounded-full border border-emerald-500/30 font-semibold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-xs px-3 py-1.5 rounded-xl border border-emerald-500/20 font-bold uppercase tracking-wider">
               <ShieldCheck className="w-3.5 h-3.5" /> Local CPU & Nemotron-3 Protected
             </span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight pt-1">{meeting?.title || "Project Sync Meeting"}</h1>
-          <p className="text-xs text-gray-400 flex items-center gap-2">
-            <span>Meeting ID: #{meeting?.id}</span> • 
+          <h1 className="text-3xl font-display font-bold text-white tracking-tight pt-1">{meeting?.title || "Project Sync Meeting"}</h1>
+          <p className="text-sm text-zinc-400 flex items-center gap-2 font-light">
+            <span>Meeting ID: #{meeting?.id}</span> &bull; 
             <span>Recorded: {new Date(meeting?.created_at || Date.now()).toLocaleDateString('id-ID', { dateStyle: 'full' })}</span>
           </p>
         </div>
 
         {/* Action & Export Controls */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gray-800/90 hover:bg-gray-700/80 text-gray-200 border border-gray-700 hover:border-gray-600 text-sm font-medium transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10 hover:border-white/20 text-sm font-semibold transition-all active:scale-95"
             title="Copy Markdown"
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-400 animate-bounce" /> : <Copy className="w-4 h-4 text-gray-400" />}
+            {copied ? <Check className="w-4 h-4 text-emerald-400 animate-bounce" /> : <Copy className="w-4 h-4 text-zinc-400" />}
             {copied ? 'Copied!' : 'Copy MD'}
           </button>
 
           <button
             onClick={handleDownloadMarkdown}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gray-800/90 hover:bg-gray-700/80 text-gray-200 border border-gray-700 hover:border-gray-600 text-sm font-medium transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10 hover:border-white/20 text-sm font-semibold transition-all active:scale-95"
             title="Download Markdown file"
           >
-            <Download className="w-4 h-4 text-indigo-400" />
+            <Download className="w-4 h-4 text-primary" />
             Download .md
           </button>
 
           <button
             onClick={handlePrintPDF}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-indigo-600/90 hover:bg-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-indigo-600/25 active:scale-95 border border-indigo-400/30"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-amber-400 text-zinc-950 font-bold text-sm transition-all shadow-glow active:scale-95"
             title="Print to PDF or paper"
           >
             <Printer className="w-4 h-4" />
             Export PDF
           </button>
 
-          <div className="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded-xl p-1">
+          <div className="flex items-center gap-2 bg-background border border-white/10 rounded-xl p-1.5 ml-2">
             <select
               value={regenStyle}
               onChange={(e) => setRegenStyle(e.target.value)}
-              className="bg-transparent text-gray-300 text-sm py-1.5 pl-2 pr-6 focus:outline-none appearance-none cursor-pointer"
+              className="bg-transparent text-zinc-300 text-sm py-1 pl-3 pr-6 focus:outline-none appearance-none cursor-pointer font-medium"
             >
               <option value="General Executive MoM">General Executive</option>
               <option value="Agile Sprint Retro">Agile Sprint Retro</option>
@@ -315,7 +315,7 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
             <button
               onClick={handleReSynthesize}
               disabled={isSynthesizing}
-              className="inline-flex items-center justify-center p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors disabled:opacity-50"
+              className="inline-flex items-center justify-center p-2 rounded-lg bg-primary hover:bg-amber-400 text-zinc-950 transition-colors disabled:opacity-50"
               title="Generate new style via Nemotron-3"
             >
               <RefreshCw className={`w-4 h-4 ${isSynthesizing ? 'animate-spin' : ''}`} />
@@ -326,26 +326,26 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
 
       {/* Local Audio Playback Review Bar - Hidden in print view */}
       {meeting?.id && (
-        <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950/60 border border-indigo-500/30 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl backdrop-blur-md print:hidden">
-          <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 shadow-inner">
+        <div className="glass-panel rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 print:hidden">
+          <div className="flex items-center gap-4">
+            <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-primary shadow-inner">
               <Volume2 className="w-6 h-6 animate-pulse" />
             </div>
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-bold text-slate-100 tracking-tight">Local STT Audio Playback Review</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-950/90 text-cyan-300 border border-cyan-500/40">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-base font-bold text-white tracking-tight">Local STT Audio Playback Review</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-accent/20 text-accent border border-accent/30">
                   Direct Disk Stream
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Listen to your recorded audio while reviewing synthesized executive decision items.</p>
+              <p className="text-xs text-zinc-400 font-light">Listen to your recorded audio while reviewing synthesized executive decision items.</p>
             </div>
           </div>
           <audio
             ref={audioRef}
             controls
             src={getMeetingAudioUrl(meeting.id)}
-            className="w-full sm:w-72 md:w-80 h-10 rounded-xl bg-slate-950/90 accent-indigo-500 shadow-inner border border-slate-800/80"
+            className="w-full sm:w-72 md:w-96 h-12 rounded-xl bg-background accent-primary shadow-inner border border-white/5"
           >
             Your browser does not support audio playback.
           </audio>
@@ -353,22 +353,22 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
       )}
 
       {synthError && (
-        <div className="p-4 bg-red-950/80 border border-red-500/40 rounded-xl text-red-300 flex items-center gap-3 text-sm print:hidden">
-          <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
+        <div className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-300 flex items-center gap-3 text-sm print:hidden">
+          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
           <span><strong>Synthesis Notice:</strong> {synthError}</span>
         </div>
       )}
 
       {/* Tabs Bar - Hidden in print view */}
-      <div className="flex border-b border-gray-800 gap-6 px-4 print:hidden overflow-x-auto">
+      <div className="flex border-b border-white/10 gap-8 px-6 print:hidden overflow-x-auto">
         {availableStyles.map(styleName => (
           <button
             key={styleName}
             onClick={() => setActiveTab(styleName)}
-            className={`pb-3 whitespace-nowrap text-sm font-semibold flex items-center gap-2 border-b-2 transition-colors duration-150 ${
+            className={`pb-4 whitespace-nowrap text-sm font-bold tracking-wide flex items-center gap-2 border-b-2 transition-all duration-300 ${
               activeTab === styleName
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
           >
             <Sparkles className="w-4 h-4" /> {styleName}
@@ -376,10 +376,10 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
         ))}
         <button
           onClick={() => setActiveTab('transcript')}
-          className={`pb-3 whitespace-nowrap text-sm font-semibold flex items-center gap-2 border-b-2 transition-colors duration-150 ${
+          className={`pb-4 whitespace-nowrap text-sm font-bold tracking-wide flex items-center gap-2 border-b-2 transition-all duration-300 ${
             activeTab === 'transcript'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-zinc-500 hover:text-zinc-300'
           }`}
         >
           <Terminal className="w-4 h-4" /> INT8 CPU Raw Transcript
@@ -387,15 +387,15 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
       </div>
 
       {/* Main Content Pane */}
-      <div className="bg-gray-950/90 border border-gray-800/90 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
+      <div className="glass-panel rounded-3xl p-8 sm:p-10 print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
         
         {/* Print Only Formal Executive Header */}
-        <div className="hidden print:block mb-6 border-b-2 pb-4 border-gray-800">
+        <div className="hidden print:block mb-8 border-b-2 pb-6 border-zinc-200">
           <div className="flex justify-between items-baseline">
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{meeting?.title || "Executive Minutes of Meeting"}</h1>
-            <span className="text-xs font-semibold uppercase text-gray-700 bg-gray-100 px-2 py-1 rounded border border-gray-300">Confidential / Internal PM Record</span>
+            <h1 className="text-3xl font-bold text-zinc-900 tracking-tight font-display">{meeting?.title || "Executive Minutes of Meeting"}</h1>
+            <span className="text-xs font-bold uppercase tracking-widest text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-300">Confidential / Internal PM Record</span>
           </div>
-          <p className="text-xs text-gray-600 mt-1.5 flex gap-4">
+          <p className="text-sm text-zinc-600 mt-3 flex gap-6">
             <span><strong>Date:</strong> {new Date(meeting?.created_at || Date.now()).toLocaleDateString('id-ID', { dateStyle: 'long' })}</span>
             <span><strong>System:</strong> AIMeetingMoM Self-Hosted Engine</span>
             <span><strong>AI Synthesis:</strong> NVIDIA Nemotron-3</span>
@@ -405,17 +405,17 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
         {activeTab !== 'transcript' ? (
           <div className="print:block">
             {isSynthesizing ? (
-              <div className="py-16 text-center space-y-4">
-                <div className="inline-block p-4 rounded-full bg-indigo-500/10 border border-indigo-500/30 animate-pulse">
-                  <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
+              <div className="py-20 text-center space-y-5">
+                <div className="inline-flex p-5 rounded-3xl bg-primary/10 border border-primary/20 shadow-glow animate-pulse">
+                  <RefreshCw className="w-10 h-10 text-primary animate-spin" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-200">Synthesizing {regenStyle} with Nemotron-3...</h3>
-                <p className="text-xs text-gray-400 max-w-sm mx-auto">
+                <h3 className="text-xl font-display font-semibold text-zinc-100">Synthesizing {regenStyle} with Nemotron-3...</h3>
+                <p className="text-sm text-zinc-400 max-w-md mx-auto font-light">
                   Extracting relevant insights from transcript based on the selected meeting style.
                 </p>
               </div>
             ) : parsedMoMs[activeTab] ? (
-              <div className="prose prose-invert prose-indigo prose-sm sm:prose-base max-w-none print:prose-neutral print:prose-sm">
+              <div className="prose prose-invert prose-amber prose-sm sm:prose-base max-w-none print:prose-neutral print:prose-sm">
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
                   components={{
@@ -427,14 +427,14 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                         return (
                           <button 
                             onClick={(e) => { e.preventDefault(); handleSeekAudio(totalSeconds); }}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 mx-1 rounded-md bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/40 border border-indigo-500/30 text-xs font-mono font-bold transition-all active:scale-95 cursor-pointer decoration-transparent print:hidden"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 mx-1 rounded-lg bg-primary/20 text-primary hover:bg-primary/40 border border-primary/30 text-[11px] font-mono font-bold transition-all active:scale-95 cursor-pointer decoration-transparent print:hidden uppercase tracking-wider"
                             title={`Play audio from ${timeStr}`}
                           >
-                            <Clock className="w-3 h-3" /> {timeStr}
+                            <Clock className="w-3.5 h-3.5" /> {timeStr}
                           </button>
                         );
                       }
-                      return <a {...props} className="text-indigo-400 hover:text-indigo-300 underline" />;
+                      return <a {...props} className="text-primary hover:text-amber-400 underline transition-colors" />;
                     }
                   }}
                 >
@@ -442,21 +442,22 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                 </ReactMarkdown>
               </div>
             ) : (
-              <div className="p-8 text-center bg-gray-900/50 rounded-xl border border-gray-800 text-gray-400 print:text-black print:bg-white print:border-gray-300">
-                No MoM synthesized yet. Select a style and click "Regenerate" to create notes via NVIDIA Nemotron-3.
+              <div className="p-12 text-center bg-background rounded-2xl border border-white/5 text-zinc-500 print:text-black print:bg-white print:border-zinc-300 shadow-inner">
+                <p className="text-lg mb-2">📭 No MoM synthesized yet.</p>
+                <p className="text-sm">Select a style and click "Regenerate" to create notes via NVIDIA Nemotron-3.</p>
               </div>
             )}
           </div>
         ) : (
-          <div className="space-y-4 print:hidden">
-            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
-              <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-emerald-400" />
+          <div className="space-y-5 print:hidden">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-widest flex items-center gap-2">
+                <Terminal className="w-5 h-5 text-emerald-400" />
                 faster-whisper (INT8) Local CPU Transcription
               </h3>
-              <span className="text-xs text-gray-500">Zero Cloud Audio Leakage</span>
+              <span className="text-xs text-zinc-500 font-medium">Zero Cloud Audio Leakage</span>
             </div>
-            <pre className="font-mono text-sm leading-relaxed bg-gray-900/80 p-6 rounded-xl border border-gray-800/80 text-gray-300 overflow-x-auto whitespace-pre-wrap max-h-[65vh] overflow-y-auto shadow-inner">
+            <pre className="font-mono text-sm leading-relaxed bg-background p-8 rounded-2xl border border-white/5 text-zinc-300 overflow-x-auto whitespace-pre-wrap max-h-[65vh] overflow-y-auto shadow-inner">
               {meeting?.transcript_text || '[No transcript file available for this meeting recording yet.]'}
             </pre>
           </div>

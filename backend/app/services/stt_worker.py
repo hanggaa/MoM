@@ -125,8 +125,15 @@ def run_stt_task(
                     diarization = pipeline(meeting.audio_file_path)
                     transcript_lines = align_speakers(raw_segments, diarization)
                 except Exception as py_err:
+                    import traceback
+                    err_trace = traceback.format_exc()
                     logger.error(f"Pyannote diarization failed, falling back to raw: {py_err}")
-                    transcript_lines = [f"[{s['start']:.1f}s - {s['end']:.1f}s] {s['text']}" for s in raw_segments]
+                    transcript_lines = [
+                        "⚠️ [SYSTEM NOTICE: Speaker Diarization Failed. Falling back to raw STT.]",
+                        f"⚠️ [DEBUG TRACE]:\n{err_trace}\n",
+                        "--------------------------------------------------\n"
+                    ]
+                    transcript_lines.extend([f"[{s['start']:.1f}s - {s['end']:.1f}s] {s['text']}" for s in raw_segments])
             else:
                 transcript_lines = [f"[{s['start']:.1f}s - {s['end']:.1f}s] {s['text']}" for s in raw_segments]
                 
