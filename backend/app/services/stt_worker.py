@@ -117,6 +117,17 @@ def run_stt_task(
                     
                     # === Compatibility Patches for pyannote 3.1.x + modern dependencies ===
                     
+                    # STEP A: Set ALL environment variables BEFORE any HF/pyannote imports
+                    # (huggingface_hub reads these at import time and caches them)
+                    hf_cache_dir = str(STORAGE_DIR / ".hf_cache")
+                    os.makedirs(hf_cache_dir, exist_ok=True)
+                    os.environ["HF_HOME"] = hf_cache_dir
+                    os.environ["HUGGINGFACE_HUB_CACHE"] = os.path.join(hf_cache_dir, "hub")
+                    os.environ["XDG_CACHE_HOME"] = hf_cache_dir
+                    os.environ["TORCH_HOME"] = os.path.join(hf_cache_dir, "torch")
+                    if hf_token:
+                        os.environ["HF_TOKEN"] = hf_token
+                    
                     # Patch 1: torchaudio >= 2.2.0 removed set_audio_backend
                     import torchaudio
                     if not hasattr(torchaudio, "set_audio_backend"):
@@ -129,8 +140,14 @@ def run_stt_task(
 
                     # Patch 3: huggingface_hub removed use_auth_token kwarg,
                     # but pyannote 3.1.x still passes it internally.
-                    # We wrap the affected HF functions to translate the old kwarg.
                     import huggingface_hub
+                    import huggingface_hub.constants
+                    
+                    # Force-override the cached HF_HOME constant in case it was already resolved
+                    huggingface_hub.constants.HF_HOME = hf_cache_dir
+                    huggingface_hub.constants.HF_HUB_CACHE = os.path.join(hf_cache_dir, "hub")
+                    huggingface_hub.constants.HUGGINGFACE_HUB_CACHE = os.path.join(hf_cache_dir, "hub")
+                    
                     _original_hf_hub_download = huggingface_hub.file_download.hf_hub_download
                     
                     def _patched_hf_hub_download(*args, **kwargs):
@@ -153,18 +170,6 @@ def run_stt_task(
                         
                         _HfApi.model_info = _patched_model_info
 
-                    # Set token via env var as an additional fallback
-                    if hf_token:
-                        os.environ["HF_TOKEN"] = hf_token
-                    
-                    # Redirect HuggingFace cache to writable storage dir
-                    # (www-data user cannot write to /var/www/.cache)
-                    hf_cache_dir = str(STORAGE_DIR / ".hf_cache")
-                    os.makedirs(hf_cache_dir, exist_ok=True)
-                    os.environ["HF_HOME"] = hf_cache_dir
-                    os.environ["HUGGINGFACE_HUB_CACHE"] = os.path.join(hf_cache_dir, "hub")
-                    os.environ["TORCH_HOME"] = os.path.join(hf_cache_dir, "torch")
-                    
                     from pyannote.audio import Pipeline
                     pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
                     
