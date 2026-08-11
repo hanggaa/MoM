@@ -115,23 +115,49 @@ def run_stt_task(
                     db.add(task)
                     db.commit()
                     
+                    # === Compatibility Patches for pyannote 3.1.x + modern dependencies ===
+                    
+                    # Patch 1: torchaudio >= 2.2.0 removed set_audio_backend
                     import torchaudio
                     if not hasattr(torchaudio, "set_audio_backend"):
-                        # Monkey patch for pyannote.audio 3.1.1 running on torchaudio >= 2.2.0
                         torchaudio.set_audio_backend = lambda backend: None
                         
+                    # Patch 2: NumPy 2.0+ removed np.NaN
                     import numpy as np
                     if not hasattr(np, "NaN"):
-                        # Monkey patch for pyannote.audio running with NumPy 2.0+
                         np.NaN = np.nan
 
+                    # Patch 3: huggingface_hub removed use_auth_token kwarg,
+                    # but pyannote 3.1.x still passes it internally.
+                    # We wrap the affected HF functions to translate the old kwarg.
+                    import huggingface_hub
+                    _original_hf_hub_download = huggingface_hub.file_download.hf_hub_download
                     
-                    from pyannote.audio import Pipeline
+                    def _patched_hf_hub_download(*args, **kwargs):
+                        if "use_auth_token" in kwargs:
+                            kwargs["token"] = kwargs.pop("use_auth_token")
+                        return _original_hf_hub_download(*args, **kwargs)
                     
-                    # Set token via environment variable to completely bypass pyannote/huggingface_hub kwarg mismatch
+                    huggingface_hub.file_download.hf_hub_download = _patched_hf_hub_download
+                    huggingface_hub.hf_hub_download = _patched_hf_hub_download
+                    
+                    # Also patch hf_api.model_info if pyannote calls it with use_auth_token
+                    if hasattr(huggingface_hub, "hf_api"):
+                        _HfApi = huggingface_hub.hf_api.HfApi
+                        _original_model_info = _HfApi.model_info
+                        
+                        def _patched_model_info(self, *args, **kwargs):
+                            if "use_auth_token" in kwargs:
+                                kwargs["token"] = kwargs.pop("use_auth_token")
+                            return _original_model_info(self, *args, **kwargs)
+                        
+                        _HfApi.model_info = _patched_model_info
+
+                    # Set token via env var as an additional fallback
                     if hf_token:
                         os.environ["HF_TOKEN"] = hf_token
-                        
+                    
+                    from pyannote.audio import Pipeline
                     pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
                     
                     # Convert device mapping safely (pyannote might prefer cpu)
