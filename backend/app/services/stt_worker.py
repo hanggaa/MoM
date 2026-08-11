@@ -128,12 +128,45 @@ def run_stt_task(
                     if hf_token:
                         os.environ["HF_TOKEN"] = hf_token
                     
-                    # Patch 1: torchaudio >= 2.2.0 removed set_audio_backend & get_audio_backend
+                    # Patch 1: torchaudio >= 2.2.0 removed backend module entirely.
+                    # pyannote 3.1.x imports torchaudio.backend.common.AudioMetaData,
+                    # set_audio_backend, and get_audio_backend — all gone in 2.2+.
+                    # We recreate the entire module structure here.
+                    import sys
+                    import types
                     import torchaudio
+                    
                     if not hasattr(torchaudio, "set_audio_backend"):
                         torchaudio.set_audio_backend = lambda backend: None
                     if not hasattr(torchaudio, "get_audio_backend"):
                         torchaudio.get_audio_backend = lambda: "soundfile"
+                    
+                    if "torchaudio.backend" not in sys.modules or "torchaudio.backend.common" not in sys.modules:
+                        # Create fake torchaudio.backend and torchaudio.backend.common modules
+                        backend_mod = types.ModuleType("torchaudio.backend")
+                        backend_mod.__package__ = "torchaudio.backend"
+                        common_mod = types.ModuleType("torchaudio.backend.common")
+                        common_mod.__package__ = "torchaudio.backend"
+                        
+                        # Re-export AudioMetaData from its new location in torchaudio >= 2.2
+                        if hasattr(torchaudio, "AudioMetaData"):
+                            common_mod.AudioMetaData = torchaudio.AudioMetaData
+                        else:
+                            # Ultimate fallback: create a minimal compatible dataclass
+                            from dataclasses import dataclass
+                            @dataclass
+                            class _AudioMetaData:
+                                sample_rate: int = 0
+                                num_frames: int = 0
+                                num_channels: int = 0
+                                bits_per_sample: int = 0
+                                encoding: str = ""
+                            common_mod.AudioMetaData = _AudioMetaData
+                        
+                        backend_mod.common = common_mod
+                        torchaudio.backend = backend_mod
+                        sys.modules["torchaudio.backend"] = backend_mod
+                        sys.modules["torchaudio.backend.common"] = common_mod
                         
                     # Patch 2: NumPy 2.0+ removed np.NaN
                     import numpy as np
