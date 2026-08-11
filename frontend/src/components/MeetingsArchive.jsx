@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Trash2, HardDrive, Calendar, Loader2, CheckCircle2, Archive, AlertCircle } from 'lucide-react';
+import { Search, Trash2, HardDrive, Calendar, Loader2, CheckCircle2, Archive, AlertCircle, ArrowRight } from 'lucide-react';
 import { listMeetings, purgeMeetingAudio, deleteMeeting, getMeetingDetails } from '../services/api';
 
 const getMoMPreview = (m) => {
