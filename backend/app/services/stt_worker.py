@@ -115,105 +115,21 @@ def run_stt_task(
                     db.add(task)
                     db.commit()
                     
-                    # === Compatibility Patches for pyannote 3.1.x + modern dependencies ===
-                    
-                    # STEP A: Set ALL environment variables BEFORE any HF/pyannote imports
-                    # (huggingface_hub reads these at import time and caches them)
+                    # Apply all compatibility patches for pyannote 3.1.x + modern deps
                     hf_cache_dir = str(STORAGE_DIR / ".hf_cache")
                     os.makedirs(hf_cache_dir, exist_ok=True)
-                    os.environ["HF_HOME"] = hf_cache_dir
-                    os.environ["HUGGINGFACE_HUB_CACHE"] = os.path.join(hf_cache_dir, "hub")
-                    os.environ["XDG_CACHE_HOME"] = hf_cache_dir
-                    os.environ["TORCH_HOME"] = os.path.join(hf_cache_dir, "torch")
                     if hf_token:
                         os.environ["HF_TOKEN"] = hf_token
+                    os.environ["HF_HOME"] = hf_cache_dir
+                    os.environ["XDG_CACHE_HOME"] = hf_cache_dir
+                    os.environ["TORCH_HOME"] = os.path.join(hf_cache_dir, "torch")
                     
-                    # Patch 1: torchaudio >= 2.2.0 removed backend module entirely.
-                    # pyannote 3.1.x imports torchaudio.backend.common.AudioMetaData,
-                    # set_audio_backend, and get_audio_backend — all gone in 2.2+.
-                    # We recreate the entire module structure here.
-                    import sys
-                    import types
-                    import torchaudio
+                    from app.services.pyannote_compat import apply_pyannote_compat_patches
+                    apply_pyannote_compat_patches(hf_cache_dir)
                     
-                    if not hasattr(torchaudio, "set_audio_backend"):
-                        torchaudio.set_audio_backend = lambda backend: None
-                    if not hasattr(torchaudio, "get_audio_backend"):
-                        torchaudio.get_audio_backend = lambda: "soundfile"
-                    
-                    if "torchaudio.backend" not in sys.modules or "torchaudio.backend.common" not in sys.modules:
-                        # Create fake torchaudio.backend and torchaudio.backend.common modules
-                        backend_mod = types.ModuleType("torchaudio.backend")
-                        backend_mod.__package__ = "torchaudio.backend"
-                        common_mod = types.ModuleType("torchaudio.backend.common")
-                        common_mod.__package__ = "torchaudio.backend"
-                        
-                        # Re-export AudioMetaData from its new location in torchaudio >= 2.2
-                        if hasattr(torchaudio, "AudioMetaData"):
-                            common_mod.AudioMetaData = torchaudio.AudioMetaData
-                        else:
-                            # Ultimate fallback: create a minimal compatible dataclass
-                            from dataclasses import dataclass
-                            @dataclass
-                            class _AudioMetaData:
-                                sample_rate: int = 0
-                                num_frames: int = 0
-                                num_channels: int = 0
-                                bits_per_sample: int = 0
-                                encoding: str = ""
-                            common_mod.AudioMetaData = _AudioMetaData
-                        
-                        backend_mod.common = common_mod
-                        torchaudio.backend = backend_mod
-                        sys.modules["torchaudio.backend"] = backend_mod
-                        sys.modules["torchaudio.backend.common"] = common_mod
-                        
-                    # Patch 2: NumPy 2.0+ removed np.NaN
-                    import numpy as np
-                    if not hasattr(np, "NaN"):
-                        np.NaN = np.nan
-
-                    # Patch 3: huggingface_hub removed use_auth_token kwarg,
-                    # but pyannote 3.1.x still passes it internally.
-                    import huggingface_hub
-                    import huggingface_hub.constants
-                    
-                    # Force-override the cached HF_HOME constant in case it was already resolved
-                    huggingface_hub.constants.HF_HOME = hf_cache_dir
-                    huggingface_hub.constants.HF_HUB_CACHE = os.path.join(hf_cache_dir, "hub")
-                    huggingface_hub.constants.HUGGINGFACE_HUB_CACHE = os.path.join(hf_cache_dir, "hub")
-                    
-                    _original_hf_hub_download = huggingface_hub.file_download.hf_hub_download
-                    _forced_cache_dir = os.path.join(hf_cache_dir, "hub")
-                    os.makedirs(_forced_cache_dir, exist_ok=True)
-                    
-                    def _patched_hf_hub_download(*args, **kwargs):
-                        if "use_auth_token" in kwargs:
-                            kwargs["token"] = kwargs.pop("use_auth_token")
-                        # Always force cache_dir to our writable storage location,
-                        # regardless of what huggingface_hub constants say
-                        kwargs["cache_dir"] = _forced_cache_dir
-                        return _original_hf_hub_download(*args, **kwargs)
-                    
-                    huggingface_hub.file_download.hf_hub_download = _patched_hf_hub_download
-                    huggingface_hub.hf_hub_download = _patched_hf_hub_download
-                    
-                    # Also patch hf_api.model_info if pyannote calls it with use_auth_token
-                    if hasattr(huggingface_hub, "hf_api"):
-                        _HfApi = huggingface_hub.hf_api.HfApi
-                        _original_model_info = _HfApi.model_info
-                        
-                        def _patched_model_info(self, *args, **kwargs):
-                            if "use_auth_token" in kwargs:
-                                kwargs["token"] = kwargs.pop("use_auth_token")
-                            return _original_model_info(self, *args, **kwargs)
-                        
-                        _HfApi.model_info = _patched_model_info
-
                     from pyannote.audio import Pipeline
                     pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
                     
-                    # Convert device mapping safely (pyannote might prefer cpu)
                     import torch
                     pipeline.to(torch.device("cpu"))
                     
