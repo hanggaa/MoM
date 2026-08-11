@@ -128,10 +128,12 @@ def run_stt_task(
                     if hf_token:
                         os.environ["HF_TOKEN"] = hf_token
                     
-                    # Patch 1: torchaudio >= 2.2.0 removed set_audio_backend
+                    # Patch 1: torchaudio >= 2.2.0 removed set_audio_backend & get_audio_backend
                     import torchaudio
                     if not hasattr(torchaudio, "set_audio_backend"):
                         torchaudio.set_audio_backend = lambda backend: None
+                    if not hasattr(torchaudio, "get_audio_backend"):
+                        torchaudio.get_audio_backend = lambda: "soundfile"
                         
                     # Patch 2: NumPy 2.0+ removed np.NaN
                     import numpy as np
