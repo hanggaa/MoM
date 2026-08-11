@@ -127,10 +127,13 @@ def run_stt_task(
 
                     
                     from pyannote.audio import Pipeline
-                    try:
-                        pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=hf_token)
-                    except TypeError:
-                        pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", token=hf_token)
+                    
+                    # Set token via environment variable to completely bypass pyannote/huggingface_hub kwarg mismatch
+                    import os
+                    if hf_token:
+                        os.environ["HF_TOKEN"] = hf_token
+                        
+                    pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
                     
                     # Convert device mapping safely (pyannote might prefer cpu)
                     import torch
