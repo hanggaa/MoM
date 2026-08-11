@@ -94,8 +94,10 @@ def _patch_torch() -> None:
     _original_torch_load = torch.load
 
     def _patched_torch_load(*args, **kwargs):
-        if "weights_only" not in kwargs:
-            kwargs["weights_only"] = False
+        # Force weights_only=False unconditionally.
+        # lightning_fabric explicitly passes weights_only=True,
+        # but pyannote 3.1.x checkpoints require unsafe loading.
+        kwargs["weights_only"] = False
         return _original_torch_load(*args, **kwargs)
 
     torch.load = _patched_torch_load
