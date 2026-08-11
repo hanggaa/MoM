@@ -70,39 +70,38 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         {/* Hero Welcome Banner */}
         {!viewingMeeting && (
-          <div className="relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-12">
-            <div className="absolute -top-[300px] -right-[300px] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute -bottom-[300px] -left-[300px] w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="relative overflow-hidden border-2 border-border bg-card p-6 sm:p-10">
+            {/* Technical visual decoration - warning stripes */}
+            <div className="absolute top-0 right-0 w-24 h-1 warning-stripes opacity-60" />
+            <div className="absolute bottom-0 left-0 w-24 h-1 warning-stripes opacity-60" />
 
-            <div className="relative z-10 max-w-3xl space-y-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest bg-white/5 text-primary border border-primary/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                <Lock size={12} />
-                <span>100% Self-Hosted & Local Audio Privacy</span>
+            <div className="relative z-10 space-y-6">
+              <div className="inline-flex items-center gap-2 border border-primary bg-black/80 px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-widest text-primary glow-text-primary">
+                [ STATUS: SECURE LOCAL ENVIRONMENT ]
               </div>
 
-              <h1 className="text-4xl sm:text-6xl font-display font-bold tracking-tight text-white leading-[1.1]">
-                Executive STT & <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">AI MoM Synthesis</span>
+              <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-wider text-phosphor leading-[1.1] uppercase glow-text">
+                EXECUTIVE STT & <span className="text-primary glow-text-primary">AI MoM SYNTHESIS</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-zinc-400 leading-relaxed font-light max-w-2xl">
-                Automate multi-hour meeting documentation without sacrificing confidential company secrets. Local <code className="text-primary font-mono bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 text-sm">faster-whisper INT8</code> transcription combined with your own NVIDIA Nemotron-3 executive reasoning.
+              <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-3xl font-mono">
+                Automate multi-hour meeting documentation without sacrificing confidential company secrets. Local <code className="text-primary font-mono bg-black/80 px-1.5 py-0.5 border border-border text-xs">faster-whisper INT8</code> transcription combined with server-side <code className="text-primary font-mono bg-black/80 px-1.5 py-0.5 border border-border text-xs">NVIDIA Nemotron-3</code> executive reasoning.
               </p>
 
-              <div className="pt-4 flex flex-wrap gap-4">
+              <div className="pt-2 flex flex-wrap gap-4">
                 {!byokStatus.is_set && (
                   <button
                     onClick={() => setIsSettingsOpen(true)}
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider bg-primary text-zinc-950 shadow-glow hover:bg-amber-400 active:scale-95 transition-all animate-pulse"
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-primary text-black font-bold text-xs uppercase tracking-widest hover:bg-red-500 active:translate-y-0.5 transition-all animate-pulse"
                   >
-                    <AlertTriangle size={18} />
-                    <span>Configure NVIDIA BYOK Token to Unlock Phase 2</span>
-                    <ArrowRight size={18} />
+                    <AlertTriangle size={14} />
+                    <span>[ CONFIGURE NVIDIA TOKEN TO UNLOCK AI MODULE ]</span>
+                    <ArrowRight size={14} />
                   </button>
                 )}
                 {byokStatus.is_set && (
-                  <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-medium tracking-wide">
-                    <CheckCircle2 size={18} className="text-primary" />
-                    <span>Phase 2 Engine Operational — Ready for Audio Upload & MoM Synthesis</span>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 border border-green/30 bg-green/5 text-green text-xs font-mono tracking-wider uppercase select-none">
+                    <span>/// MAINBOARD INTEGRITY CHECK PASSED // READY FOR CAPTURE</span>
                   </div>
                 )}
               </div>
@@ -140,58 +139,57 @@ export default function App() {
 
         {/* Phase Roadmap Status Grid */}
         {!viewingMeeting && (
-          <div className="space-y-6 pt-8 border-t border-white/5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-display font-semibold text-white inline-flex items-center gap-3">
-                <Layers size={24} className="text-primary" />
-                <span>System Architecture Readiness</span>
+          <div className="space-y-6 pt-8 border-t border-border">
+            <div className="flex items-center justify-between font-mono">
+              <h2 className="text-sm font-display font-bold text-phosphor inline-flex items-center gap-2 uppercase">
+                <span>[01] SYSTEM_READINESS_METRICS</span>
               </h2>
-              <span className="text-sm font-medium text-muted tracking-wide uppercase">Roadmap Status</span>
+              <span className="text-[10px] text-muted tracking-wider uppercase select-none">// OPERATION REPORT</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px border border-border bg-border select-none">
               {/* Feature Card 1 */}
-              <div className="p-6 rounded-2xl glass-panel hover:-translate-y-1 transition-transform duration-300 space-y-5">
-                <div className="p-3.5 w-fit rounded-xl bg-white/5 text-primary border border-white/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                  <Cpu size={24} />
+              <div className="p-6 bg-card space-y-4 flex flex-col justify-between group hover:bg-black/30 transition-colors">
+                <div className="space-y-3">
+                  <div className="text-[9px] font-mono text-primary font-bold">DEV_ID // SYS-01</div>
+                  <h3 className="text-sm font-bold text-phosphor font-display uppercase tracking-wider">Monorepo Foundation & SQLite ORM</h3>
+                  <p className="text-xs text-muted leading-relaxed font-mono">
+                    Layered backend engine initialized with FastAPI, SQLModel tables (<code className="text-zinc-500">AppSettings</code>, <code className="text-zinc-500">Meeting</code>), and secure server-side BYOK vault.
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-100 font-display">1. Monorepo Foundation & SQLite ORM</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  Layered backend engine initialized with FastAPI, SQLModel tables (<code className="text-zinc-300">AppSettings</code>, <code className="text-zinc-300">Meeting</code>), and secure server-side BYOK vault.
-                </p>
-                <div className="pt-4 mt-auto flex items-center justify-between text-xs font-semibold text-primary uppercase tracking-wider">
-                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} /> Active & Verified</span>
-                  <span className="text-zinc-500">Phase 1</span>
+                <div className="pt-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider border-t border-border mt-auto">
+                  <span className="text-green glow-text-green font-bold">[OPERATIONAL]</span>
+                  <span className="text-muted">PHASE_01</span>
                 </div>
               </div>
 
               {/* Feature Card 2 */}
-              <div className="p-6 rounded-2xl glass-panel hover:-translate-y-1 transition-transform duration-300 space-y-5">
-                <div className="p-3.5 w-fit rounded-xl bg-white/5 text-primary border border-white/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                  <Mic size={24} />
+              <div className="p-6 bg-card space-y-4 flex flex-col justify-between group hover:bg-black/30 transition-colors">
+                <div className="space-y-3">
+                  <div className="text-[9px] font-mono text-primary font-bold">DEV_ID // SYS-02</div>
+                  <h3 className="text-sm font-bold text-phosphor font-display uppercase tracking-wider">Chunked Audio & STT Pipeline</h3>
+                  <p className="text-xs text-muted leading-relaxed font-mono">
+                    Resilient slice upload bypassing Cloudflare 100MB body limits, wired to asynchronous <code className="text-zinc-500">faster-whisper INT8</code> worker in FastAPI.
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-100 font-display">2. 25MB Chunked Audio & STT Pipeline</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  Resilient slice upload bypassing Cloudflare 100MB body limits, wired to asynchronous <code className="text-zinc-300">faster-whisper INT8</code> worker in FastAPI.
-                </p>
-                <div className="pt-4 mt-auto flex items-center justify-between text-xs font-semibold text-primary uppercase tracking-wider">
-                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} /> Active & Verified</span>
-                  <span className="text-zinc-500">Phase 2</span>
+                <div className="pt-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider border-t border-border mt-auto">
+                  <span className="text-green glow-text-green font-bold">[OPERATIONAL]</span>
+                  <span className="text-muted">PHASE_02</span>
                 </div>
               </div>
 
               {/* Feature Card 3 */}
-              <div className="p-6 rounded-2xl glass-panel hover:-translate-y-1 transition-transform duration-300 space-y-5">
-                <div className="p-3.5 w-fit rounded-xl bg-white/5 text-primary border border-white/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                  <FileText size={24} />
+              <div className="p-6 bg-card space-y-4 flex flex-col justify-between group hover:bg-black/30 transition-colors">
+                <div className="space-y-3">
+                  <div className="text-[9px] font-mono text-primary font-bold">DEV_ID // SYS-03</div>
+                  <h3 className="text-sm font-bold text-phosphor font-display uppercase tracking-wider">Nemotron-3 Executive MoM Engine</h3>
+                  <p className="text-xs text-muted leading-relaxed font-mono">
+                    AI synthesis extracting structured Action Items, PICs, and deadlines with one-click Markdown copy and PDF print stylesheet.
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-zinc-100 font-display">3. Nemotron-3 Executive MoM Engine</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  AI synthesis extracting structured Action Items, PICs, and deadlines with one-click Markdown copy and PDF print stylesheet.
-                </p>
-                <div className="pt-4 mt-auto flex items-center justify-between text-xs font-semibold text-primary uppercase tracking-wider">
-                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 size={14} /> Active & Verified</span>
-                  <span className="text-zinc-500">Phase 3</span>
+                <div className="pt-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider border-t border-border mt-auto">
+                  <span className="text-green glow-text-green font-bold">[OPERATIONAL]</span>
+                  <span className="text-muted">PHASE_03</span>
                 </div>
               </div>
             </div>
@@ -199,8 +197,8 @@ export default function App() {
         )}
       </main>
 
-      <footer className="w-full border-t border-white/5 py-8 text-center text-sm font-medium text-muted print:hidden">
-        AIMeetingMoM MVP &bull; Running locally on GCP e2-standard-4 architecture &bull; Zero External Audio Leakage Guaranteed
+      <footer className="w-full border-t border-border py-6 text-center text-[10px] font-mono text-muted tracking-widest uppercase select-none print:hidden bg-card">
+        AIMeetingMoM MAINBOARD &bull; HOSTED ON GCP E2-STANDARD-4 ARCHITECTURE &bull; [SECURITY STAGE: ZERO AUDIO LEAKAGE]
       </footer>
 
       <BYOKSettingsModal

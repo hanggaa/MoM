@@ -119,12 +119,15 @@ const AudioUploader = ({ onUploadComplete }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto my-6 p-8 glass-panel rounded-3xl transition-all duration-300">
-      <h2 className="text-3xl font-display font-semibold text-white mb-2">
-        Upload Meeting Audio
-      </h2>
-      <p className="text-sm text-zinc-400 mb-8 font-light">
-        Supports long executive meetings (up to multi-hour audio). Automatically sliced into 25MB resilient packets to ensure guaranteed transfer without network timeout.
+    <div className="max-w-3xl mx-auto my-6 p-6 border border-border bg-card transition-all duration-300">
+      <div className="flex items-center justify-between border-b border-border pb-3 mb-4 select-none">
+        <h2 className="text-lg font-display font-bold text-phosphor uppercase tracking-wider">
+          [02] AUDIO_CAPTURE_STAGE
+        </h2>
+        <span className="text-[9px] font-mono text-primary">// RESILIENT PACKET TRANSMITTER</span>
+      </div>
+      <p className="text-xs text-muted mb-6 font-mono leading-relaxed">
+        Supports long executive meeting audio. Files are sliced into 25MB packets to ensure guaranteed local transmission bypassing network constraints.
       </p>
 
       {!file ? (
@@ -133,10 +136,10 @@ const AudioUploader = ({ onUploadComplete }) => {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`border border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
+          className={`border border-dashed p-10 text-center cursor-pointer transition-all duration-150 select-none ${
             isDragging
-              ? 'border-primary bg-primary/5 scale-[1.02] shadow-glow'
-              : 'border-white/10 hover:border-white/20 bg-white/5'
+              ? 'border-primary bg-primary/5 scale-[1.01]'
+              : 'border-border hover:border-primary/50 bg-black/40'
           }`}
         >
           <input
@@ -146,112 +149,117 @@ const AudioUploader = ({ onUploadComplete }) => {
             onChange={handleFileChange}
             className="hidden"
           />
-          <div className="w-16 h-16 mx-auto mb-6 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 shadow-inner">
-            <span className="text-3xl">🎙️</span>
+          <div className="w-12 h-12 mx-auto mb-4 border border-border flex items-center justify-center bg-black text-primary font-mono text-xs font-bold">
+            [REC]
           </div>
-          <p className="text-zinc-200 font-medium text-lg mb-2">
-            Drag & Drop your meeting recording here
+          <p className="text-phosphor font-bold text-xs uppercase tracking-widest mb-1.5">
+            DRAG & DROP RECORDING HERE
           </p>
-          <p className="text-sm text-zinc-400 mb-6">
-            or <span className="text-primary hover:text-amber-400 transition-colors font-medium cursor-pointer">browse files</span> from your computer
+          <p className="text-[10px] text-muted mb-4 font-mono">
+            OR CLICK TO QUERY LOCAL DIRECTORY
           </p>
-          <div className="flex flex-wrap justify-center gap-2 text-[10px] text-zinc-500 uppercase tracking-widest font-medium">
-            <span className="px-2 py-1 bg-white/5 rounded-md border border-white/5">MP3</span>
-            <span className="px-2 py-1 bg-white/5 rounded-md border border-white/5">WAV</span>
-            <span className="px-2 py-1 bg-white/5 rounded-md border border-white/5">M4A</span>
-            <span className="px-2 py-1 bg-white/5 rounded-md border border-white/5">WEBM</span>
-            <span className="px-2 py-1 bg-white/5 rounded-md border border-white/5">FLAC</span>
+          <div className="flex flex-wrap justify-center gap-1.5 text-[9px] text-muted uppercase tracking-widest font-mono">
+            <span>[MP3]</span>
+            <span>[WAV]</span>
+            <span>[M4A]</span>
+            <span>[WEBM]</span>
+            <span>[FLAC]</span>
           </div>
         </div>
       ) : (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="border border-border bg-black/40 p-5 space-y-5">
+          <div className="flex items-center justify-between border-b border-border pb-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">
-                ✓
+              <div className="w-8 h-8 border border-green text-green flex items-center justify-center font-mono font-bold text-xs bg-black select-none">
+                OK
               </div>
-              <div>
-                <h4 className="text-zinc-200 font-medium truncate max-w-sm">{file.name}</h4>
-                <p className="text-xs text-zinc-500 font-medium tracking-wide">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB • {Math.ceil(file.size / CHUNK_SIZE)} Chunk(s)
+              <div className="min-w-0">
+                <h4 className="text-phosphor font-mono text-xs font-bold truncate max-w-[200px] sm:max-w-sm">{file.name}</h4>
+                <p className="text-[10px] text-muted font-mono tracking-wider uppercase mt-0.5">
+                  SIZE: {(file.size / (1024 * 1024)).toFixed(2)} MB // PACKETS: {Math.ceil(file.size / CHUNK_SIZE)}
                 </p>
               </div>
             </div>
             {!uploading && (
               <button
                 onClick={resetForm}
-                className="text-xs text-zinc-400 hover:text-white py-1.5 px-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
+                className="text-[10px] text-primary hover:text-white py-1 px-3 border border-primary/40 hover:border-primary bg-black font-mono font-bold uppercase transition-colors"
               >
-                Remove
+                [REMOVE]
               </button>
             )}
           </div>
 
-          <div className="mb-8 space-y-5">
+          <div className="space-y-4 font-mono text-xs">
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2">
-                Meeting Title / Reference
+              <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-1.5 select-none">
+                // MEETING_TITLE_DESCRIPTOR
               </label>
               <input
                 type="text"
                 disabled={uploading}
                 value={meetingTitle}
                 onChange={(e) => setMeetingTitle(e.target.value)}
-                placeholder="e.g. Q3 Sprint Planning & Architecture Review"
-                className="w-full px-4 py-3 bg-background border border-white/10 rounded-xl text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all text-sm disabled:opacity-50"
+                placeholder="e.g. Q3 Sprint Planning"
+                className="w-full px-3 py-2 bg-black border border-border text-phosphor placeholder-zinc-700 focus:outline-none focus:border-primary transition-all text-xs disabled:opacity-50 font-mono"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-3 border-t border-white/5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-bold text-zinc-300 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                  <span>Output MoM Language</span>
+                <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-1.5 select-none">
+                  // OUTPUT_TRANSLATION
                 </label>
                 <select
                   disabled={uploading}
                   value={outputLanguage}
                   onChange={(e) => setOutputLanguage(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-background border border-white/10 rounded-xl text-zinc-200 focus:outline-none focus:border-primary transition-colors text-sm disabled:opacity-50 appearance-none"
+                  className="w-full px-3 py-2 bg-black border border-border text-phosphor focus:outline-none focus:border-primary transition-colors text-xs disabled:opacity-50 font-mono appearance-none"
                 >
-                  <option value="Bahasa Indonesia (Formal Corporate)">🇮🇩 Bahasa Indonesia (Formal Corporate)</option>
-                  <option value="English (Executive Standard)">🇬🇧 English (Executive Standard)</option>
+                  <option value="Bahasa Indonesia (Formal Corporate)">INDONESIAN (FORMAL)</option>
+                  <option value="English (Executive Standard)">ENGLISH (EXECUTIVE)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-zinc-300 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                  <span>Synthesis Style Focus</span>
+                <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-1.5 select-none">
+                  // SYNTHESIS_TEMPLATE
                 </label>
                 <select
                   disabled={uploading}
                   value={meetingStyle}
                   onChange={(e) => setMeetingStyle(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-background border border-white/10 rounded-xl text-zinc-200 focus:outline-none focus:border-primary transition-colors text-sm disabled:opacity-50 appearance-none"
+                  className="w-full px-3 py-2 bg-black border border-border text-phosphor focus:outline-none focus:border-primary transition-colors text-xs disabled:opacity-50 font-mono appearance-none"
                 >
-                  <option value="General Executive MoM">👔 General Executive (Strategic Insights)</option>
-                  <option value="Agile Sprint Retrospective">🚀 Agile Sprint Retro (Velocity & Blockers)</option>
-                  <option value="Technical Architecture Spec">🏗️ Tech Architecture Spec (API & Trade-offs)</option>
-                  <option value="Sales & Commercials">💼 Sales & Commercials (Pricing & SLAs)</option>
-                  <option value="Daily Standup">⏱️ Daily Standup (Yesterday, Today, Blockers)</option>
-                  <option value="Brainstorming & Ideation">💡 Brainstorming & Ideation (Raw Ideas & Votes)</option>
-                  <option value="User Discovery Interview">🗣️ User Discovery Interview (Pain Points & Quotes)</option>
-                  <option value="Journalistic Narrative">📰 Journalistic Narrative (Smooth 5W1H Summary)</option>
+                  <option value="General Executive MoM">GENERAL EXECUTIVE MOM</option>
+                  <option value="Agile Sprint Retrospective">AGILE SPRINT RETROSPECTIVE</option>
+                  <option value="Technical Architecture Spec">TECHNICAL ARCHITECTURE SPEC</option>
+                  <option value="Sales & Commercials">SALES & COMMERCIALS</option>
+                  <option value="Daily Standup">DAILY STANDUP</option>
+                  <option value="Brainstorming & Ideation">BRAINSTORMING & IDEATION</option>
+                  <option value="User Discovery Interview">USER DISCOVERY INTERVIEW</option>
+                  <option value="Journalistic Narrative">JOURNALISTIC NARRATIVE</option>
                 </select>
               </div>
             </div>
           </div>
 
           {uploading && (
-            <div className="my-6 space-y-3">
-              <div className="flex justify-between text-xs font-mono font-medium">
-                <span className="text-primary animate-pulse">{chunkStatus}</span>
-                <span className="text-white">{progress}%</span>
+            <div className="my-4 space-y-2 border-t border-border pt-4 select-none">
+              <div className="flex justify-between text-[10px] font-mono font-bold">
+                <span className="text-primary animate-pulse">{chunkStatus.toUpperCase()}</span>
+                <span className="text-phosphor">{progress}%</span>
               </div>
-              <div className="w-full bg-background h-2 rounded-full overflow-hidden border border-white/5">
-                <div
-                  className="bg-primary h-full rounded-full transition-all duration-300 shadow-glow"
+              {/* Telemetry style progress bar */}
+              <div className="w-full bg-black h-4 border border-border flex items-center px-1 font-mono text-[10px]">
+                <div 
+                  className="bg-primary h-2 transition-all duration-150"
                   style={{ width: `${progress}%` }}
-                ></div>
+                />
+                <span className="ml-2 text-primary font-bold">
+                  {Math.round(progress / 5) > 0 ? '█'.repeat(Math.round(progress / 5)) : ''}
+                  {'.'.repeat(20 - Math.round(progress / 5))}
+                </span>
               </div>
             </div>
           )}
@@ -259,9 +267,9 @@ const AudioUploader = ({ onUploadComplete }) => {
           {!uploading && (
             <button
               onClick={startUpload}
-              className="w-full py-3.5 bg-primary hover:bg-amber-400 text-zinc-950 font-bold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 shadow-glow flex items-center justify-center space-x-2 text-sm uppercase tracking-wider"
+              className="w-full py-3 bg-primary hover:bg-red-500 text-black font-bold text-xs uppercase tracking-widest transition-all duration-150 flex items-center justify-center gap-2 select-none"
             >
-              <span>Upload & Process Recording</span>
+              <span>[ COMMENCE TRANSMISSION & EXTRACTION ]</span>
               <span>➔</span>
             </button>
           )}
@@ -269,9 +277,9 @@ const AudioUploader = ({ onUploadComplete }) => {
       )}
 
       {error && (
-        <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-300 text-sm flex items-center space-x-2">
-          <span>⚠️</span>
-          <span>{error}</span>
+        <div className="mt-4 p-4 border border-primary bg-primary/5 text-primary text-xs font-mono flex items-start gap-2 select-none">
+          <span className="font-bold">[ ERROR ]</span>
+          <span>{error.toUpperCase()}</span>
         </div>
       )}
     </div>

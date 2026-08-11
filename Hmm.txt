@@ -1,42 +1,29 @@
 python - <<'PY'
-import os
+from importlib.metadata import version
 import torch
-import huggingface_hub.file_download
-from sqlmodel import Session
+import torchaudio
 
-from app.core.config import STORAGE_DIR
-from app.models.database import engine
-from app.services.nim_client import get_hf_token
-from app.services.pyannote_compat import apply_pyannote_compat_patches
-
-audio_path = "/tmp/aimeetingmom-diarization-test.flac"
-hf_cache_dir = str(STORAGE_DIR / ".hf_cache")
-
-with Session(engine) as db:
-    hf_token = get_hf_token(db)
-
-if not hf_token:
-    raise RuntimeError("No Hugging Face token configured.")
-
-os.environ["HF_TOKEN"] = hf_token
-os.environ["HF_HOME"] = hf_cache_dir
-os.environ["XDG_CACHE_HOME"] = hf_cache_dir
-os.environ["TORCH_HOME"] = os.path.join(hf_cache_dir, "torch")
-
-apply_pyannote_compat_patches(hf_cache_dir)
-
-from pyannote.audio import Pipeline
-
-pipeline = Pipeline.from_pretrained(
-    "pyannote/speaker-diarization-3.1",
-    use_auth_token=hf_token,
+packages = (
+    "numpy",
+    "torch",
+    "torchaudio",
+    "pyannote.audio",
+    "pyannote.core",
+    "pyannote.database",
+    "pyannote.metrics",
+    "pyannote.pipeline",
 )
-pipeline.to(torch.device("cpu"))
 
-diarization = pipeline(audio_path)
-tracks = list(diarization.itertracks(yield_label=True))
+for package in packages:
+    print(package, version(package))
 
-print(f"SUCCESS: {len(tracks)} speaker segments")
-for turn, _, speaker in tracks[:20]:
-    print(f"{turn.start:.1f}s - {turn.end:.1f}s: {speaker}")
+print("CUDA:", torch.version.cuda)
+print("torchaudio.info:", hasattr(torchaudio, "info"))
+
+assert version("numpy") == "1.26.4"
+assert version("pyannote.audio") == "3.4.0"
+assert version("torch").startswith("2.8.0")
+assert version("torchaudio").startswith("2.8.0")
+assert torch.version.cuda is None
+assert hasattr(torchaudio, "info")
 PY

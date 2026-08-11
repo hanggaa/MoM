@@ -97,108 +97,104 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="p-8 rounded-3xl glass-panel space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6 font-mono text-xs">
+      <div className="p-6 border border-border bg-card">
         {/* Header & Search */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
-          <div>
-            <h2 className="text-2xl font-display font-semibold text-white flex items-center gap-2.5">
-              <Archive size={24} className="text-primary shrink-0" />
-              <span>Executive MoM Archive & Smart Disk Cleanup</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+          <div className="select-none">
+            <h2 className="text-md font-display font-bold text-phosphor flex items-center gap-2 uppercase">
+              <span>[04] ARCHIVED_RECORDS_REGISTRY</span>
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-light">
-              Search across meeting titles, action items, and executive summaries. Use Smart Archive to delete large raw audio files while keeping text reports intact.
+            <p className="text-[10px] text-muted mt-1 uppercase leading-relaxed">
+              Global query across meeting indices. Use Smart Archive to purge raw binary audio files while preserving synthesized telemetry.
             </p>
           </div>
 
           {/* Live Search Box */}
           <div className="relative min-w-[280px]">
-            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search title, PIC, keyword, topic..."
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-background border border-white/10 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-light"
+              placeholder="SEARCH INDEX..."
+              className="w-full pl-9 pr-4 py-2 bg-black border border-border text-xs text-phosphor placeholder-zinc-700 focus:outline-none focus:border-primary transition-all font-mono"
             />
-            {loading && <Loader2 size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-primary animate-spin" />}
+            {loading && <Loader2 size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary animate-spin" />}
           </div>
         </div>
 
         {/* Notifications */}
         {notification && (
-          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-2.5 animate-fade-in shadow-lg">
-            <CheckCircle2 size={18} className="shrink-0 text-emerald-400" />
-            <span>{notification}</span>
+          <div className="mt-4 p-4 border border-green bg-green/5 text-green text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-widest">
+            <span>[ SYSTEM: {notification.toUpperCase()} ]</span>
           </div>
         )}
 
         {error && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2.5">
-            <AlertCircle size={18} className="shrink-0 text-rose-400" />
-            <span>{error}</span>
+          <div className="mt-4 p-4 border border-primary bg-primary/5 text-primary text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-widest">
+            <span>[ ERROR: {error.toUpperCase()} ]</span>
           </div>
         )}
 
         {/* Meetings Grid / Table */}
         {!loading && meetings.length === 0 ? (
-          <div className="py-12 text-center text-zinc-500 space-y-2">
-            <p className="text-lg">📭 No matching executive meetings found in server archive.</p>
-            {searchTerm && <p className="text-sm text-zinc-600">Try refining your keyword search filter.</p>}
+          <div className="py-12 text-center text-muted space-y-2 select-none">
+            <p className="text-sm font-bold">[ NO_RECORDS_DETECTED ]</p>
+            {searchTerm && <p className="text-[10px]">Try redefining your query keyword parameters.</p>}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-px border border-border bg-border mt-4">
             {meetings.map((m) => {
               const isArchived = m.is_audio_archived;
-              const dateStr = m.created_at ? new Date(m.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently Processed';
+              const dateStr = m.created_at ? new Date(m.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'PENDING';
               
               return (
                 <div
                   key={m.id}
                   onClick={() => handleOpenMeeting(m.id)}
-                  className="group relative p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all cursor-pointer shadow-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.1)] flex flex-col justify-between"
+                  className="group relative p-5 bg-card hover:bg-black/30 transition-all cursor-pointer flex flex-col justify-between"
                 >
                   <div>
                     {/* Top Row: Status Pills */}
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border ${
+                    <div className="flex items-center justify-between gap-2 mb-4 select-none">
+                      <span className={`px-2 py-0.5 border text-[9px] font-bold tracking-widest uppercase ${
                         m.status === 'DONE'
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                          ? 'bg-black text-green border-green'
                           : m.status === 'ERROR'
-                          ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                          : 'bg-primary/10 text-primary border-primary/30 animate-pulse'
+                          ? 'bg-black text-primary border-primary'
+                          : 'bg-black text-primary border-primary animate-pulse'
                       }`}>
-                        {m.status === 'DONE' ? '✓ Synthesized' : m.status}
+                        {m.status === 'DONE' ? 'SYNTHESIZED' : m.status}
                       </span>
 
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
-                        <Calendar size={14} />
-                        <span>{dateStr}</span>
+                      <div className="flex items-center gap-1 text-[10px] text-muted font-mono">
+                        <span>TIMESTAMP: {dateStr}</span>
                       </div>
                     </div>
 
                     {/* Title & Style */}
-                    <h3 className="text-lg font-semibold text-zinc-100 group-hover:text-primary transition-colors line-clamp-1 font-display">
-                      {m.title || `Meeting #${m.id}`}
+                    <h3 className="text-sm font-bold text-phosphor group-hover:text-primary transition-colors line-clamp-1 uppercase tracking-wider font-display">
+                      {m.title || `MEETING_${m.id}`}
                     </h3>
 
-                    <div className="flex flex-wrap gap-2 my-3">
-                      <span className="px-2.5 py-1 rounded-lg bg-background border border-white/5 text-[11px] font-medium text-zinc-400">
-                        🌐 {m.output_language || 'English'}
+                    <div className="flex flex-wrap gap-2 my-3 select-none">
+                      <span className="px-2 py-0.5 border border-border bg-black text-[9px] font-bold text-muted">
+                        LANG: {m.output_language ? m.output_language.split(' ')[0].toUpperCase() : 'UNKNOWN'}
                       </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-background border border-white/5 text-[11px] font-medium text-emerald-400">
-                        🎯 {m.meeting_style || 'Executive MoM'}
+                      <span className="px-2 py-0.5 border border-border bg-black text-[9px] font-bold text-green">
+                        FOCUS: {m.meeting_style ? m.meeting_style.toUpperCase() : 'EXECUTIVE'}
                       </span>
                     </div>
 
                     {/* Snippet Preview */}
-                    <p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed font-light mt-3">
-                      {getMoMPreview(m)}
+                    <p className="text-xs text-muted line-clamp-2 leading-relaxed mt-3">
+                      {getMoMPreview(m).toUpperCase()}
                     </p>
                   </div>
 
                   {/* Bottom Action Bar */}
-                  <div className="pt-4 mt-5 border-t border-white/10 flex items-center justify-between text-xs">
+                  <div className="pt-4 mt-5 border-t border-border flex items-center justify-between text-[10px]">
                     {/* Audio Status / Smart Archive Button */}
                     <div>
                       {!isArchived && m.audio_file_path ? (
@@ -206,34 +202,34 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
                           type="button"
                           onClick={(e) => handlePurgeAudio(e, m.id, m.title)}
                           disabled={actionLoading === `purge_${m.id}`}
-                          title="Purge raw audio file to free up server disk space while retaining MoM text"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-background hover:bg-amber-500/10 text-zinc-400 hover:text-amber-400 border border-white/10 hover:border-amber-500/30 transition-all text-[11px] font-semibold"
+                          title="Purge raw audio file to save disk space"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-primary/40 hover:border-primary bg-black text-primary font-bold uppercase transition-colors"
                         >
-                          {actionLoading === `purge_${m.id}` ? <Loader2 size={13} className="animate-spin" /> : <HardDrive size={13} className="text-amber-400" />}
-                          <span>Smart Archive (Purge Audio)</span>
+                          {actionLoading === `purge_${m.id}` ? <Loader2 size={10} className="animate-spin" /> : <HardDrive size={10} />}
+                          <span>[PURGE_AUDIO]</span>
                         </button>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 bg-background px-3 py-1.5 rounded-xl border border-white/5">
-                          <CheckCircle2 size={14} className="text-emerald-500" />
-                          <span>Audio Purged &bull; Disk Saved</span>
+                        <span className="inline-flex items-center gap-1.5 text-[9px] font-bold text-muted border border-border bg-black px-2.5 py-1 select-none">
+                          <CheckCircle2 size={10} className="text-green" />
+                          <span>[AUDIO_PURGED]</span>
                         </span>
                       )}
                     </div>
 
                     {/* View & Delete Controls */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={(e) => handleDeleteEntirely(e, m.id, m.title)}
                         disabled={actionLoading === `del_${m.id}`}
-                        className="p-2 rounded-xl bg-background hover:bg-rose-500/10 text-zinc-500 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 transition-all"
-                        title="Delete meeting entirely"
+                        className="p-1 border border-border hover:border-primary/60 bg-black text-muted hover:text-primary transition-all"
+                        title="Delete record entirely"
                       >
-                        {actionLoading === `del_${m.id}` ? <Loader2 size={14} className="animate-spin text-rose-400" /> : <Trash2 size={14} />}
+                        {actionLoading === `del_${m.id}` ? <Loader2 size={12} className="animate-spin text-primary" /> : <Trash2 size={12} />}
                       </button>
 
-                      <span className="inline-flex items-center gap-1.5 font-bold text-primary group-hover:text-amber-400 transition-colors text-xs pl-1">
-                        <span>Read MoM</span>
+                      <span className="inline-flex items-center gap-1 font-bold text-primary group-hover:text-red-500 transition-colors pl-1">
+                        <span>[READ_REPORT]</span>
                         <span>➔</span>
                       </span>
                     </div>

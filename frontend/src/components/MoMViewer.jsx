@@ -246,79 +246,79 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn pb-12 print:max-w-none print:m-0 print:p-0">
+    <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn pb-12 print:max-w-none print:m-0 print:p-0 font-mono text-xs">
       {/* Header Bar - Hidden in print view */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 glass-panel p-6 rounded-3xl print:hidden">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 border border-border bg-card p-5 print:hidden">
         <div className="space-y-2">
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap select-none">
             <button 
               onClick={onReset} 
-              className="p-2 mr-2 hover:bg-white/5 rounded-xl text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wider"
+              className="p-1 border border-border hover:border-primary bg-black text-muted hover:text-phosphor transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider"
             >
-              <ArrowLeft className="w-4 h-4" /> Back to Upload
+              <ArrowLeft className="w-3.5 h-3.5" /> [ BACK_TO_DASHBOARD ]
             </button>
-            <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-xs px-3 py-1.5 rounded-xl border border-emerald-500/20 font-bold uppercase tracking-wider">
-              <ShieldCheck className="w-3.5 h-3.5" /> Local CPU & Nemotron-3 Protected
+            <span className="inline-flex items-center gap-1.5 border border-green/30 bg-green/5 text-green text-[9px] px-2.5 py-1 font-bold uppercase tracking-wider">
+              [ SECURE LOCAL CPU ENGINE ACTIVE ]
             </span>
           </div>
-          <h1 className="text-3xl font-display font-bold text-white tracking-tight pt-1">{meeting?.title || "Project Sync Meeting"}</h1>
-          <p className="text-sm text-zinc-400 flex items-center gap-2 font-light">
-            <span>Meeting ID: #{meeting?.id}</span> &bull; 
-            <span>Recorded: {new Date(meeting?.created_at || Date.now()).toLocaleDateString('id-ID', { dateStyle: 'full' })}</span>
+          <h1 className="text-lg font-display font-bold text-phosphor tracking-wider pt-1 uppercase glow-text">{meeting?.title || "UNRESOLVED_MEETING_RECORD"}</h1>
+          <p className="text-[10px] text-muted flex items-center gap-2 select-none uppercase">
+            <span>INDEX_REF: #{meeting?.id}</span> &bull; 
+            <span>TIMESTAMP: {meeting?.created_at ? new Date(meeting.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'PENDING'}</span>
           </p>
         </div>
 
         {/* Action & Export Controls */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 select-none">
           <button
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10 hover:border-white/20 text-sm font-semibold transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary bg-black text-phosphor text-[10px] font-bold uppercase transition-colors"
             title="Copy Markdown"
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-400 animate-bounce" /> : <Copy className="w-4 h-4 text-zinc-400" />}
-            {copied ? 'Copied!' : 'Copy MD'}
+            {copied ? <Check className="w-3.5 h-3.5 text-green" /> : <Copy className="w-3.5 h-3.5 text-muted" />}
+            <span>{copied ? 'COPIED' : '[COPY_MD]'}</span>
           </button>
 
           <button
             onClick={handleDownloadMarkdown}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-200 border border-white/10 hover:border-white/20 text-sm font-semibold transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary bg-black text-phosphor text-[10px] font-bold uppercase transition-colors"
             title="Download Markdown file"
           >
-            <Download className="w-4 h-4 text-primary" />
-            Download .md
+            <Download className="w-3.5 h-3.5 text-primary" />
+            <span>[DOWNLOAD_MD]</span>
           </button>
 
           <button
             onClick={handlePrintPDF}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-amber-400 text-zinc-950 font-bold text-sm transition-all shadow-glow active:scale-95"
-            title="Print to PDF or paper"
+            className="inline-flex items-center gap-2 px-3 py-1.5 border border-primary bg-black text-primary font-bold text-[10px] hover:bg-primary hover:text-black transition-colors"
+            title="Print to PDF"
           >
-            <Printer className="w-4 h-4" />
-            Export PDF
+            <Printer className="w-3.5 h-3.5" />
+            <span>[EXPORT_PDF]</span>
           </button>
 
-          <div className="flex items-center gap-2 bg-background border border-white/10 rounded-xl p-1.5 ml-2">
+          <div className="flex items-center gap-2 bg-black border border-border p-1">
             <select
               value={regenStyle}
               onChange={(e) => setRegenStyle(e.target.value)}
-              className="bg-transparent text-zinc-300 text-sm py-1 pl-3 pr-6 focus:outline-none appearance-none cursor-pointer font-medium"
+              className="bg-transparent text-phosphor text-[10px] font-bold py-1 pl-2 pr-6 focus:outline-none appearance-none cursor-pointer font-mono"
             >
-              <option value="General Executive MoM">General Executive</option>
-              <option value="Agile Sprint Retro">Agile Sprint Retro</option>
-              <option value="Tech Architecture Spec">Tech Architecture Spec</option>
-              <option value="Sales & Commercials">Sales & Commercials</option>
-              <option value="Daily Standup">Daily Standup</option>
-              <option value="Brainstorming & Ideation">Brainstorming & Ideation</option>
-              <option value="User Discovery Interview">User Discovery Interview</option>
-              <option value="Journalistic Narrative">Journalistic Narrative</option>
+              <option value="General Executive MoM">GENERAL EXECUTIVE</option>
+              <option value="Agile Sprint Retro">AGILE RETRO</option>
+              <option value="Tech Architecture Spec">TECH ARCH SPEC</option>
+              <option value="Sales & Commercials">SALES / COMM</option>
+              <option value="Daily Standup">DAILY STANDUP</option>
+              <option value="Brainstorming & Ideation">BRAINSTORM</option>
+              <option value="User Discovery Interview">USER DISCOVERY</option>
+              <option value="Journalistic Narrative">NARRATIVE</option>
             </select>
             <button
               onClick={handleReSynthesize}
               disabled={isSynthesizing}
-              className="inline-flex items-center justify-center p-2 rounded-lg bg-primary hover:bg-amber-400 text-zinc-950 transition-colors disabled:opacity-50"
+              className="inline-flex items-center justify-center p-1.5 border border-primary hover:bg-primary text-primary hover:text-black transition-colors disabled:opacity-50 bg-black"
               title="Generate new style via Nemotron-3"
             >
-              <RefreshCw className={`w-4 h-4 ${isSynthesizing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${isSynthesizing ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
@@ -326,26 +326,26 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
 
       {/* Local Audio Playback Review Bar - Hidden in print view */}
       {meeting?.id && (
-        <div className="glass-panel rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 print:hidden">
-          <div className="flex items-center gap-4">
-            <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-primary shadow-inner">
-              <Volume2 className="w-6 h-6 animate-pulse" />
+        <div className="border border-border bg-card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 print:hidden">
+          <div className="flex items-center gap-3">
+            <div className="p-2 border border-primary text-primary bg-black select-none">
+              <Volume2 className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-base font-bold text-white tracking-tight">Local STT Audio Playback Review</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-accent/20 text-accent border border-accent/30">
-                  Direct Disk Stream
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-bold text-phosphor uppercase">// TELEMETRY_AUDIO_MONITOR</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-primary text-primary bg-primary/5 select-none">
+                  DISK_STREAM
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 font-light">Listen to your recorded audio while reviewing synthesized executive decision items.</p>
+              <p className="text-[10px] text-muted font-light select-none">Direct file streaming synchronized with clickable segment timestamps.</p>
             </div>
           </div>
           <audio
             ref={audioRef}
             controls
             src={getMeetingAudioUrl(meeting.id)}
-            className="w-full sm:w-72 md:w-96 h-12 rounded-xl bg-background accent-primary shadow-inner border border-white/5"
+            className="w-full sm:w-72 md:w-96 h-9 bg-black border border-border text-primary"
           >
             Your browser does not support audio playback.
           </audio>
@@ -353,41 +353,41 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
       )}
 
       {synthError && (
-        <div className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-300 flex items-center gap-3 text-sm print:hidden">
-          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
-          <span><strong>Synthesis Notice:</strong> {synthError}</span>
+        <div className="p-4 border border-primary bg-primary/5 text-primary flex items-center gap-2 select-none uppercase tracking-wider print:hidden">
+          <AlertTriangle className="w-4 h-4 text-primary shrink-0" />
+          <span><strong>[SYNTHESIS NOTICE]</strong> {synthError.toUpperCase()}</span>
         </div>
       )}
 
       {/* Tabs Bar - Hidden in print view */}
-      <div className="flex border-b border-white/10 gap-8 px-6 print:hidden overflow-x-auto">
+      <div className="flex border-b border-border gap-6 px-4 print:hidden overflow-x-auto select-none">
         {availableStyles.map(styleName => (
           <button
             key={styleName}
             onClick={() => setActiveTab(styleName)}
-            className={`pb-4 whitespace-nowrap text-sm font-bold tracking-wide flex items-center gap-2 border-b-2 transition-all duration-300 ${
+            className={`pb-3 whitespace-nowrap text-[10px] font-bold tracking-widest uppercase flex items-center gap-1 border-b-2 transition-all ${
               activeTab === styleName
                 ? 'border-primary text-primary'
-                : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                : 'border-transparent text-muted hover:text-phosphor'
             }`}
           >
-            <Sparkles className="w-4 h-4" /> {styleName}
+            <span>[ {styleName.replace(' MoM', '')} ]</span>
           </button>
         ))}
         <button
           onClick={() => setActiveTab('transcript')}
-          className={`pb-4 whitespace-nowrap text-sm font-bold tracking-wide flex items-center gap-2 border-b-2 transition-all duration-300 ${
+          className={`pb-3 whitespace-nowrap text-[10px] font-bold tracking-widest uppercase flex items-center gap-1 border-b-2 transition-all ${
             activeTab === 'transcript'
               ? 'border-primary text-primary'
-              : 'border-transparent text-zinc-500 hover:text-zinc-300'
+              : 'border-transparent text-muted hover:text-phosphor'
           }`}
         >
-          <Terminal className="w-4 h-4" /> INT8 CPU Raw Transcript
+          <span>[ RAW_TRANSCRIPT ]</span>
         </button>
       </div>
 
       {/* Main Content Pane */}
-      <div className="glass-panel rounded-3xl p-8 sm:p-10 print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
+      <div className="border border-border bg-card p-6 sm:p-8 print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
         
         {/* Print Only Formal Executive Header */}
         <div className="hidden print:block mb-8 border-b-2 pb-6 border-zinc-200">
@@ -395,7 +395,7 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
             <h1 className="text-3xl font-bold text-zinc-900 tracking-tight font-display">{meeting?.title || "Executive Minutes of Meeting"}</h1>
             <span className="text-xs font-bold uppercase tracking-widest text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-300">Confidential / Internal PM Record</span>
           </div>
-          <p className="text-sm text-zinc-600 mt-3 flex gap-6">
+          <p className="text-sm text-zinc-600 mt-3 flex gap-6 font-mono">
             <span><strong>Date:</strong> {new Date(meeting?.created_at || Date.now()).toLocaleDateString('id-ID', { dateStyle: 'long' })}</span>
             <span><strong>System:</strong> AIMeetingMoM Self-Hosted Engine</span>
             <span><strong>AI Synthesis:</strong> NVIDIA Nemotron-3</span>
@@ -405,20 +405,33 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
         {activeTab !== 'transcript' ? (
           <div className="print:block">
             {isSynthesizing ? (
-              <div className="py-20 text-center space-y-5">
-                <div className="inline-flex p-5 rounded-3xl bg-primary/10 border border-primary/20 shadow-glow animate-pulse">
-                  <RefreshCw className="w-10 h-10 text-primary animate-spin" />
+              <div className="py-16 text-center space-y-4 select-none">
+                <div className="inline-flex p-4 border border-primary bg-primary/5 animate-pulse">
+                  <RefreshCw className="w-8 h-8 text-primary animate-spin" />
                 </div>
-                <h3 className="text-xl font-display font-semibold text-zinc-100">Synthesizing {regenStyle} with Nemotron-3...</h3>
-                <p className="text-sm text-zinc-400 max-w-md mx-auto font-light">
-                  Extracting relevant insights from transcript based on the selected meeting style.
+                <h3 className="text-xs font-bold text-phosphor uppercase">Synthesizing {regenStyle} via Nemotron-3...</h3>
+                <p className="text-[10px] text-muted max-w-md mx-auto leading-relaxed">
+                  QUERYING TELEMETRY TRANSCRIPT AND EXTRACTING STRATEGIC PM READOUTS.
                 </p>
               </div>
             ) : parsedMoMs[activeTab] ? (
-              <div className="prose prose-invert prose-amber prose-sm sm:prose-base max-w-none print:prose-neutral print:prose-sm">
+              <div className="prose prose-invert prose-sm max-w-none print:prose-neutral print:prose-sm">
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
                   components={{
+                    h1: ({node, ...props}) => <h1 {...props} className="text-xs font-bold text-primary uppercase tracking-widest border-b border-border pb-1 mt-6 mb-3 font-display" />,
+                    h2: ({node, ...props}) => <h2 {...props} className="text-[11px] font-bold text-primary uppercase tracking-widest mt-5 mb-2 font-display" />,
+                    h3: ({node, ...props}) => <h3 {...props} className="text-[10px] font-bold text-phosphor uppercase mt-4 mb-2" />,
+                    p: ({node, ...props}) => <p {...props} className="text-xs text-phosphor leading-relaxed mb-3 font-mono" />,
+                    ul: ({node, ...props}) => <ul {...props} className="list-square pl-5 space-y-1 mb-4 text-xs font-mono text-phosphor" />,
+                    ol: ({node, ...props}) => <ol {...props} className="list-decimal pl-5 space-y-1 mb-4 text-xs font-mono text-phosphor" />,
+                    li: ({node, ...props}) => <li {...props} className="text-phosphor leading-relaxed" />,
+                    table: ({node, ...props}) => <table {...props} className="w-full text-left text-[11px] border border-border bg-black border-collapse my-4 font-mono" />,
+                    thead: ({node, ...props}) => <thead {...props} className="bg-card border-b border-border text-primary uppercase text-[9px]" />,
+                    th: ({node, ...props}) => <th {...props} className="px-3 py-2 border border-border font-bold" />,
+                    tr: ({node, ...props}) => <tr {...props} className="hover:bg-black/20 border-b border-border" />,
+                    td: ({node, ...props}) => <td {...props} className="px-3 py-2 border border-border text-phosphor" />,
+                    code: ({node, ...props}) => <code {...props} className="text-primary bg-black border border-border px-1 py-0.5 text-[10px]" />,
                     a: ({node, ...props}) => {
                       if (props.href && props.href.startsWith('timestamp://')) {
                         const timeStr = props.href.replace('timestamp://', '');
@@ -427,14 +440,14 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                         return (
                           <button 
                             onClick={(e) => { e.preventDefault(); handleSeekAudio(totalSeconds); }}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 mx-1 rounded-lg bg-primary/20 text-primary hover:bg-primary/40 border border-primary/30 text-[11px] font-mono font-bold transition-all active:scale-95 cursor-pointer decoration-transparent print:hidden uppercase tracking-wider"
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 mx-1 border border-primary text-primary hover:bg-primary hover:text-black font-mono font-bold text-[9px] transition-colors cursor-pointer select-none uppercase tracking-wider print:hidden"
                             title={`Play audio from ${timeStr}`}
                           >
-                            <Clock className="w-3.5 h-3.5" /> {timeStr}
+                            <span>[PLAY: {timeStr}]</span>
                           </button>
                         );
                       }
-                      return <a {...props} className="text-primary hover:text-amber-400 underline transition-colors" />;
+                      return <a {...props} className="text-primary hover:underline transition-colors font-bold" />;
                     }
                   }}
                 >
@@ -442,29 +455,28 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                 </ReactMarkdown>
               </div>
             ) : (
-              <div className="p-12 text-center bg-background rounded-2xl border border-white/5 text-zinc-500 print:text-black print:bg-white print:border-zinc-300 shadow-inner">
-                <p className="text-lg mb-2">📭 No MoM synthesized yet.</p>
-                <p className="text-sm">Select a style and click "Regenerate" to create notes via NVIDIA Nemotron-3.</p>
+              <div className="p-12 text-center border border-border bg-black/60 text-muted select-none">
+                <p className="text-sm font-bold uppercase mb-1">[ NO_MOM_REPORT_GENERATED ]</p>
+                <p className="text-[10px]">SELECT STYLE PROFILE AND TRIGGER GENERATOR MODULE.</p>
               </div>
             )}
           </div>
         ) : (
-          <div className="space-y-5 print:hidden">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-widest flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-emerald-400" />
-                faster-whisper (INT8) Local CPU Transcription
+          <div className="space-y-4 print:hidden">
+            <div className="flex items-center justify-between border-b border-border pb-3 select-none">
+              <h3 className="text-xs font-bold text-phosphor uppercase tracking-wider">
+                // RAW_INT8_STT_TELEMETRY
               </h3>
-              <span className="text-xs text-zinc-500 font-medium">Zero Cloud Audio Leakage</span>
+              <span className="text-[9px] text-muted">ZERO_CLOUD_EXPOSURE_CONFIRMED</span>
             </div>
-            <pre className="font-mono text-sm leading-relaxed bg-background p-8 rounded-2xl border border-white/5 text-zinc-300 overflow-x-auto whitespace-pre-wrap max-h-[65vh] overflow-y-auto shadow-inner">
+            <pre className="font-mono text-xs leading-relaxed bg-black p-5 border border-border text-phosphor overflow-x-auto whitespace-pre-wrap max-h-[65vh] overflow-y-auto">
               {meeting?.transcript_text || '[No transcript file available for this meeting recording yet.]'}
             </pre>
           </div>
         )}
 
         {/* Print Only Footer */}
-        <div className="hidden print:block mt-12 pt-4 border-t border-gray-300 text-[10px] text-gray-500 text-center">
+        <div className="hidden print:block mt-12 pt-4 border-t border-gray-300 text-[10px] text-gray-500 text-center font-mono uppercase">
           Generated automatically by AIMeetingMoM — Private Local Audio Processing & BYOK Executive Reasoning
         </div>
       </div>

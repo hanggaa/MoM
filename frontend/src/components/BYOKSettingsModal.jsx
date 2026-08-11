@@ -86,53 +86,53 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xl flex items-center justify-center p-4">
-      <div className="relative w-full max-w-xl overflow-hidden rounded-3xl glass-panel shadow-2xl transition-all">
-        {/* Decorative Top Glow */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50 animate-gradient" />
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 flex items-center justify-center p-4">
+      <div className="relative w-full max-w-xl overflow-hidden border-2 border-border bg-card shadow-none transition-all font-mono text-xs">
+        
+        {/* Technical visual decoration - warning stripes */}
+        <div className="absolute top-0 left-0 right-0 h-1 warning-stripes opacity-60" />
 
         {/* Header */}
-        <div className="p-6 pb-4 border-b border-white/10 flex items-center justify-between">
+        <div className="p-5 border-b border-border flex items-center justify-between select-none">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
-              <Sparkles size={20} />
-            </div>
             <div>
-              <h3 className="text-lg font-display font-semibold text-zinc-100">Engine & API Configuration</h3>
-              <p className="text-xs text-zinc-400 font-light mt-0.5">Customize AI models, local STT accuracy, and secure tokens</p>
+              <h3 className="text-sm font-display font-bold text-phosphor uppercase tracking-wider glow-text">
+                [05] MAINBOARD_ENGINE_CONFIGURATION
+              </h3>
+              <p className="text-[9px] text-muted uppercase mt-1 tracking-widest">// CUSTOMIZE AI MODELS & CRYPTO VAULT</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-500 hover:text-zinc-300 rounded-xl hover:bg-white/5 transition-colors"
+            className="p-1 text-muted hover:text-primary border border-transparent hover:border-border bg-black transition-colors"
           >
-            <X size={20} />
+            <X size={14} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/5 bg-black/20 px-6 pt-3 gap-2">
+        <div className="flex border-b border-border bg-black px-6 pt-3 gap-2 select-none">
           <button
             onClick={() => setActiveTab('byok')}
-            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-all border-b-2 uppercase tracking-wider ${
+            className={`flex items-center gap-2 pb-3 px-3 text-[10px] font-bold transition-all border-b-2 uppercase tracking-wider ${
               activeTab === 'byok'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                ? 'border-primary text-primary font-bold'
+                : 'border-transparent text-muted hover:text-phosphor'
             }`}
           >
-            <Key size={15} />
-            <span>NVIDIA BYOK Vault</span>
+            <Key size={12} />
+            <span>[ VAULT_TOKENS ]</span>
           </button>
           <button
             onClick={() => setActiveTab('stt')}
-            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-all border-b-2 uppercase tracking-wider ${
+            className={`flex items-center gap-2 pb-3 px-3 text-[10px] font-bold transition-all border-b-2 uppercase tracking-wider ${
               activeTab === 'stt'
-                ? 'border-accent text-accent'
-                : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                ? 'border-primary text-primary font-bold'
+                : 'border-transparent text-muted hover:text-phosphor'
             }`}
           >
-            <Cpu size={15} />
-            <span>STT Model Resolution & Vocab</span>
+            <Cpu size={12} />
+            <span>[ STT_RESOLUTION ]</span>
           </button>
         </div>
 
@@ -140,32 +140,34 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
         {activeTab === 'byok' && (
           <div className="p-6 space-y-6">
             {/* Current Status Info Box */}
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-4 shadow-inner">
-              <Shield size={22} className="text-emerald-400 shrink-0 mt-0.5" />
-              <div className="text-xs space-y-2">
-                <p className="font-bold text-zinc-100 uppercase tracking-widest text-[10px]">Server-Side Zero-Exposure Security</p>
-                <p className="text-zinc-400 leading-relaxed font-light">
-                  Your token is encrypted in SQLite and never exposed to browser clients or third-party tracking.
+            <div className="p-4 border border-border bg-black/60 flex items-start gap-3 select-none">
+              <Shield size={16} className="text-green shrink-0 mt-0.5" />
+              <div className="text-[10px] space-y-2">
+                <p className="font-bold text-phosphor uppercase tracking-wider">// ZERO_EXPOSURE_INTEGRITY_CONFIRMED</p>
+                <p className="text-muted leading-relaxed font-light">
+                  ALL TOKENS ARE STORAGE-ENCRYPTED LOCALLY AND NEVER EXPOSED TO CLIENT BUNDLES.
                 </p>
-                <div className="pt-2 flex items-center gap-3 font-mono">
-                  <span className="text-zinc-500 uppercase text-[10px] tracking-widest font-bold">NVIDIA Token:</span>
-                  <span className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${byokStatus?.is_set ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
-                    {byokStatus?.is_set ? (byokStatus.preview || 'Connected') : 'Not Registered'}
-                  </span>
-                </div>
-                <div className="pt-1 flex items-center gap-3 font-mono">
-                  <span className="text-zinc-500 uppercase text-[10px] tracking-widest font-bold">HF Token:</span>
-                  <span className={`px-2.5 py-1 rounded-lg font-bold text-[11px] ${byokStatus?.hf_is_set ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
-                    {byokStatus?.hf_is_set ? (byokStatus.hf_preview || 'Connected') : 'Not Registered'}
-                  </span>
+                <div className="pt-2 flex flex-col gap-1.5 font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted uppercase tracking-wider w-20">NVIDIA_API:</span>
+                    <span className={`px-2 py-0.5 border font-bold text-[9px] ${byokStatus?.is_set ? 'text-green border-green bg-green/5' : 'text-primary border-primary bg-primary/5'}`}>
+                      {byokStatus?.is_set ? (byokStatus.preview || 'CONNECTED') : 'NOT_SET'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted uppercase tracking-wider w-20">HF_TOKEN:</span>
+                    <span className={`px-2 py-0.5 border font-bold text-[9px] ${byokStatus?.hf_is_set ? 'text-green border-green bg-green/5' : 'text-primary border-primary bg-primary/5'}`}>
+                      {byokStatus?.hf_is_set ? (byokStatus.hf_preview || 'CONNECTED') : 'NOT_SET'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <form onSubmit={handleSaveBYOK} className="space-y-5">
+            <form onSubmit={handleSaveBYOK} className="space-y-4">
               <div>
-                <label htmlFor="apiKeyInput" className="block text-xs font-bold uppercase tracking-widest text-zinc-300 mb-2">
-                  Enter NVIDIA NIM API Token
+                <label htmlFor="apiKeyInput" className="block text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5 select-none">
+                  // ENTER_NVIDIA_NIM_API_TOKEN
                 </label>
                 <input
                   id="apiKeyInput"
@@ -173,25 +175,25 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="nvapi-................................................"
-                  className="w-full px-5 py-3 rounded-xl bg-background border border-white/10 font-mono text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-light"
+                  className="w-full px-3 py-2 bg-black border border-border text-xs text-phosphor placeholder-zinc-800 focus:outline-none focus:border-primary transition-all font-mono"
                   disabled={loading}
                 />
-                <div className="mt-2 flex justify-between items-center text-[11px] text-zinc-500">
-                  <span>Required for Nemotron-3 executive MoM reasoning.</span>
+                <div className="mt-2 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 text-[9px] text-muted">
+                  <span>REQUIRED FOR SYNTHESIS INDICES.</span>
                   <a
                     href="https://build.nvidia.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary hover:text-amber-400 transition-colors inline-flex items-center gap-1 font-semibold"
+                    className="text-primary hover:underline inline-flex items-center gap-1 font-bold"
                   >
-                    Get token from build.nvidia.com <ExternalLink size={11} />
+                    GET TOKEN FROM NVIDIA.COM <ExternalLink size={10} />
                   </a>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="hfTokenInput" className="block text-xs font-bold uppercase tracking-widest text-zinc-300 mb-2">
-                  Enter HuggingFace Access Token
+                <label htmlFor="hfTokenInput" className="block text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5 select-none">
+                  // ENTER_HUGGINGFACE_ACCESS_TOKEN
                 </label>
                 <input
                   id="hfTokenInput"
@@ -199,58 +201,49 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                   value={hfToken}
                   onChange={(e) => setHfToken(e.target.value)}
                   placeholder="hf_..................................."
-                  className="w-full px-5 py-3 rounded-xl bg-background border border-white/10 font-mono text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all font-light"
+                  className="w-full px-3 py-2 bg-black border border-border text-xs text-phosphor placeholder-zinc-800 focus:outline-none focus:border-primary transition-all font-mono"
                   disabled={loading}
                 />
-                <div className="mt-2 flex justify-between items-center text-[11px] text-zinc-500">
-                  <span>Required for Pyannote Speaker Diarization.</span>
+                <div className="mt-2 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 text-[9px] text-muted">
+                  <span>REQUIRED FOR PYANNOTE SPEAKER DIARIZATION.</span>
                   <a
                     href="https://huggingface.co/settings/tokens"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary hover:text-amber-400 transition-colors inline-flex items-center gap-1 font-semibold"
+                    className="text-primary hover:underline inline-flex items-center gap-1 font-bold"
                   >
-                    Get token from huggingface.co <ExternalLink size={11} />
+                    GET TOKEN FROM HUGGINGFACE.CO <ExternalLink size={10} />
                   </a>
                 </div>
               </div>
 
               {error && (
-                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2.5">
-                  <AlertCircle size={16} className="shrink-0 text-rose-400" />
-                  <span>{error}</span>
+                <div className="p-3 border border-primary bg-primary/5 text-primary text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
+                  <span>[ ERROR: {error.toUpperCase()} ]</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-2.5">
-                  <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />
-                  <span>{successMsg}</span>
+                <div className="p-3 border border-green bg-green/5 text-green text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
+                  <span>[ SUCCESS: {successMsg.toUpperCase()} ]</span>
                 </div>
               )}
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-border select-none">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={loading}
-                  className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="px-4 py-2 border border-border hover:border-primary bg-black text-muted hover:text-phosphor transition-colors uppercase tracking-wider text-[10px] font-bold"
                 >
-                  Cancel
+                  [ CANCEL ]
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary hover:bg-amber-400 text-zinc-950 shadow-glow active:scale-95 transition-all disabled:opacity-50"
+                  className="px-5 py-2 border border-primary hover:bg-primary hover:text-black bg-black text-primary font-bold uppercase tracking-wider text-[10px] transition-colors"
                 >
-                  {loading ? (
-                    <>
-                      <Loader2 size={15} className="animate-spin" />
-                      <span>Verifying Token...</span>
-                    </>
-                  ) : (
-                    <span>Verify & Secure Key</span>
-                  )}
+                  {loading ? '[ VERIFYING_TOKEN... ]' : '[ SECURE_VAULT_KEYS ]'}
                 </button>
               </div>
             </form>
@@ -261,112 +254,103 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
         {activeTab === 'stt' && (
           <form onSubmit={handleSaveSTT} className="p-6 space-y-6">
             <div className="space-y-4">
-              <label className="block text-xs font-bold uppercase tracking-widest text-accent flex items-center gap-2">
-                <Cpu size={16} />
-                <span>Select Local Whisper STT Accuracy Model</span>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 select-none">
+                <Cpu size={14} />
+                <span>// SELECT_STT_QUANTIZATION_ENGINE</span>
               </label>
-              <p className="text-sm font-light text-zinc-400 leading-relaxed">
-                Choose the CPU quantization accuracy. Higher resolution models improve transcription of technical terms and heavy accents while maintaining zero external audio exposure.
+              <p className="text-[10px] text-muted leading-relaxed font-light select-none">
+                CHOOSE CPU ACCURACY PRESET. HIGHER PRESETS MAXIMIZE BILINGUAL RECOGNITION BUT CONSUME GREATER PROCESSING MEMORY.
               </p>
               
-              <div className="grid grid-cols-1 gap-3 pt-2">
+              <div className="grid grid-cols-1 gap-2 pt-2 select-none">
                 {[
                   {
                     id: 'large-v3-turbo',
-                    name: '👑 large-v3-turbo (Recommended for Executive Accuracy)',
-                    desc: 'Maximum resolution & bilingual nuance. ~5-6 GB RAM usage (Ideal for GCP e2-standard-4 with 16GB RAM).'
+                    name: '[X] LARGE-V3-TURBO (MAXIMUM_RESOLUTION)',
+                    desc: 'MAXIMUM NUANCE RETRIEVAL. REQUIRES >= 6GB ENGINE HEADROOM.'
                   },
                   {
                     id: 'small',
-                    name: '⚡ small (Balanced Resolution & Speed)',
-                    desc: 'Great precision for clear audio recordings. ~2 GB RAM consumption with rapid inference speed.'
+                    name: '[ ] SMALL (BALANCED_InFERENCE)',
+                    desc: 'FAST COMPUTATION WITH BALANCED PRECISION. CONSUMES ~2GB.'
                   },
                   {
                     id: 'base',
-                    name: '🏎️ base (Ultra-Fast Lightweight Drafts)',
-                    desc: 'Fastest turn-around for casual internal updates. ~1 GB RAM usage.'
+                    name: '[ ] BASE (LIGHTWEIGHT_DRAFT)',
+                    desc: 'HIGHEST SPEED PROFILE FOR CASUAL AUDIO. CONSUMES ~1GB.'
                   }
                 ].map((model) => (
                   <label
                     key={model.id}
                     onClick={() => setModelSize(model.id)}
-                    className={`cursor-pointer p-4 rounded-2xl border transition-all flex items-start gap-3.5 ${
+                    className={`cursor-pointer p-4 border transition-all flex flex-col gap-1.5 ${
                       modelSize === model.id
-                        ? 'bg-accent/10 border-accent text-zinc-100 shadow-[0_0_15px_rgba(245,158,11,0.15)]'
-                        : 'bg-background border-white/10 hover:border-white/20 text-zinc-400'
+                        ? 'bg-primary/5 border-primary text-phosphor'
+                        : 'bg-black/40 border-border text-muted hover:border-primary/50'
                     }`}
                   >
-                    <input
-                      type="radio"
-                      name="sttModel"
-                      checked={modelSize === model.id}
-                      onChange={() => setModelSize(model.id)}
-                      className="mt-1 accent-accent"
-                    />
-                    <div>
-                      <div className="text-sm font-bold text-zinc-200">{model.name}</div>
-                      <div className="text-xs text-zinc-500 font-light mt-1.5 leading-relaxed">{model.desc}</div>
+                    <div className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="sttModel"
+                        checked={modelSize === model.id}
+                        onChange={() => setModelSize(model.id)}
+                        className="accent-primary hidden"
+                      />
+                      <span>{modelSize === model.id ? model.name.replace('[ ]', '[█]') : model.name}</span>
                     </div>
+                    <div className="text-[9px] text-muted uppercase tracking-wide leading-relaxed font-light">{model.desc}</div>
                   </label>
                 ))}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/10">
-              <label htmlFor="vocabInput" className="block text-xs font-bold uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
-                <BookOpen size={15} />
-                <span>Custom Technical Vocabulary Biasing</span>
+            <div className="pt-4 border-t border-border">
+              <label htmlFor="vocabInput" className="block text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5 flex items-center gap-2 select-none">
+                <BookOpen size={14} />
+                <span>// CUSTOM_DICTIONARY_BIASING</span>
               </label>
-              <p className="text-xs font-light text-zinc-400 mb-3">
-                Provide technical terms, product names, or acronyms separated by commas. Whisper STT will bias recognition toward these words.
+              <p className="text-[9px] text-muted mb-3 select-none">
+                LIST TERMS OR ACRONYMS SEPARATED BY COMMAS TO BIAS THE RECOGNITION ENGINE TOWARD THEM.
               </p>
               <textarea
                 id="vocabInput"
                 rows="3"
                 value={customVocab}
                 onChange={(e) => setCustomVocab(e.target.value)}
-                placeholder="e.g. Kubernetes, Nemotron, Cloudflare, Nginx, INT8, GCP, MoM, Agile, Fintech, OJK"
-                className="w-full p-4 rounded-xl bg-background border border-white/10 font-mono text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-primary transition-all font-light"
+                placeholder="e.g. KUBERNETES, NEMOTRON, CLOUDFLARE, NGINX, INT8, GCP, MOM, OJK"
+                className="w-full p-3 bg-black border border-border font-mono text-xs text-phosphor placeholder-zinc-800 focus:outline-none focus:border-primary transition-all disabled:opacity-50"
                 disabled={sttLoading}
               />
             </div>
 
             {sttError && (
-              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2.5">
-                <AlertCircle size={16} className="shrink-0" />
-                <span>{sttError}</span>
+              <div className="p-3 border border-primary bg-primary/5 text-primary text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
+                <span>[ ERROR: {sttError.toUpperCase()} ]</span>
               </div>
             )}
 
             {sttSuccess && (
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-2.5">
-                <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />
-                <span>{sttSuccess}</span>
+              <div className="p-3 border border-green bg-green/5 text-green text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
+                <span>[ SUCCESS: {sttSuccess.toUpperCase()} ]</span>
               </div>
             )}
 
-            <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
+            <div className="pt-4 flex items-center justify-end gap-3 border-t border-border select-none">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={sttLoading}
-                className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="px-4 py-2 border border-border hover:border-primary bg-black text-muted hover:text-phosphor transition-colors uppercase tracking-wider text-[10px] font-bold"
               >
-                Cancel
+                [ CANCEL ]
               </button>
               <button
                 type="submit"
                 disabled={sttLoading}
-                className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-accent hover:bg-amber-400 text-zinc-950 shadow-[0_0_15px_rgba(245,158,11,0.2)] active:scale-95 transition-all disabled:opacity-50"
+                className="px-5 py-2 border border-primary hover:bg-primary hover:text-black bg-black text-primary font-bold uppercase tracking-wider text-[10px] transition-colors"
               >
-                {sttLoading ? (
-                  <>
-                    <Loader2 size={15} className="animate-spin" />
-                    <span>Saving Engine Config...</span>
-                  </>
-                ) : (
-                  <span>Save Engine Resolution</span>
-                )}
+                {sttLoading ? '[ SAVING_PREFERENCES... ]' : '[ COMMIT_RESOLUTION_CONFIG ]'}
               </button>
             </div>
           </form>

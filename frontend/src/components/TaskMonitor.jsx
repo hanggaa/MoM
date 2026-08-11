@@ -63,61 +63,57 @@ export default function TaskMonitor({ taskId, meetingId, onComplete, onReset }) 
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl glass-panel p-8 transition-all duration-500">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 -left-10 w-48 h-48 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="relative z-10 flex flex-col gap-8">
+    <div className="relative border border-border bg-card p-6 transition-all duration-500 font-mono text-xs">
+      <div className="relative z-10 flex flex-col gap-6">
         {/* Header section with Privacy Assurance Badge */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 border-b border-white/10 pb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 border-b border-border pb-5 select-none">
           <div>
-            <h3 className="text-xl font-display font-semibold text-white flex items-center gap-2">
-              <span className="inline-flex h-2.5 w-2.5 rounded-full bg-primary animate-ping" />
-              Local Asynchronous STT Processing
+            <h3 className="text-md font-display font-bold text-phosphor flex items-center gap-2 uppercase">
+              <span className="inline-flex h-1.5 w-1.5 bg-primary animate-pulse" />
+              [03] PIPELINE_EXTRACTION_MONITOR
             </h3>
-            <p className="text-sm text-zinc-400 mt-2 font-light">
-              Meeting ID: <span className="text-zinc-200 font-mono">#{meetingId || 'Pending'}</span> &bull; Task ID: <span className="text-zinc-200 font-mono text-xs">{taskId.slice(0, 12)}...</span>
+            <p className="text-[10px] text-muted mt-2 uppercase tracking-wider">
+              MEETING_ID: <span className="text-primary font-bold">#{meetingId || 'PENDING'}</span> &bull; TASK_ID: <span className="text-primary font-bold">{taskId.slice(0, 12)}...</span>
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-sm">
-            <span>🔒 CPU Local INT8 Engine</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-border text-[9px] font-bold uppercase tracking-wider bg-black text-muted">
+            <span>🔒 LOCAL INT8 ENGINE ACTIVE</span>
           </div>
         </div>
 
         {/* Dynamic Status Badge & Elapsed Timer */}
-        <div className="flex flex-col md:flex-row items-center justify-between bg-background rounded-2xl p-6 border border-white/5">
-          <div className="flex items-center gap-5">
+        <div className="flex flex-col md:flex-row items-center justify-between bg-black p-5 border border-border">
+          <div className="flex items-center gap-4">
             {status === 'QUEUED' && (
-              <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 font-bold animate-pulse text-2xl">
-                ⏳
+              <div className="h-10 w-16 border border-border flex items-center justify-center text-primary font-bold animate-pulse text-xs bg-card select-none">
+                [WAIT]
               </div>
             )}
             {status === 'PROCESSING' && (
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-2xl font-bold">
-                <span className="animate-spin text-2xl">⚙️</span>
+              <div className="h-10 w-16 border border-primary flex items-center justify-center text-primary text-xs font-bold bg-card select-none animate-pulse">
+                [PROC]
               </div>
             )}
             {status === 'SYNTHESIZING' && (
-              <div className="h-14 w-14 rounded-2xl bg-accent/20 border border-accent/30 flex items-center justify-center text-accent text-2xl font-bold animate-pulse shadow-glow">
-                ✨
+              <div className="h-10 w-16 border border-primary flex items-center justify-center text-primary text-xs font-bold bg-card select-none animate-pulse glow-text-primary">
+                [AI_MOM]
               </div>
             )}
             {status === 'DONE' && (
-              <div className="h-14 w-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl">
-                ✓
+              <div className="h-10 w-16 border border-green text-green flex items-center justify-center text-xs font-bold bg-card select-none">
+                [DONE]
               </div>
             )}
             {status === 'ERROR' && (
-              <div className="h-14 w-14 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400 text-3xl">
-                ✕
+              <div className="h-10 w-16 border border-primary text-primary flex items-center justify-center text-xs font-bold bg-card select-none">
+                [FAIL]
               </div>
             )}
 
             <div>
-              <p className="text-[11px] uppercase tracking-widest text-zinc-500 font-bold mb-1">Current Execution State</p>
-              <p className="text-lg font-semibold text-white font-display">
+              <p className="text-[9px] uppercase tracking-widest text-muted font-bold mb-1 select-none">// PIPELINE_EXECUTION_STATE</p>
+              <p className="text-xs font-bold text-phosphor uppercase tracking-wider">
                 {status === 'QUEUED' && 'In Queue — Preparing Faster-Whisper Model...'}
                 {status === 'PROCESSING' && 'Transcribing Audio Segments (CPU INT8 Mode)...'}
                 {status === 'SYNTHESIZING' && 'Synthesizing Executive MoM (NVIDIA Nemotron-3)...'}
@@ -127,62 +123,63 @@ export default function TaskMonitor({ taskId, meetingId, onComplete, onReset }) 
             </div>
           </div>
 
-          <div className="mt-5 md:mt-0 px-5 py-3 bg-white/5 rounded-xl border border-white/10 text-right font-mono text-sm">
-            <span className="text-zinc-500 mr-2 uppercase text-[10px] tracking-widest">Elapsed:</span>
+          <div className="mt-4 md:mt-0 px-4 py-2 border border-border text-right font-mono text-xs bg-card select-none">
+            <span className="text-muted mr-2 uppercase text-[9px] tracking-widest">ELAPSED:</span>
             <span className="text-primary font-bold">{formatTime(elapsed)}</span>
           </div>
         </div>
 
         {/* Progress Bar Section */}
-        <div className="space-y-3">
-          <div className="flex justify-between items-center text-sm font-semibold uppercase tracking-widest">
-            <span className="text-zinc-400">STT Progress & Assembly</span>
-            <span className="text-primary font-bold font-mono text-base">{progress}%</span>
+        <div className="space-y-2 select-none">
+          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+            <span className="text-muted">STT Progress & Assembly</span>
+            <span className="text-primary font-bold font-mono text-xs">{progress}%</span>
           </div>
-          <div className="h-2 w-full bg-background rounded-full overflow-hidden border border-white/5">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ease-out shadow-glow ${
-                status === 'ERROR'
-                  ? 'bg-rose-500'
-                  : 'bg-primary'
-              }`}
+          {/* Segmented brutalist progress bar */}
+          <div className="w-full bg-black h-4 border border-border flex items-center px-1 font-mono text-[10px]">
+            <div 
+              className={`h-2 transition-all duration-150 ${status === 'ERROR' ? 'bg-primary' : 'bg-primary'}`}
               style={{ width: `${progress}%` }}
             />
+            <span className="ml-2 text-primary font-bold">
+              {Math.round(progress / 5) > 0 ? '█'.repeat(Math.round(progress / 5)) : ''}
+              {'.'.repeat(20 - Math.round(progress / 5))}
+            </span>
           </div>
         </div>
 
         {/* Error Details if any */}
         {status === 'ERROR' && (
-          <div className="bg-rose-950/40 border border-rose-500/40 rounded-xl p-4 text-rose-200 text-sm flex flex-col gap-2">
-            <p className="font-semibold flex items-center gap-2">
-              <span>⚠️</span> Transcription Pipeline Error:
+          <div className="border border-primary bg-primary/5 p-4 text-primary text-xs flex flex-col gap-2">
+            <p className="font-bold uppercase">
+              [⚠️ PIPELINE EXTRACTION ERROR ]
             </p>
-            <p className="font-mono bg-rose-950/80 p-2 rounded border border-rose-700/50">
+            <p className="font-mono bg-black p-3 border border-border text-primary font-bold whitespace-pre-wrap">
               {errorMessage || 'Unknown STT processing error occurred.'}
             </p>
             <button
               onClick={onReset}
-              className="mt-2 self-start px-4 py-2 text-xs font-semibold bg-rose-700 hover:bg-rose-600 text-white rounded-lg transition-colors shadow"
+              className="mt-2 self-start px-4 py-2 text-xs font-bold border border-primary hover:bg-primary hover:text-black text-primary transition-colors bg-black"
             >
-              Upload New Audio
+              [ RESET TRANSMITTER & UPLOAD NEW AUDIO ]
             </button>
           </div>
         )}
 
         {/* Action button upon complete STT */}
         {status === 'DONE' && (
-          <div className="flex flex-col sm:flex-row items-center justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 mt-4 transition-all gap-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between border border-green bg-green/5 p-5 mt-2 gap-5">
             <div>
-              <p className="font-display font-semibold text-emerald-400 text-lg">Executive MoM & Transcript Saved to SQLite Vault</p>
-              <p className="text-sm text-emerald-500/70 mt-1 font-light">
-                NVIDIA Nemotron-3 synthesis finished successfully.
+              <p className="font-bold text-green text-sm uppercase">// MO_M EXTRACTION SUCCESSFUL</p>
+              <p className="text-[10px] text-green/70 mt-1 uppercase tracking-wider font-light">
+                NVIDIA Nemotron-3 synthesis finished and saved to local SQLite vault.
               </p>
             </div>
             <button
               onClick={() => onComplete && onComplete(meetingId)}
-              className="w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl bg-primary hover:bg-amber-400 text-zinc-950 transition-all shadow-glow hover:-translate-y-0.5 active:scale-95 uppercase tracking-wider text-sm whitespace-nowrap"
+              className="w-full sm:w-auto px-6 py-2.5 font-bold bg-green hover:bg-green/80 text-black transition-colors uppercase tracking-widest text-xs whitespace-nowrap"
             >
-              View Executive MoM Dashboard →
+              [ VIEW MOM DASHBOARD ]
             </button>
           </div>
         )}

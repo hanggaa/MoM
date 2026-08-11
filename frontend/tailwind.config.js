@@ -7,20 +7,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#09090b", // zinc-950
-        card: "#18181b",       // zinc-900
-        border: "#27272a",     // zinc-800
-        primary: "#f59e0b",    // amber-500
-        accent: "#d97706",     // amber-600
-        muted: "#a1a1aa",      // zinc-400
+        background: "#080808", // CRT Deactivated Black
+        card: "#121212",       // Dark Slate / Carbon
+        border: "#262626",     // Heavy Grid Line
+        primary: "#ff2a2a",    // Hazard Red Accent (Only one primary accent)
+        accent: "#cc1b1b",     // Muted Hazard Red
+        muted: "#8a8a8a",      // Steel Muted Grey
+        phosphor: "#eaeaea",   // White Phosphor Text
+        green: "#4af626",      // Terminal Green for specific telemetry
       },
       fontFamily: {
-        sans: ['Outfit', 'system-ui', 'sans-serif'],
-        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        sans: ['JetBrains Mono', 'Courier New', 'monospace'],
+        display: ['Share Tech Mono', 'JetBrains Mono', 'monospace'],
+        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
+      },
+      borderRadius: {
+        DEFAULT: '0px',
+        'sm': '0px',
+        'md': '0px',
+        'lg': '0px',
+        'xl': '0px',
+        '2xl': '0px',
+        '3xl': '0px',
+        'full': '0px',
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(245, 158, 11, 0.15)',
-        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
+        'glow': '0 0 15px rgba(255, 42, 42, 0.25)',
+        'phosphor': '0 0 10px rgba(234, 234, 234, 0.1)',
+        'card': 'none', // Flat design, zero elevation shadows
       }
     },
   },
