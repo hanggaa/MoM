@@ -129,7 +129,6 @@ def run_stt_task(
                     from pyannote.audio import Pipeline
                     
                     # Set token via environment variable to completely bypass pyannote/huggingface_hub kwarg mismatch
-                    import os
                     if hf_token:
                         os.environ["HF_TOKEN"] = hf_token
                         
