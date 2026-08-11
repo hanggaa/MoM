@@ -63,123 +63,118 @@ export default function TaskMonitor({ taskId, meetingId, onComplete, onReset }) 
   };
 
   return (
-    <div className="relative border border-border bg-card p-6 transition-all duration-500 font-mono text-xs">
-      <div className="relative z-10 flex flex-col gap-6">
+    <div className="max-w-2xl mx-auto border border-border bg-card p-6 sm:p-8 rounded-xl shadow-card transition-all duration-300">
+      <div className="flex flex-col gap-6">
         {/* Header section with Privacy Assurance Badge */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 border-b border-border pb-5 select-none">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4 select-none">
           <div>
-            <h3 className="text-md font-display font-bold text-phosphor flex items-center gap-2 uppercase">
-              <span className="inline-flex h-1.5 w-1.5 bg-primary animate-pulse" />
-              [03] PIPELINE_EXTRACTION_MONITOR
+            <h3 className="text-lg font-serif font-semibold text-primary tracking-tight">
+              Transcription & MoM Monitor
             </h3>
-            <p className="text-[10px] text-muted mt-2 uppercase tracking-wider">
-              MEETING_ID: <span className="text-primary font-bold">#{meetingId || 'PENDING'}</span> &bull; TASK_ID: <span className="text-primary font-bold">{taskId.slice(0, 12)}...</span>
+            <p className="text-xs text-accent mt-1">
+              Meeting: <span className="font-mono text-primary font-bold">#{meetingId || 'Pending'}</span> &bull; Task: <span className="font-mono text-primary">{taskId.slice(0, 8)}</span>
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-border text-[9px] font-bold uppercase tracking-wider bg-black text-muted">
-            <span>🔒 LOCAL INT8 ENGINE ACTIVE</span>
+          <div className="inline-flex items-center gap-1.5 bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 px-3 py-1 text-[9px] font-mono font-bold uppercase tracking-wider rounded-full">
+            <span>Local Engine Active</span>
           </div>
         </div>
 
         {/* Dynamic Status Badge & Elapsed Timer */}
-        <div className="flex flex-col md:flex-row items-center justify-between bg-black p-5 border border-border">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between bg-background p-4 border border-border rounded-lg gap-4">
+          <div className="flex items-center gap-3">
             {status === 'QUEUED' && (
-              <div className="h-10 w-16 border border-border flex items-center justify-center text-primary font-bold animate-pulse text-xs bg-card select-none">
-                [WAIT]
-              </div>
+              <span className="bg-pastel-yellow-bg text-pastel-yellow-text border border-pastel-yellow-text/10 text-xs px-2.5 py-1 rounded-full font-bold uppercase select-none">
+                Queued
+              </span>
             )}
             {status === 'PROCESSING' && (
-              <div className="h-10 w-16 border border-primary flex items-center justify-center text-primary text-xs font-bold bg-card select-none animate-pulse">
-                [PROC]
-              </div>
+              <span className="bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 text-xs px-2.5 py-1 rounded-full font-bold uppercase animate-pulse select-none">
+                Running
+              </span>
             )}
             {status === 'SYNTHESIZING' && (
-              <div className="h-10 w-16 border border-primary flex items-center justify-center text-primary text-xs font-bold bg-card select-none animate-pulse glow-text-primary">
-                [AI_MOM]
-              </div>
+              <span className="bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 text-xs px-2.5 py-1 rounded-full font-bold uppercase animate-pulse select-none">
+                AI Synthesis
+              </span>
             )}
             {status === 'DONE' && (
-              <div className="h-10 w-16 border border-green text-green flex items-center justify-center text-xs font-bold bg-card select-none">
-                [DONE]
-              </div>
+              <span className="bg-pastel-green-bg text-pastel-green-text border border-pastel-green-text/10 text-xs px-2.5 py-1 rounded-full font-bold uppercase select-none">
+                Done
+              </span>
             )}
             {status === 'ERROR' && (
-              <div className="h-10 w-16 border border-primary text-primary flex items-center justify-center text-xs font-bold bg-card select-none">
-                [FAIL]
-              </div>
+              <span className="bg-pastel-red-bg text-pastel-red-text border border-pastel-red-text/10 text-xs px-2.5 py-1 rounded-full font-bold uppercase select-none">
+                Failed
+              </span>
             )}
 
-            <div>
-              <p className="text-[9px] uppercase tracking-widest text-muted font-bold mb-1 select-none">// PIPELINE_EXECUTION_STATE</p>
-              <p className="text-xs font-bold text-phosphor uppercase tracking-wider">
-                {status === 'QUEUED' && 'In Queue — Preparing Faster-Whisper Model...'}
-                {status === 'PROCESSING' && 'Transcribing Audio Segments (CPU INT8 Mode)...'}
-                {status === 'SYNTHESIZING' && 'Synthesizing Executive MoM (NVIDIA Nemotron-3)...'}
-                {status === 'DONE' && 'STT Audio & AI MoM Synthesis Complete!'}
-                {status === 'ERROR' && 'STT Worker Encountered an Error'}
+            <div className="min-w-0">
+              <p className="text-[10px] text-accent uppercase font-bold select-none tracking-wider mb-0.5">Execution State</p>
+              <p className="text-xs text-primary font-sans">
+                {status === 'QUEUED' && 'In queue — preparing model...'}
+                {status === 'PROCESSING' && 'Transcribing audio segments (CPU INT8)...'}
+                {status === 'SYNTHESIZING' && 'Synthesizing meeting notes (Nemotron-3)...'}
+                {status === 'DONE' && 'STT and synthesis successfully complete.'}
+                {status === 'ERROR' && 'STT worker encountered an error.'}
               </p>
             </div>
           </div>
 
-          <div className="mt-4 md:mt-0 px-4 py-2 border border-border text-right font-mono text-xs bg-card select-none">
-            <span className="text-muted mr-2 uppercase text-[9px] tracking-widest">ELAPSED:</span>
+          <div className="px-3 py-1.5 bg-card border border-border rounded-md text-xs font-mono select-none shrink-0">
+            <span className="text-accent mr-1.5 uppercase text-[9px] font-bold">Elapsed:</span>
             <span className="text-primary font-bold">{formatTime(elapsed)}</span>
           </div>
         </div>
 
         {/* Progress Bar Section */}
         <div className="space-y-2 select-none">
-          <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-            <span className="text-muted">STT Progress & Assembly</span>
-            <span className="text-primary font-bold font-mono text-xs">{progress}%</span>
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-accent font-semibold">STT Progress</span>
+            <span className="text-primary font-bold font-mono">{progress}%</span>
           </div>
-          {/* Segmented brutalist progress bar */}
-          <div className="w-full bg-black h-4 border border-border flex items-center px-1 font-mono text-[10px]">
+          <div className="w-full bg-background border border-border h-2 rounded-full overflow-hidden">
             <div 
-              className={`h-2 transition-all duration-150 ${status === 'ERROR' ? 'bg-primary' : 'bg-primary'}`}
+              className="bg-primary h-full transition-all duration-150"
               style={{ width: `${progress}%` }}
             />
-            <span className="ml-2 text-primary font-bold">
-              {Math.round(progress / 5) > 0 ? '█'.repeat(Math.round(progress / 5)) : ''}
-              {'.'.repeat(20 - Math.round(progress / 5))}
-            </span>
           </div>
         </div>
 
         {/* Error Details if any */}
         {status === 'ERROR' && (
-          <div className="border border-primary bg-primary/5 p-4 text-primary text-xs flex flex-col gap-2">
-            <p className="font-bold uppercase">
-              [⚠️ PIPELINE EXTRACTION ERROR ]
-            </p>
-            <p className="font-mono bg-black p-3 border border-border text-primary font-bold whitespace-pre-wrap">
+          <div className="border border-pastel-red-text/20 bg-pastel-red-bg p-5 text-pastel-red-text text-xs rounded-md space-y-3">
+            <div>
+              <p className="font-bold uppercase tracking-wide">Extraction Failure details</p>
+              <p className="text-[10px] text-pastel-red-text/80 mt-0.5">The backend job scheduler reported the following trace:</p>
+            </div>
+            <pre className="font-mono bg-card p-3 border border-border text-pastel-red-text rounded-md whitespace-pre-wrap text-[11px] leading-relaxed">
               {errorMessage || 'Unknown STT processing error occurred.'}
-            </p>
+            </pre>
             <button
               onClick={onReset}
-              className="mt-2 self-start px-4 py-2 text-xs font-bold border border-primary hover:bg-primary hover:text-black text-primary transition-colors bg-black"
+              className="px-4 py-2 text-xs font-bold border border-border bg-card hover:bg-background text-primary transition-colors rounded-md active:scale-98"
             >
-              [ RESET TRANSMITTER & UPLOAD NEW AUDIO ]
+              Reset and Upload New Audio
             </button>
           </div>
         )}
 
         {/* Action button upon complete STT */}
         {status === 'DONE' && (
-          <div className="flex flex-col sm:flex-row items-center justify-between border border-green bg-green/5 p-5 mt-2 gap-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between border border-pastel-green-text/25 bg-pastel-green-bg text-pastel-green-text p-6 rounded-lg gap-4">
             <div>
-              <p className="font-bold text-green text-sm uppercase">// MO_M EXTRACTION SUCCESSFUL</p>
-              <p className="text-[10px] text-green/70 mt-1 uppercase tracking-wider font-light">
-                NVIDIA Nemotron-3 synthesis finished and saved to local SQLite vault.
+              <p className="font-bold text-sm">Meeting Analysis Successful</p>
+              <p className="text-[10px] text-pastel-green-text/80 mt-0.5">
+                NVIDIA Nemotron-3 synthesis finished and stored in local database.
               </p>
             </div>
             <button
               onClick={() => onComplete && onComplete(meetingId)}
-              className="w-full sm:w-auto px-6 py-2.5 font-bold bg-green hover:bg-green/80 text-black transition-colors uppercase tracking-widest text-xs whitespace-nowrap"
+              className="w-full sm:w-auto px-5 py-2.5 bg-primary hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider transition-all duration-150 rounded-md active:scale-98"
             >
-              [ VIEW MOM DASHBOARD ]
+              View Dashboard
             </button>
           </div>
         )}

@@ -97,28 +97,28 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 font-mono text-xs">
-      <div className="p-6 border border-border bg-card">
+    <div className="max-w-6xl mx-auto space-y-6">
+      <div className="p-6 sm:p-8 border border-border bg-card rounded-xl shadow-card">
         {/* Header & Search */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
           <div className="select-none">
-            <h2 className="text-md font-display font-bold text-phosphor flex items-center gap-2 uppercase">
-              <span>[04] ARCHIVED_RECORDS_REGISTRY</span>
+            <h2 className="text-xl font-serif font-semibold text-primary tracking-tight">
+              Archived Meetings Registry
             </h2>
-            <p className="text-[10px] text-muted mt-1 uppercase leading-relaxed">
-              Global query across meeting indices. Use Smart Archive to purge raw binary audio files while preserving synthesized telemetry.
+            <p className="text-xs text-accent mt-1 leading-relaxed max-w-2xl">
+              Query past discussion documents. Purge raw binary audio to reclaim server storage while keeping synthesized meeting minutes.
             </p>
           </div>
 
           {/* Live Search Box */}
           <div className="relative min-w-[280px]">
-            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={12} strokeWidth={2.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-accent" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="SEARCH INDEX..."
-              className="w-full pl-9 pr-4 py-2 bg-black border border-border text-xs text-phosphor placeholder-zinc-700 focus:outline-none focus:border-primary transition-all font-mono"
+              placeholder="Search meetings..."
+              className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-md text-xs text-primary placeholder-accent/40 focus:outline-none focus:border-primary transition-all font-sans"
             />
             {loading && <Loader2 size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary animate-spin" />}
           </div>
@@ -126,75 +126,75 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
 
         {/* Notifications */}
         {notification && (
-          <div className="mt-4 p-4 border border-green bg-green/5 text-green text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-widest">
-            <span>[ SYSTEM: {notification.toUpperCase()} ]</span>
+          <div className="mt-4 p-4 border border-pastel-green-text/20 bg-pastel-green-bg text-pastel-green-text text-xs rounded-md flex items-center gap-2 select-none font-sans font-semibold">
+            <span>{notification}</span>
           </div>
         )}
 
         {error && (
-          <div className="mt-4 p-4 border border-primary bg-primary/5 text-primary text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-widest">
-            <span>[ ERROR: {error.toUpperCase()} ]</span>
+          <div className="mt-4 p-4 border border-pastel-red-text/20 bg-pastel-red-bg text-pastel-red-text text-xs rounded-md flex items-center gap-2 select-none font-sans font-semibold">
+            <span>{error}</span>
           </div>
         )}
 
-        {/* Meetings Grid / Table */}
+        {/* Meetings Grid */}
         {!loading && meetings.length === 0 ? (
-          <div className="py-12 text-center text-muted space-y-2 select-none">
-            <p className="text-sm font-bold">[ NO_RECORDS_DETECTED ]</p>
-            {searchTerm && <p className="text-[10px]">Try redefining your query keyword parameters.</p>}
+          <div className="py-12 text-center text-accent space-y-2 select-none font-sans">
+            <p className="text-sm font-bold">No Records Detected</p>
+            {searchTerm && <p className="text-xs">Try redefining your search keywords.</p>}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px border border-border bg-border mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             {meetings.map((m) => {
               const isArchived = m.is_audio_archived;
-              const dateStr = m.created_at ? new Date(m.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'PENDING';
+              const dateStr = m.created_at ? new Date(m.created_at).toLocaleDateString('id-ID', { dateStyle: 'medium' }) : 'Pending';
               
               return (
                 <div
                   key={m.id}
                   onClick={() => handleOpenMeeting(m.id)}
-                  className="group relative p-5 bg-card hover:bg-black/30 transition-all cursor-pointer flex flex-col justify-between"
+                  className="group relative p-6 bg-card border border-border rounded-lg hover:border-accent/40 shadow-card hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-all cursor-pointer flex flex-col justify-between"
                 >
                   <div>
                     {/* Top Row: Status Pills */}
                     <div className="flex items-center justify-between gap-2 mb-4 select-none">
-                      <span className={`px-2 py-0.5 border text-[9px] font-bold tracking-widest uppercase ${
+                      <span className={`px-2.5 py-0.5 border text-[9px] font-bold font-mono tracking-wider rounded-full uppercase ${
                         m.status === 'DONE'
-                          ? 'bg-black text-green border-green'
+                          ? 'bg-pastel-green-bg text-pastel-green-text border-pastel-green-text/10'
                           : m.status === 'ERROR'
-                          ? 'bg-black text-primary border-primary'
-                          : 'bg-black text-primary border-primary animate-pulse'
+                          ? 'bg-pastel-red-bg text-pastel-red-text border-pastel-red-text/10'
+                          : 'bg-pastel-yellow-bg text-pastel-yellow-text border-pastel-yellow-text/10 animate-pulse'
                       }`}>
-                        {m.status === 'DONE' ? 'SYNTHESIZED' : m.status}
+                        {m.status === 'DONE' ? 'Synthesized' : m.status}
                       </span>
 
-                      <div className="flex items-center gap-1 text-[10px] text-muted font-mono">
-                        <span>TIMESTAMP: {dateStr}</span>
+                      <div className="flex items-center gap-1 text-[10px] text-accent font-sans">
+                        <span>{dateStr}</span>
                       </div>
                     </div>
 
                     {/* Title & Style */}
-                    <h3 className="text-sm font-bold text-phosphor group-hover:text-primary transition-colors line-clamp-1 uppercase tracking-wider font-display">
-                      {m.title || `MEETING_${m.id}`}
+                    <h3 className="text-sm font-bold text-primary group-hover:text-zinc-700 transition-colors line-clamp-1 font-sans">
+                      {m.title || `Meeting #${m.id}`}
                     </h3>
 
-                    <div className="flex flex-wrap gap-2 my-3 select-none">
-                      <span className="px-2 py-0.5 border border-border bg-black text-[9px] font-bold text-muted">
-                        LANG: {m.output_language ? m.output_language.split(' ')[0].toUpperCase() : 'UNKNOWN'}
+                    <div className="flex flex-wrap gap-1.5 my-3 select-none">
+                      <span className="px-2 py-0.5 border border-pastel-blue-text/5 bg-pastel-blue-bg text-[9px] font-bold font-mono text-pastel-blue-text rounded-full uppercase">
+                        {m.output_language ? m.output_language.split(' ')[0] : 'Language'}
                       </span>
-                      <span className="px-2 py-0.5 border border-border bg-black text-[9px] font-bold text-green">
-                        FOCUS: {m.meeting_style ? m.meeting_style.toUpperCase() : 'EXECUTIVE'}
+                      <span className="px-2 py-0.5 border border-pastel-green-text/5 bg-pastel-green-bg text-[9px] font-bold font-mono text-pastel-green-text rounded-full uppercase">
+                        {m.meeting_style ? m.meeting_style.replace(' MoM', '') : 'Executive'}
                       </span>
                     </div>
 
                     {/* Snippet Preview */}
-                    <p className="text-xs text-muted line-clamp-2 leading-relaxed mt-3">
-                      {getMoMPreview(m).toUpperCase()}
+                    <p className="text-xs text-accent line-clamp-2 leading-relaxed mt-2 font-sans">
+                      {getMoMPreview(m)}
                     </p>
                   </div>
 
                   {/* Bottom Action Bar */}
-                  <div className="pt-4 mt-5 border-t border-border flex items-center justify-between text-[10px]">
+                  <div className="pt-4 mt-5 border-t border-border flex items-center justify-between text-xs font-sans">
                     {/* Audio Status / Smart Archive Button */}
                     <div>
                       {!isArchived && m.audio_file_path ? (
@@ -203,15 +203,15 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
                           onClick={(e) => handlePurgeAudio(e, m.id, m.title)}
                           disabled={actionLoading === `purge_${m.id}`}
                           title="Purge raw audio file to save disk space"
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-primary/40 hover:border-primary bg-black text-primary font-bold uppercase transition-colors"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 border border-pastel-red-text/15 bg-pastel-red-bg text-pastel-red-text text-[10px] font-semibold rounded-md hover:bg-pastel-red-text hover:text-white transition-colors"
                         >
                           {actionLoading === `purge_${m.id}` ? <Loader2 size={10} className="animate-spin" /> : <HardDrive size={10} />}
-                          <span>[PURGE_AUDIO]</span>
+                          <span>Purge Audio</span>
                         </button>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[9px] font-bold text-muted border border-border bg-black px-2.5 py-1 select-none">
-                          <CheckCircle2 size={10} className="text-green" />
-                          <span>[AUDIO_PURGED]</span>
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-accent bg-background border border-border px-2.5 py-1 rounded-full select-none font-mono">
+                          <CheckCircle2 size={10} strokeWidth={2.5} className="text-pastel-green-text" />
+                          <span>Audio Purged</span>
                         </span>
                       )}
                     </div>
@@ -222,15 +222,15 @@ const MeetingsArchive = ({ onSelectMeeting }) => {
                         type="button"
                         onClick={(e) => handleDeleteEntirely(e, m.id, m.title)}
                         disabled={actionLoading === `del_${m.id}`}
-                        className="p-1 border border-border hover:border-primary/60 bg-black text-muted hover:text-primary transition-all"
+                        className="p-1.5 border border-border rounded-md hover:bg-pastel-red-bg hover:text-pastel-red-text text-accent hover:border-pastel-red-text/25 transition-all bg-card"
                         title="Delete record entirely"
                       >
-                        {actionLoading === `del_${m.id}` ? <Loader2 size={12} className="animate-spin text-primary" /> : <Trash2 size={12} />}
+                        {actionLoading === `del_${m.id}` ? <Loader2 size={12} className="animate-spin text-pastel-red-text" /> : <Trash2 size={12} />}
                       </button>
 
-                      <span className="inline-flex items-center gap-1 font-bold text-primary group-hover:text-red-500 transition-colors pl-1">
-                        <span>[READ_REPORT]</span>
-                        <span>➔</span>
+                      <span className="inline-flex items-center gap-1.5 font-bold text-primary group-hover:text-zinc-700 transition-colors pl-1">
+                        <span>Read Report</span>
+                        <ArrowRight size={12} strokeWidth={2.5} />
                       </span>
                     </div>
                   </div>

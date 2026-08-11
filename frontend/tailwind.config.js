@@ -7,34 +7,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#080808", // CRT Deactivated Black
-        card: "#121212",       // Dark Slate / Carbon
-        border: "#262626",     // Heavy Grid Line
-        primary: "#ff2a2a",    // Hazard Red Accent (Only one primary accent)
-        accent: "#cc1b1b",     // Muted Hazard Red
-        muted: "#8a8a8a",      // Steel Muted Grey
-        phosphor: "#eaeaea",   // White Phosphor Text
-        green: "#4af626",      // Terminal Green for specific telemetry
+        background: "#F7F6F3", // Warm Bone Canvas
+        card: "#FFFFFF",       // Pure White Surface
+        border: "#EAEAEA",     // Ultra Light Gray Divider
+        primary: "#111111",    // Off-Black Text/UI Solid
+        accent: "#787774",     // Muted Gray Secondary
+        muted: "#787774",
+        pastel: {
+          red: {
+            bg: "#FDEBEC",
+            text: "#9F2F2D",
+          },
+          blue: {
+            bg: "#E1F3FE",
+            text: "#1F6C9F",
+          },
+          green: {
+            bg: "#EDF3EC",
+            text: "#346538",
+          },
+          yellow: {
+            bg: "#FBF3DB",
+            text: "#956400",
+          }
+        }
       },
       fontFamily: {
-        sans: ['JetBrains Mono', 'Courier New', 'monospace'],
-        display: ['Share Tech Mono', 'JetBrains Mono', 'monospace'],
+        sans: ['SF Pro Display', 'system-ui', 'sans-serif'],
+        serif: ['Instrument Serif', 'Playfair Display', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'Courier New', 'monospace'],
       },
       borderRadius: {
-        DEFAULT: '0px',
-        'sm': '0px',
-        'md': '0px',
-        'lg': '0px',
-        'xl': '0px',
-        '2xl': '0px',
-        '3xl': '0px',
-        'full': '0px',
+        'sm': '4px',
+        'md': '6px',
+        'lg': '8px',
+        'xl': '12px',
+        '2xl': '16px',
+        '3xl': '24px',
+        'full': '9999px',
       },
       boxShadow: {
-        'glow': '0 0 15px rgba(255, 42, 42, 0.25)',
-        'phosphor': '0 0 10px rgba(234, 234, 234, 0.1)',
-        'card': 'none', // Flat design, zero elevation shadows
+        'glow': 'none',
+        'card': '0 2px 8px rgba(0, 0, 0, 0.03)',
       }
     },
   },

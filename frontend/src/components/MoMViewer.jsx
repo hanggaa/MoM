@@ -246,25 +246,25 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn pb-12 print:max-w-none print:m-0 print:p-0 font-mono text-xs">
+    <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn pb-12 print:max-w-none print:m-0 print:p-0 font-sans text-sm text-primary">
       {/* Header Bar - Hidden in print view */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 border border-border bg-card p-5 print:hidden">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 border border-border bg-card p-6 rounded-xl shadow-card print:hidden">
         <div className="space-y-2">
           <div className="flex items-center gap-3 flex-wrap select-none">
             <button 
               onClick={onReset} 
-              className="p-1 border border-border hover:border-primary bg-black text-muted hover:text-phosphor transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider"
+              className="px-3 py-1.5 border border-border hover:border-accent bg-card hover:bg-background text-accent hover:text-primary transition-all rounded-md flex items-center gap-1.5 text-xs font-semibold"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> [ BACK_TO_DASHBOARD ]
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
             </button>
-            <span className="inline-flex items-center gap-1.5 border border-green/30 bg-green/5 text-green text-[9px] px-2.5 py-1 font-bold uppercase tracking-wider">
-              [ SECURE LOCAL CPU ENGINE ACTIVE ]
+            <span className="inline-flex items-center gap-1.5 bg-pastel-green-bg text-pastel-green-text border border-pastel-green-text/10 text-[9px] px-2.5 py-1 rounded-full font-bold font-mono tracking-wider uppercase">
+              <ShieldCheck className="w-3 h-3 text-pastel-green-text shrink-0" strokeWidth={2.5} /> Local & Secure CPU Engine
             </span>
           </div>
-          <h1 className="text-lg font-display font-bold text-phosphor tracking-wider pt-1 uppercase glow-text">{meeting?.title || "UNRESOLVED_MEETING_RECORD"}</h1>
-          <p className="text-[10px] text-muted flex items-center gap-2 select-none uppercase">
-            <span>INDEX_REF: #{meeting?.id}</span> &bull; 
-            <span>TIMESTAMP: {meeting?.created_at ? new Date(meeting.created_at).toISOString().replace('T', ' ').substring(0, 16) : 'PENDING'}</span>
+          <h1 className="text-2xl font-serif text-primary tracking-tight pt-1 leading-tight">{meeting?.title || "Project Discussion Record"}</h1>
+          <p className="text-xs text-accent flex items-center gap-2 select-none">
+            <span>Index: #{meeting?.id}</span> &bull; 
+            <span>Recorded: {meeting?.created_at ? new Date(meeting.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' }) : 'Pending'}</span>
           </p>
         </div>
 
@@ -272,53 +272,53 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
         <div className="flex flex-wrap items-center gap-2.5 select-none">
           <button
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary bg-black text-phosphor text-[10px] font-bold uppercase transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-border hover:bg-background text-primary text-xs font-semibold rounded-md transition-colors"
             title="Copy Markdown"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-green" /> : <Copy className="w-3.5 h-3.5 text-muted" />}
-            <span>{copied ? 'COPIED' : '[COPY_MD]'}</span>
+            {copied ? <Check className="w-3.5 h-3.5 text-pastel-green-text" strokeWidth={2.5} /> : <Copy className="w-3.5 h-3.5 text-accent" strokeWidth={2.5} />}
+            <span>{copied ? 'Copied' : 'Copy MD'}</span>
           </button>
 
           <button
             onClick={handleDownloadMarkdown}
-            className="inline-flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary bg-black text-phosphor text-[10px] font-bold uppercase transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-border hover:bg-background text-primary text-xs font-semibold rounded-md transition-colors"
             title="Download Markdown file"
           >
-            <Download className="w-3.5 h-3.5 text-primary" />
-            <span>[DOWNLOAD_MD]</span>
+            <Download className="w-3.5 h-3.5 text-pastel-blue-text" strokeWidth={2.5} />
+            <span>Download .md</span>
           </button>
 
           <button
             onClick={handlePrintPDF}
-            className="inline-flex items-center gap-2 px-3 py-1.5 border border-primary bg-black text-primary font-bold text-[10px] hover:bg-primary hover:text-black transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-zinc-800 text-white font-semibold text-xs rounded-md transition-colors active:scale-98"
             title="Print to PDF"
           >
-            <Printer className="w-3.5 h-3.5" />
-            <span>[EXPORT_PDF]</span>
+            <Printer className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <span>Export PDF</span>
           </button>
 
-          <div className="flex items-center gap-2 bg-black border border-border p-1">
+          <div className="flex items-center gap-2 bg-background border border-border rounded-md p-1 pl-2">
             <select
               value={regenStyle}
               onChange={(e) => setRegenStyle(e.target.value)}
-              className="bg-transparent text-phosphor text-[10px] font-bold py-1 pl-2 pr-6 focus:outline-none appearance-none cursor-pointer font-mono"
+              className="bg-transparent text-primary text-xs font-semibold py-1 focus:outline-none appearance-none cursor-pointer font-sans"
             >
-              <option value="General Executive MoM">GENERAL EXECUTIVE</option>
-              <option value="Agile Sprint Retro">AGILE RETRO</option>
-              <option value="Tech Architecture Spec">TECH ARCH SPEC</option>
-              <option value="Sales & Commercials">SALES / COMM</option>
-              <option value="Daily Standup">DAILY STANDUP</option>
-              <option value="Brainstorming & Ideation">BRAINSTORM</option>
-              <option value="User Discovery Interview">USER DISCOVERY</option>
-              <option value="Journalistic Narrative">NARRATIVE</option>
+              <option value="General Executive MoM">General Executive</option>
+              <option value="Agile Sprint Retro">Agile Sprint Retro</option>
+              <option value="Tech Architecture Spec">Technical Arch Spec</option>
+              <option value="Sales & Commercials">Sales & Commercials</option>
+              <option value="Daily Standup">Daily Standup</option>
+              <option value="Brainstorming & Ideation">Brainstorming</option>
+              <option value="User Discovery Interview">User Discovery</option>
+              <option value="Journalistic Narrative">Narrative</option>
             </select>
             <button
               onClick={handleReSynthesize}
               disabled={isSynthesizing}
-              className="inline-flex items-center justify-center p-1.5 border border-primary hover:bg-primary text-primary hover:text-black transition-colors disabled:opacity-50 bg-black"
-              title="Generate new style via Nemotron-3"
+              className="inline-flex items-center justify-center p-1.5 border border-border bg-card hover:bg-background text-accent hover:text-primary transition-colors disabled:opacity-50 rounded-md"
+              title="Generate new style"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSynthesizing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${isSynthesizing ? 'animate-spin' : ''}`} strokeWidth={2.5} />
             </button>
           </div>
         </div>
@@ -326,26 +326,26 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
 
       {/* Local Audio Playback Review Bar - Hidden in print view */}
       {meeting?.id && (
-        <div className="border border-border bg-card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 print:hidden">
+        <div className="border border-border bg-card p-5 rounded-xl shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 print:hidden">
           <div className="flex items-center gap-3">
-            <div className="p-2 border border-primary text-primary bg-black select-none">
-              <Volume2 className="w-5 h-5" />
+            <div className="p-2.5 rounded-lg bg-pastel-blue-bg text-pastel-blue-text shrink-0 select-none">
+              <Volume2 className="w-5 h-5" strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold text-phosphor uppercase">// TELEMETRY_AUDIO_MONITOR</span>
-                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 border border-primary text-primary bg-primary/5 select-none">
-                  DISK_STREAM
+                <span className="text-sm font-bold text-primary">STT Audio Monitor</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 bg-pastel-blue-bg text-pastel-blue-text rounded-full select-none">
+                  Disk Stream
                 </span>
               </div>
-              <p className="text-[10px] text-muted font-light select-none">Direct file streaming synchronized with clickable segment timestamps.</p>
+              <p className="text-xs text-accent font-light select-none">Direct file streaming synchronized with clickable segment timestamps.</p>
             </div>
           </div>
           <audio
             ref={audioRef}
             controls
             src={getMeetingAudioUrl(meeting.id)}
-            className="w-full sm:w-72 md:w-96 h-9 bg-black border border-border text-primary"
+            className="w-full sm:w-72 md:w-96 h-10 bg-background rounded-md text-primary"
           >
             Your browser does not support audio playback.
           </audio>
@@ -353,9 +353,9 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
       )}
 
       {synthError && (
-        <div className="p-4 border border-primary bg-primary/5 text-primary flex items-center gap-2 select-none uppercase tracking-wider print:hidden">
-          <AlertTriangle className="w-4 h-4 text-primary shrink-0" />
-          <span><strong>[SYNTHESIS NOTICE]</strong> {synthError.toUpperCase()}</span>
+        <div className="p-4 border border-pastel-red-text/20 bg-pastel-red-bg text-pastel-red-text text-xs rounded-md flex items-center gap-2 select-none print:hidden">
+          <AlertTriangle className="w-4 h-4 text-pastel-red-text shrink-0" strokeWidth={2.5} />
+          <span><strong>Synthesis Notice:</strong> {synthError}</span>
         </div>
       )}
 
@@ -365,29 +365,29 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
           <button
             key={styleName}
             onClick={() => setActiveTab(styleName)}
-            className={`pb-3 whitespace-nowrap text-[10px] font-bold tracking-widest uppercase flex items-center gap-1 border-b-2 transition-all ${
+            className={`pb-3 whitespace-nowrap text-xs font-bold tracking-wide border-b-2 transition-all ${
               activeTab === styleName
                 ? 'border-primary text-primary'
-                : 'border-transparent text-muted hover:text-phosphor'
+                : 'border-transparent text-accent hover:text-primary'
             }`}
           >
-            <span>[ {styleName.replace(' MoM', '')} ]</span>
+            <span>{styleName.replace(' MoM', '')}</span>
           </button>
         ))}
         <button
           onClick={() => setActiveTab('transcript')}
-          className={`pb-3 whitespace-nowrap text-[10px] font-bold tracking-widest uppercase flex items-center gap-1 border-b-2 transition-all ${
+          className={`pb-3 whitespace-nowrap text-xs font-bold tracking-wide border-b-2 transition-all ${
             activeTab === 'transcript'
               ? 'border-primary text-primary'
-              : 'border-transparent text-muted hover:text-phosphor'
+              : 'border-transparent text-accent hover:text-primary'
           }`}
         >
-          <span>[ RAW_TRANSCRIPT ]</span>
+          <span>Raw Transcript</span>
         </button>
       </div>
 
       {/* Main Content Pane */}
-      <div className="border border-border bg-card p-6 sm:p-8 print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
+      <div className="border border-border bg-card p-8 sm:p-12 rounded-xl shadow-card print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
         
         {/* Print Only Formal Executive Header */}
         <div className="hidden print:block mb-8 border-b-2 pb-6 border-zinc-200">
@@ -406,32 +406,32 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
           <div className="print:block">
             {isSynthesizing ? (
               <div className="py-16 text-center space-y-4 select-none">
-                <div className="inline-flex p-4 border border-primary bg-primary/5 animate-pulse">
-                  <RefreshCw className="w-8 h-8 text-primary animate-spin" />
+                <div className="inline-flex p-4 rounded-full bg-pastel-blue-bg text-pastel-blue-text animate-pulse">
+                  <RefreshCw className="w-8 h-8 text-pastel-blue-text animate-spin" strokeWidth={2.5} />
                 </div>
-                <h3 className="text-xs font-bold text-phosphor uppercase">Synthesizing {regenStyle} via Nemotron-3...</h3>
-                <p className="text-[10px] text-muted max-w-md mx-auto leading-relaxed">
-                  QUERYING TELEMETRY TRANSCRIPT AND EXTRACTING STRATEGIC PM READOUTS.
+                <h3 className="text-sm font-semibold text-primary">Synthesizing {regenStyle} via Nemotron-3...</h3>
+                <p className="text-xs text-accent max-w-sm mx-auto leading-relaxed">
+                  Extracting relevant insights from transcript based on the selected style template.
                 </p>
               </div>
             ) : parsedMoMs[activeTab] ? (
-              <div className="prose prose-invert prose-sm max-w-none print:prose-neutral print:prose-sm">
+              <div className="prose prose-sm max-w-none print:prose-neutral">
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    h1: ({node, ...props}) => <h1 {...props} className="text-xs font-bold text-primary uppercase tracking-widest border-b border-border pb-1 mt-6 mb-3 font-display" />,
-                    h2: ({node, ...props}) => <h2 {...props} className="text-[11px] font-bold text-primary uppercase tracking-widest mt-5 mb-2 font-display" />,
-                    h3: ({node, ...props}) => <h3 {...props} className="text-[10px] font-bold text-phosphor uppercase mt-4 mb-2" />,
-                    p: ({node, ...props}) => <p {...props} className="text-xs text-phosphor leading-relaxed mb-3 font-mono" />,
-                    ul: ({node, ...props}) => <ul {...props} className="list-square pl-5 space-y-1 mb-4 text-xs font-mono text-phosphor" />,
-                    ol: ({node, ...props}) => <ol {...props} className="list-decimal pl-5 space-y-1 mb-4 text-xs font-mono text-phosphor" />,
-                    li: ({node, ...props}) => <li {...props} className="text-phosphor leading-relaxed" />,
-                    table: ({node, ...props}) => <table {...props} className="w-full text-left text-[11px] border border-border bg-black border-collapse my-4 font-mono" />,
-                    thead: ({node, ...props}) => <thead {...props} className="bg-card border-b border-border text-primary uppercase text-[9px]" />,
-                    th: ({node, ...props}) => <th {...props} className="px-3 py-2 border border-border font-bold" />,
-                    tr: ({node, ...props}) => <tr {...props} className="hover:bg-black/20 border-b border-border" />,
-                    td: ({node, ...props}) => <td {...props} className="px-3 py-2 border border-border text-phosphor" />,
-                    code: ({node, ...props}) => <code {...props} className="text-primary bg-black border border-border px-1 py-0.5 text-[10px]" />,
+                    h1: ({node, ...props}) => <h1 {...props} className="text-xl font-serif text-primary font-normal tracking-tight border-b border-border pb-2 mt-8 mb-4" />,
+                    h2: ({node, ...props}) => <h2 {...props} className="text-lg font-serif text-primary font-semibold tracking-tight mt-6 mb-3" />,
+                    h3: ({node, ...props}) => <h3 {...props} className="text-sm font-bold text-primary mt-5 mb-2" />,
+                    p: ({node, ...props}) => <p {...props} className="text-sm text-primary leading-relaxed mb-4 font-sans" />,
+                    ul: ({node, ...props}) => <ul {...props} className="list-disc pl-5 space-y-1.5 mb-4 text-sm font-sans text-primary" />,
+                    ol: ({node, ...props}) => <ol {...props} className="list-decimal pl-5 space-y-1.5 mb-4 text-sm font-sans text-primary" />,
+                    li: ({node, ...props}) => <li {...props} className="text-primary leading-relaxed" />,
+                    table: ({node, ...props}) => <table {...props} className="w-full text-left text-xs border border-border bg-card border-collapse my-6 font-sans" />,
+                    thead: ({node, ...props}) => <thead {...props} className="bg-background border-b border-border text-primary uppercase text-[10px] tracking-wider font-bold" />,
+                    th: ({node, ...props}) => <th {...props} className="px-4 py-3 border border-border font-bold text-primary" />,
+                    tr: ({node, ...props}) => <tr {...props} className="hover:bg-background border-b border-border transition-colors" />,
+                    td: ({node, ...props}) => <td {...props} className="px-4 py-3 border border-border text-primary" />,
+                    code: ({node, ...props}) => <code {...props} className="bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 px-1.5 py-0.5 rounded font-mono text-[11px]" />,
                     a: ({node, ...props}) => {
                       if (props.href && props.href.startsWith('timestamp://')) {
                         const timeStr = props.href.replace('timestamp://', '');
@@ -440,14 +440,15 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                         return (
                           <button 
                             onClick={(e) => { e.preventDefault(); handleSeekAudio(totalSeconds); }}
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 mx-1 border border-primary text-primary hover:bg-primary hover:text-black font-mono font-bold text-[9px] transition-colors cursor-pointer select-none uppercase tracking-wider print:hidden"
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 mx-1 bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 rounded-full font-mono text-[10px] font-bold hover:bg-pastel-blue-text hover:text-white transition-colors cursor-pointer select-none"
                             title={`Play audio from ${timeStr}`}
                           >
-                            <span>[PLAY: {timeStr}]</span>
+                            <Clock size={10} strokeWidth={2.5} className="shrink-0" />
+                            <span>{timeStr}</span>
                           </button>
                         );
                       }
-                      return <a {...props} className="text-primary hover:underline transition-colors font-bold" />;
+                      return <a {...props} className="text-pastel-blue-text hover:underline transition-colors font-bold" />;
                     }
                   }}
                 >
@@ -455,22 +456,22 @@ export default function MoMViewer({ meeting: initialMeeting, onReset }) {
                 </ReactMarkdown>
               </div>
             ) : (
-              <div className="p-12 text-center border border-border bg-black/60 text-muted select-none">
-                <p className="text-sm font-bold uppercase mb-1">[ NO_MOM_REPORT_GENERATED ]</p>
-                <p className="text-[10px]">SELECT STYLE PROFILE AND TRIGGER GENERATOR MODULE.</p>
+              <div className="p-12 text-center border border-border bg-background text-accent rounded-lg select-none">
+                <p className="text-sm font-bold mb-1">No Minutes Generated</p>
+                <p className="text-xs text-accent">Select a style template and trigger generation module.</p>
               </div>
             )}
           </div>
         ) : (
           <div className="space-y-4 print:hidden">
             <div className="flex items-center justify-between border-b border-border pb-3 select-none">
-              <h3 className="text-xs font-bold text-phosphor uppercase tracking-wider">
-                // RAW_INT8_STT_TELEMETRY
+              <h3 className="text-sm font-semibold text-primary">
+                Raw STT Transcription
               </h3>
-              <span className="text-[9px] text-muted">ZERO_CLOUD_EXPOSURE_CONFIRMED</span>
+              <span className="text-[10px] text-accent">Local processing &bull; Zero external API leakage</span>
             </div>
-            <pre className="font-mono text-xs leading-relaxed bg-black p-5 border border-border text-phosphor overflow-x-auto whitespace-pre-wrap max-h-[65vh] overflow-y-auto">
-              {meeting?.transcript_text || '[No transcript file available for this meeting recording yet.]'}
+            <pre className="font-mono text-xs leading-relaxed bg-background p-6 border border-border text-primary rounded-lg overflow-x-auto whitespace-pre-wrap max-h-[65vh] overflow-y-auto">
+              {meeting?.transcript_text || 'No transcript file available for this meeting recording yet.'}
             </pre>
           </div>
         )}

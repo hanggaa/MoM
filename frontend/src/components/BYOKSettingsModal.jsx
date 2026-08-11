@@ -86,53 +86,48 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-xl overflow-hidden border-2 border-border bg-card shadow-none transition-all font-mono text-xs">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="relative w-full max-w-lg overflow-hidden border border-border bg-card shadow-card rounded-xl transition-all font-sans text-sm text-primary">
         
-        {/* Technical visual decoration - warning stripes */}
-        <div className="absolute top-0 left-0 right-0 h-1 warning-stripes opacity-60" />
-
         {/* Header */}
         <div className="p-5 border-b border-border flex items-center justify-between select-none">
-          <div className="flex items-center gap-3">
-            <div>
-              <h3 className="text-sm font-display font-bold text-phosphor uppercase tracking-wider glow-text">
-                [05] MAINBOARD_ENGINE_CONFIGURATION
-              </h3>
-              <p className="text-[9px] text-muted uppercase mt-1 tracking-widest">// CUSTOMIZE AI MODELS & CRYPTO VAULT</p>
-            </div>
+          <div>
+            <h3 className="text-sm font-bold text-primary tracking-tight">
+              Settings & Configuration
+            </h3>
+            <p className="text-[10px] text-accent mt-0.5 font-mono">Customize system models & credentials</p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-muted hover:text-primary border border-transparent hover:border-border bg-black transition-colors"
+            className="p-1.5 text-accent hover:text-primary hover:bg-background rounded-md transition-colors"
           >
-            <X size={14} />
+            <X size={14} strokeWidth={2.5} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-border bg-black px-6 pt-3 gap-2 select-none">
+        <div className="flex border-b border-border bg-background px-6 pt-3 gap-2 select-none">
           <button
             onClick={() => setActiveTab('byok')}
-            className={`flex items-center gap-2 pb-3 px-3 text-[10px] font-bold transition-all border-b-2 uppercase tracking-wider ${
+            className={`flex items-center gap-1.5 pb-3 px-3 text-xs font-bold transition-all border-b-2 tracking-wide ${
               activeTab === 'byok'
                 ? 'border-primary text-primary font-bold'
-                : 'border-transparent text-muted hover:text-phosphor'
+                : 'border-transparent text-accent hover:text-primary'
             }`}
           >
-            <Key size={12} />
-            <span>[ VAULT_TOKENS ]</span>
+            <Key size={12} strokeWidth={2.5} />
+            <span>Vault Credentials</span>
           </button>
           <button
             onClick={() => setActiveTab('stt')}
-            className={`flex items-center gap-2 pb-3 px-3 text-[10px] font-bold transition-all border-b-2 uppercase tracking-wider ${
+            className={`flex items-center gap-1.5 pb-3 px-3 text-xs font-bold transition-all border-b-2 tracking-wide ${
               activeTab === 'stt'
                 ? 'border-primary text-primary font-bold'
-                : 'border-transparent text-muted hover:text-phosphor'
+                : 'border-transparent text-accent hover:text-primary'
             }`}
           >
-            <Cpu size={12} />
-            <span>[ STT_RESOLUTION ]</span>
+            <Cpu size={12} strokeWidth={2.5} />
+            <span>STT Quantization</span>
           </button>
         </div>
 
@@ -140,24 +135,24 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
         {activeTab === 'byok' && (
           <div className="p-6 space-y-6">
             {/* Current Status Info Box */}
-            <div className="p-4 border border-border bg-black/60 flex items-start gap-3 select-none">
-              <Shield size={16} className="text-green shrink-0 mt-0.5" />
-              <div className="text-[10px] space-y-2">
-                <p className="font-bold text-phosphor uppercase tracking-wider">// ZERO_EXPOSURE_INTEGRITY_CONFIRMED</p>
-                <p className="text-muted leading-relaxed font-light">
-                  ALL TOKENS ARE STORAGE-ENCRYPTED LOCALLY AND NEVER EXPOSED TO CLIENT BUNDLES.
+            <div className="p-4 border border-pastel-green-text/10 bg-pastel-green-bg text-pastel-green-text rounded-lg flex items-start gap-3 select-none text-xs">
+              <Shield size={16} strokeWidth={2.5} className="text-pastel-green-text shrink-0 mt-0.5" />
+              <div className="space-y-2">
+                <p className="font-bold">Zero-Exposure Encryption Active</p>
+                <p className="text-pastel-green-text/80 leading-relaxed font-light">
+                  Tokens are stored encrypted inside the local database. They are never exposed to client-side bundles.
                 </p>
-                <div className="pt-2 flex flex-col gap-1.5 font-mono">
+                <div className="pt-2 flex flex-col gap-1.5 font-mono text-[10px]">
                   <div className="flex items-center gap-2">
-                    <span className="text-muted uppercase tracking-wider w-20">NVIDIA_API:</span>
-                    <span className={`px-2 py-0.5 border font-bold text-[9px] ${byokStatus?.is_set ? 'text-green border-green bg-green/5' : 'text-primary border-primary bg-primary/5'}`}>
-                      {byokStatus?.is_set ? (byokStatus.preview || 'CONNECTED') : 'NOT_SET'}
+                    <span className="text-pastel-green-text/75 uppercase tracking-wider w-20">Nvidia NIM:</span>
+                    <span className={`px-2 py-0.5 border font-bold text-[9px] rounded ${byokStatus?.is_set ? 'text-pastel-green-text border-pastel-green-text/20 bg-card' : 'text-pastel-red-text border-pastel-red-text/20 bg-card'}`}>
+                      {byokStatus?.is_set ? 'Connected' : 'Required'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-muted uppercase tracking-wider w-20">HF_TOKEN:</span>
-                    <span className={`px-2 py-0.5 border font-bold text-[9px] ${byokStatus?.hf_is_set ? 'text-green border-green bg-green/5' : 'text-primary border-primary bg-primary/5'}`}>
-                      {byokStatus?.hf_is_set ? (byokStatus.hf_preview || 'CONNECTED') : 'NOT_SET'}
+                    <span className="text-pastel-green-text/75 uppercase tracking-wider w-20">HuggingFace:</span>
+                    <span className={`px-2 py-0.5 border font-bold text-[9px] rounded ${byokStatus?.hf_is_set ? 'text-pastel-green-text border-pastel-green-text/20 bg-card' : 'text-pastel-red-text border-pastel-red-text/20 bg-card'}`}>
+                      {byokStatus?.hf_is_set ? 'Connected' : 'Required'}
                     </span>
                   </div>
                 </div>
@@ -166,8 +161,8 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
 
             <form onSubmit={handleSaveBYOK} className="space-y-4">
               <div>
-                <label htmlFor="apiKeyInput" className="block text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5 select-none">
-                  // ENTER_NVIDIA_NIM_API_TOKEN
+                <label htmlFor="apiKeyInput" className="block text-xs font-bold uppercase tracking-wider text-primary mb-1.5 select-none">
+                  NVIDIA NIM API Key
                 </label>
                 <input
                   id="apiKeyInput"
@@ -175,25 +170,25 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="nvapi-................................................"
-                  className="w-full px-3 py-2 bg-black border border-border text-xs text-phosphor placeholder-zinc-800 focus:outline-none focus:border-primary transition-all font-mono"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-xs text-primary placeholder-accent/40 focus:outline-none focus:border-primary transition-all font-sans"
                   disabled={loading}
                 />
-                <div className="mt-2 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 text-[9px] text-muted">
-                  <span>REQUIRED FOR SYNTHESIS INDICES.</span>
+                <div className="mt-2 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 text-[10px] text-accent">
+                  <span>Required for Nemotron-3 executive synthesis.</span>
                   <a
                     href="https://build.nvidia.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary hover:underline inline-flex items-center gap-1 font-bold"
+                    className="text-pastel-blue-text hover:underline inline-flex items-center gap-1 font-bold"
                   >
-                    GET TOKEN FROM NVIDIA.COM <ExternalLink size={10} />
+                    Get Token from Nvidia <ExternalLink size={10} strokeWidth={2.5} />
                   </a>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="hfTokenInput" className="block text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5 select-none">
-                  // ENTER_HUGGINGFACE_ACCESS_TOKEN
+                <label htmlFor="hfTokenInput" className="block text-xs font-bold uppercase tracking-wider text-primary mb-1.5 select-none">
+                  HuggingFace Access Token
                 </label>
                 <input
                   id="hfTokenInput"
@@ -201,31 +196,31 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                   value={hfToken}
                   onChange={(e) => setHfToken(e.target.value)}
                   placeholder="hf_..................................."
-                  className="w-full px-3 py-2 bg-black border border-border text-xs text-phosphor placeholder-zinc-800 focus:outline-none focus:border-primary transition-all font-mono"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-xs text-primary placeholder-accent/40 focus:outline-none focus:border-primary transition-all font-sans"
                   disabled={loading}
                 />
-                <div className="mt-2 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 text-[9px] text-muted">
-                  <span>REQUIRED FOR PYANNOTE SPEAKER DIARIZATION.</span>
+                <div className="mt-2 flex flex-col sm:flex-row justify-between sm:items-center gap-1.5 text-[10px] text-accent">
+                  <span>Required for Pyannote speaker diarization.</span>
                   <a
                     href="https://huggingface.co/settings/tokens"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary hover:underline inline-flex items-center gap-1 font-bold"
+                    className="text-pastel-blue-text hover:underline inline-flex items-center gap-1 font-bold"
                   >
-                    GET TOKEN FROM HUGGINGFACE.CO <ExternalLink size={10} />
+                    Get Token from HuggingFace <ExternalLink size={10} strokeWidth={2.5} />
                   </a>
                 </div>
               </div>
 
               {error && (
-                <div className="p-3 border border-primary bg-primary/5 text-primary text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
-                  <span>[ ERROR: {error.toUpperCase()} ]</span>
+                <div className="p-3 border border-pastel-red-text/20 bg-pastel-red-bg text-pastel-red-text text-xs rounded-md font-semibold">
+                  <span>{error}</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="p-3 border border-green bg-green/5 text-green text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
-                  <span>[ SUCCESS: {successMsg.toUpperCase()} ]</span>
+                <div className="p-3 border border-pastel-green-text/20 bg-pastel-green-bg text-pastel-green-text text-xs rounded-md font-semibold">
+                  <span>{successMsg}</span>
                 </div>
               )}
 
@@ -234,16 +229,16 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                   type="button"
                   onClick={onClose}
                   disabled={loading}
-                  className="px-4 py-2 border border-border hover:border-primary bg-black text-muted hover:text-phosphor transition-colors uppercase tracking-wider text-[10px] font-bold"
+                  className="px-4 py-2 border border-border bg-card hover:bg-background text-accent hover:text-primary transition-colors text-xs font-bold rounded-md"
                 >
-                  [ CANCEL ]
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-5 py-2 border border-primary hover:bg-primary hover:text-black bg-black text-primary font-bold uppercase tracking-wider text-[10px] transition-colors"
+                  className="px-5 py-2 bg-primary hover:bg-zinc-800 text-white font-bold text-xs rounded-md transition-colors active:scale-98"
                 >
-                  {loading ? '[ VERIFYING_TOKEN... ]' : '[ SECURE_VAULT_KEYS ]'}
+                  {loading ? 'Saving Token...' : 'Save Credentials'}
                 </button>
               </div>
             </form>
@@ -254,85 +249,91 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
         {activeTab === 'stt' && (
           <form onSubmit={handleSaveSTT} className="p-6 space-y-6">
             <div className="space-y-4">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 select-none">
-                <Cpu size={14} />
-                <span>// SELECT_STT_QUANTIZATION_ENGINE</span>
+              <label className="block text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 select-none">
+                <Cpu size={14} strokeWidth={2.5} />
+                <span>STT Quantization Preset</span>
               </label>
-              <p className="text-[10px] text-muted leading-relaxed font-light select-none">
-                CHOOSE CPU ACCURACY PRESET. HIGHER PRESETS MAXIMIZE BILINGUAL RECOGNITION BUT CONSUME GREATER PROCESSING MEMORY.
+              <p className="text-xs text-accent leading-relaxed select-none">
+                Select the resolution tier for local Faster-Whisper. Higher tiers maximize vocabulary accuracy but consume more VM memory during operation.
               </p>
               
-              <div className="grid grid-cols-1 gap-2 pt-2 select-none">
+              <div className="grid grid-cols-1 gap-2.5 pt-2 select-none">
                 {[
                   {
                     id: 'large-v3-turbo',
-                    name: '[X] LARGE-V3-TURBO (MAXIMUM_RESOLUTION)',
-                    desc: 'MAXIMUM NUANCE RETRIEVAL. REQUIRES >= 6GB ENGINE HEADROOM.'
+                    name: 'Large V3 Turbo',
+                    tag: 'Recommended Accuracy',
+                    desc: 'Maximum bilingual precision. Requires at least 6GB VM memory headroom.'
                   },
                   {
                     id: 'small',
-                    name: '[ ] SMALL (BALANCED_InFERENCE)',
-                    desc: 'FAST COMPUTATION WITH BALANCED PRECISION. CONSUMES ~2GB.'
+                    name: 'Small Quantization',
+                    tag: 'Balanced Speed',
+                    desc: 'Fast computation. Balanced draft precision. Consumes ~2GB VM headroom.'
                   },
                   {
                     id: 'base',
-                    name: '[ ] BASE (LIGHTWEIGHT_DRAFT)',
-                    desc: 'HIGHEST SPEED PROFILE FOR CASUAL AUDIO. CONSUMES ~1GB.'
+                    name: 'Base Quantization',
+                    tag: 'Maximum Speed',
+                    desc: 'Lightweight draft speed. Highly responsive. Consumes ~1GB VM headroom.'
                   }
                 ].map((model) => (
                   <label
                     key={model.id}
                     onClick={() => setModelSize(model.id)}
-                    className={`cursor-pointer p-4 border transition-all flex flex-col gap-1.5 ${
+                    className={`cursor-pointer p-4 border rounded-lg transition-all flex flex-col gap-1 ${
                       modelSize === model.id
-                        ? 'bg-primary/5 border-primary text-phosphor'
-                        : 'bg-black/40 border-border text-muted hover:border-primary/50'
+                        ? 'border-primary bg-pastel-blue-bg/20 text-primary'
+                        : 'border-border bg-background/35 text-accent hover:border-accent/40'
                     }`}
                   >
-                    <div className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="sttModel"
-                        checked={modelSize === model.id}
-                        onChange={() => setModelSize(model.id)}
-                        className="accent-primary hidden"
-                      />
-                      <span>{modelSize === model.id ? model.name.replace('[ ]', '[█]') : model.name}</span>
+                    <div className="text-xs font-bold uppercase tracking-wider flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="sttModel"
+                          checked={modelSize === model.id}
+                          onChange={() => setModelSize(model.id)}
+                          className="accent-primary"
+                        />
+                        <span>{model.name}</span>
+                      </div>
+                      <span className="text-[9px] font-mono font-bold tracking-normal lowercase opacity-75">{model.tag}</span>
                     </div>
-                    <div className="text-[9px] text-muted uppercase tracking-wide leading-relaxed font-light">{model.desc}</div>
+                    <div className="text-[10px] text-accent leading-relaxed mt-0.5">{model.desc}</div>
                   </label>
                 ))}
               </div>
             </div>
 
             <div className="pt-4 border-t border-border">
-              <label htmlFor="vocabInput" className="block text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5 flex items-center gap-2 select-none">
-                <BookOpen size={14} />
-                <span>// CUSTOM_DICTIONARY_BIASING</span>
+              <label htmlFor="vocabInput" className="block text-xs font-bold uppercase tracking-wider text-primary mb-1.5 flex items-center gap-2 select-none">
+                <BookOpen size={14} strokeWidth={2.5} />
+                <span>Custom Vocabulary Biasing</span>
               </label>
-              <p className="text-[9px] text-muted mb-3 select-none">
-                LIST TERMS OR ACRONYMS SEPARATED BY COMMAS TO BIAS THE RECOGNITION ENGINE TOWARD THEM.
+              <p className="text-xs text-accent mb-3 select-none">
+                List complex jargon terms or acronyms separated by commas to force the transcription engine to recognize them.
               </p>
               <textarea
                 id="vocabInput"
                 rows="3"
                 value={customVocab}
                 onChange={(e) => setCustomVocab(e.target.value)}
-                placeholder="e.g. KUBERNETES, NEMOTRON, CLOUDFLARE, NGINX, INT8, GCP, MOM, OJK"
-                className="w-full p-3 bg-black border border-border font-mono text-xs text-phosphor placeholder-zinc-800 focus:outline-none focus:border-primary transition-all disabled:opacity-50"
+                placeholder="e.g. OJK, GOOGLE, FASTAPI, DOCKER, NIM, INT8, SQLITE"
+                className="w-full p-3 bg-background border border-border text-primary rounded-md placeholder:text-accent/40 focus:outline-none focus:border-primary transition-all disabled:opacity-50 font-sans text-xs"
                 disabled={sttLoading}
               />
             </div>
 
             {sttError && (
-              <div className="p-3 border border-primary bg-primary/5 text-primary text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
-                <span>[ ERROR: {sttError.toUpperCase()} ]</span>
+              <div className="p-3 border border-pastel-red-text/20 bg-pastel-red-bg text-pastel-red-text text-xs rounded-md font-semibold">
+                <span>{sttError}</span>
               </div>
             )}
 
             {sttSuccess && (
-              <div className="p-3 border border-green bg-green/5 text-green text-[10px] font-bold flex items-center gap-2 select-none uppercase tracking-wider">
-                <span>[ SUCCESS: {sttSuccess.toUpperCase()} ]</span>
+              <div className="p-3 border border-pastel-green-text/20 bg-pastel-green-bg text-pastel-green-text text-xs rounded-md font-semibold">
+                <span>{sttSuccess}</span>
               </div>
             )}
 
@@ -341,16 +342,16 @@ export const BYOKSettingsModal = ({ isOpen, onClose, byokStatus, onSuccess }) =>
                 type="button"
                 onClick={onClose}
                 disabled={sttLoading}
-                className="px-4 py-2 border border-border hover:border-primary bg-black text-muted hover:text-phosphor transition-colors uppercase tracking-wider text-[10px] font-bold"
+                className="px-4 py-2 border border-border bg-card hover:bg-background text-accent hover:text-primary transition-colors text-xs font-bold rounded-md"
               >
-                [ CANCEL ]
+                Cancel
               </button>
               <button
                 type="submit"
                 disabled={sttLoading}
-                className="px-5 py-2 border border-primary hover:bg-primary hover:text-black bg-black text-primary font-bold uppercase tracking-wider text-[10px] transition-colors"
+                className="px-5 py-2 bg-primary hover:bg-zinc-800 text-white font-bold text-xs rounded-md transition-colors active:scale-98"
               >
-                {sttLoading ? '[ SAVING_PREFERENCES... ]' : '[ COMMIT_RESOLUTION_CONFIG ]'}
+                {sttLoading ? 'Saving...' : 'Save Settings'}
               </button>
             </div>
           </form>
