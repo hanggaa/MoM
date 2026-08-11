@@ -119,6 +119,12 @@ def run_stt_task(
                     if not hasattr(torchaudio, "set_audio_backend"):
                         # Monkey patch for pyannote.audio 3.1.1 running on torchaudio >= 2.2.0
                         torchaudio.set_audio_backend = lambda backend: None
+                        
+                    import numpy as np
+                    if not hasattr(np, "NaN"):
+                        # Monkey patch for pyannote.audio running with NumPy 2.0+
+                        np.NaN = np.nan
+
                     
                     from pyannote.audio import Pipeline
                     try:
