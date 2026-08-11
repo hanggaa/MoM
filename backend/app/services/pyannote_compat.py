@@ -41,7 +41,7 @@ def apply_pyannote_compat_patches(hf_cache_dir: str) -> None:
 
 
 def _patch_torchaudio() -> None:
-    """torchaudio >= 2.2.0 removed the backend module, set/get_audio_backend."""
+    """torchaudio >= 2.2.0 removed the backend.common module and set/get_audio_backend."""
     import torchaudio
 
     if not hasattr(torchaudio, "set_audio_backend"):
@@ -49,12 +49,21 @@ def _patch_torchaudio() -> None:
     if not hasattr(torchaudio, "get_audio_backend"):
         torchaudio.get_audio_backend = lambda: "soundfile"
 
-    if "torchaudio.backend" not in sys.modules or "torchaudio.backend.common" not in sys.modules:
-        backend_mod = types.ModuleType("torchaudio.backend")
-        backend_mod.__package__ = "torchaudio.backend"
+    # Only inject torchaudio.backend.common into sys.modules for import resolution.
+    # Do NOT overwrite torchaudio.backend — it's used internally by torchaudio.info().
+    if "torchaudio.backend.common" not in sys.modules:
+        # Get or create the backend module without destroying the real one
+        if "torchaudio.backend" in sys.modules:
+            backend_mod = sys.modules["torchaudio.backend"]
+        else:
+            backend_mod = types.ModuleType("torchaudio.backend")
+            backend_mod.__package__ = "torchaudio.backend"
+            sys.modules["torchaudio.backend"] = backend_mod
+
         common_mod = types.ModuleType("torchaudio.backend.common")
         common_mod.__package__ = "torchaudio.backend"
 
+        # Re-export AudioMetaData from its new location in torchaudio >= 2.2
         if hasattr(torchaudio, "AudioMetaData"):
             common_mod.AudioMetaData = torchaudio.AudioMetaData
         else:
@@ -71,8 +80,6 @@ def _patch_torchaudio() -> None:
             common_mod.AudioMetaData = _AudioMetaData
 
         backend_mod.common = common_mod
-        torchaudio.backend = backend_mod
-        sys.modules["torchaudio.backend"] = backend_mod
         sys.modules["torchaudio.backend.common"] = common_mod
         logger.info("Patched torchaudio.backend.common module")
 
