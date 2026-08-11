@@ -115,6 +115,11 @@ def run_stt_task(
                     db.add(task)
                     db.commit()
                     
+                    import torchaudio
+                    if not hasattr(torchaudio, "set_audio_backend"):
+                        # Monkey patch for pyannote.audio 3.1.1 running on torchaudio >= 2.2.0
+                        torchaudio.set_audio_backend = lambda backend: None
+                    
                     from pyannote.audio import Pipeline
                     try:
                         pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=hf_token)
