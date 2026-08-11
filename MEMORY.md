@@ -5,8 +5,8 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 -->
 
 ## 🏗️ Active Phase & Goal
-**Current Task:** Complete! Phase 7: The Ultimate PM Workspace (Speaker Diarization & Chat with Your Meetings RAG) is fully integrated.
-**Next Steps:** Wait for further user instructions or bug reports.
+**Current Task:** Speaker diarization reliability fix implemented locally and awaiting production deployment verification.
+**Next Steps:** Install the pinned CPU dependency family, deploy the worker changes, restart the service, and rerun a real compressed-audio diarization smoke test.
 
 ## 📂 Architectural Decisions
 *(Log specific choices made during the build here so future agents respect them)*
@@ -26,11 +26,13 @@ DO NOT delete historical context if it is still relevant. Compress older complet
 - 2026-08-10 — Transitioned `meeting.mom_data` column from raw Markdown strings to JSON dictionary strings `{"style": "markdown"}` to support multi-style synthesis side-by-side in `MoMViewer.jsx` tabs without requiring SQLite schema migrations. Legacy raw markdown is gracefully handled and coerced into "General Executive MoM".
 - 2026-08-10 — Integrated `pyannote.audio` CPU pipeline into `stt_worker.py` to perform Speaker Diarization after `faster-whisper`. Timestamps are heuristically merged. HuggingFace token required for Pyannote is stored safely in `AppSettings` alongside NVIDIA BYOK token.
 - 2026-08-10 — Built Local RAG system using `chromadb` and `sentence-transformers` for "Chat with your meetings" capability. Documents are chunked and inserted automatically after synthesis, empowering a React Chat Widget with conversational query features.
+- 2026-08-11 — Speaker diarization now converts compressed uploads to a temporary lossless 16 kHz mono FLAC before pyannote inference, while faster-whisper and playback retain the original upload. The derivative is removed after success or failure. The production ML family is pinned to NumPy 1.26.4, Torch/TorchAudio 2.8.0, pyannote.audio 3.4.0, and matching pyannote 3.x companion packages.
 ## 🐛 Known Issues & Quirks
 *(Log current bugs or weird workarounds here)*
 - Cloudflare Free/Pro enforces a strict 100MB HTTP request body limitation; frontend audio upload slices files into 25MB chunks and uploads sequentially to `/api/upload/chunk`. (SOLVED via `AudioUploader.jsx` & `upload_service.py`).
 - Nginx and Cloudflare will terminate long-running synchronous requests with HTTP 504 Gateway Timeout; STT processing executes via FastAPI `BackgroundTasks`, communicating progress back to UI via polling `GET /api/tasks/{id}`. (SOLVED via `stt_worker.py` & `TaskMonitor.jsx`).
 - SQLite cross-thread connection sharing during pytest executions requires configuring test engines with `StaticPool` and `connect_args={"check_same_thread": False}`.
+- Compressed-audio random seeking can return short tensors to pyannote and break `torch.vstack`; normalization to 16 kHz mono FLAC resolves the mismatch. (SOLVED via `audio_normalizer.py` and `stt_worker.py`; production deployment smoke pending.)
 
 ## 📜 Completed Phases
 - [x] Part 1: Deep Research and technical constraint resolution (`research-AIMeetingMoM.md`)

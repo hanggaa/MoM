@@ -1,12 +1,18 @@
 import os
+import sys
+import types
+from contextlib import contextmanager
+from typing import Iterator
+
 import pytest
 from pathlib import Path
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from app.models import schemas # ensure metadata loads tables
+from app.models import schemas  # ensure metadata loads tables
 from app.models.schemas import Meeting, Task
 from app.services.stt_worker import run_stt_task
+from app.services import stt_worker
 from app.core.config import STORAGE_DIR
 
 test_engine = create_engine(
@@ -140,3 +146,111 @@ def test_stt_worker_missing_audio_file():
         assert errored_task.status == "ERROR"
         assert "Audio recording file missing" in errored_task.error_message
         assert errored_meeting.status == "ERROR"
+
+
+def test_stt_worker_uses_temporary_flac_only_for_diarization(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original_audio = tmp_path / "meeting.mp3"
+    original_audio.write_bytes(b"compressed-audio")
+    normalized_audio = tmp_path / "diarization-test.flac"
+    transcribed_paths: list[str] = []
+    diarized_paths: list[str] = []
+
+    class FakeRuntimeWhisperModel:
+        def __init__(self, **kwargs: object) -> None:
+            pass
+
+        def transcribe(
+            self, path: str, **kwargs: object
+        ) -> tuple[list[FakeSegment], FakeInfo]:
+            transcribed_paths.append(path)
+            return FakeWhisperModel().transcribe(path, **kwargs)
+
+    class FakeDiarization:
+        def itertracks(
+            self, yield_label: bool = False
+        ) -> Iterator[tuple[object, object, str]]:
+            return iter(())
+
+    class FakePipeline:
+        @classmethod
+        def from_pretrained(cls, model_name: str) -> "FakePipeline":
+            return cls()
+
+        def to(self, device: object) -> None:
+            return None
+
+        def __call__(self, path: str) -> FakeDiarization:
+            diarized_paths.append(path)
+            assert Path(path).exists()
+            return FakeDiarization()
+
+    @contextmanager
+    def fake_normalized_audio(
+        source_path: str | Path, output_dir: str | Path
+    ) -> Iterator[Path]:
+        normalized_audio.write_bytes(b"normalized-flac")
+        try:
+            yield normalized_audio
+        finally:
+            normalized_audio.unlink(missing_ok=True)
+
+    faster_whisper_module = types.ModuleType("faster_whisper")
+    faster_whisper_module.WhisperModel = FakeRuntimeWhisperModel
+    pyannote_module = types.ModuleType("pyannote")
+    pyannote_module.__path__ = []
+    pyannote_audio_module = types.ModuleType("pyannote.audio")
+    pyannote_audio_module.Pipeline = FakePipeline
+
+    monkeypatch.setitem(sys.modules, "faster_whisper", faster_whisper_module)
+    monkeypatch.setitem(sys.modules, "pyannote", pyannote_module)
+    monkeypatch.setitem(sys.modules, "pyannote.audio", pyannote_audio_module)
+    monkeypatch.setattr(stt_worker, "STORAGE_DIR", tmp_path)
+    monkeypatch.setattr(stt_worker, "get_hf_token", lambda db: "hf-token")
+    monkeypatch.setattr(
+        stt_worker,
+        "synthesize_mom_sync",
+        lambda db, meeting, mock_client=None: None,
+    )
+    monkeypatch.setattr(
+        stt_worker,
+        "normalized_audio_for_diarization",
+        fake_normalized_audio,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "app.services.pyannote_compat.apply_pyannote_compat_patches",
+        lambda cache_dir: None,
+    )
+
+    with Session(test_engine) as db:
+        meeting = Meeting(
+            title="Diarization Regression",
+            audio_file_path=str(original_audio),
+            status="QUEUED",
+        )
+        db.add(meeting)
+        db.commit()
+        db.refresh(meeting)
+        task_id = "test-uuid-diarization-003"
+        task = Task(
+            id=task_id,
+            meeting_id=meeting.id,
+            status="QUEUED",
+            progress_percent=0,
+        )
+        db.add(task)
+        db.commit()
+        meeting_id = meeting.id
+
+    run_stt_task(
+        task_id=task_id,
+        meeting_id=meeting_id,
+        db_engine=test_engine,
+        mock_nim_client=FakeNimClient(),
+    )
+
+    assert transcribed_paths == [str(original_audio)]
+    assert diarized_paths == [str(normalized_audio)]
+    assert not normalized_audio.exists()

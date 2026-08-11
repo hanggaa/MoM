@@ -1,5 +1,5 @@
 """
-Compatibility patches for pyannote.audio 3.1.x running with modern dependencies.
+Compatibility patches for the deployed pyannote.audio 3.x dependency family.
 
 pyannote.audio 3.1.1 was written for:
   - torchaudio < 2.2  (uses torchaudio.backend.common, set/get_audio_backend)
@@ -7,8 +7,9 @@ pyannote.audio 3.1.1 was written for:
   - huggingface_hub < 0.24  (uses use_auth_token kwarg)
   - torch < 2.6       (uses torch.load with weights_only=False default)
 
-This module monkey-patches all four libraries so pyannote 3.1.x works
-on a modern Python ML stack without downgrading anything.
+This module keeps the legacy pyannote pipeline compatible with the deployed
+Torch and Hugging Face Hub versions while dependency pins preserve its tested
+major-version family.
 
 Call apply_pyannote_compat_patches(hf_cache_dir) once before
 `from pyannote.audio import Pipeline`.
@@ -29,14 +30,14 @@ def apply_pyannote_compat_patches(hf_cache_dir: str) -> None:
     global _PATCHES_APPLIED
     if _PATCHES_APPLIED:
         return
-    _PATCHES_APPLIED = True
-    logger.info("Applying pyannote 3.1.x compatibility patches for modern dependencies...")
+    logger.info("Applying pyannote 3.x compatibility patches...")
 
     _patch_torchaudio()
     _patch_numpy()
     _patch_torch()
     _patch_huggingface_hub(hf_cache_dir)
 
+    _PATCHES_APPLIED = True
     logger.info("All pyannote compatibility patches applied successfully.")
 
 
@@ -98,6 +99,9 @@ def _patch_torch() -> None:
     pyannote checkpoints require weights_only=False to load."""
     import torch
 
+    if getattr(torch.load, "_aimeetingmom_pyannote_compat", False):
+        return
+
     _original_torch_load = torch.load
 
     def _patched_torch_load(*args, **kwargs):
@@ -107,6 +111,7 @@ def _patch_torch() -> None:
         kwargs["weights_only"] = False
         return _original_torch_load(*args, **kwargs)
 
+    _patched_torch_load._aimeetingmom_pyannote_compat = True
     torch.load = _patched_torch_load
     logger.info("Patched torch.load to default weights_only=False")
 
@@ -116,6 +121,8 @@ def _patch_huggingface_hub(hf_cache_dir: str) -> None:
     pyannote 3.1.x still passes it internally. We intercept and translate."""
     import huggingface_hub
     import huggingface_hub.constants
+    import huggingface_hub.file_download as file_download
+    import huggingface_hub.hf_api as hf_api
 
     forced_hub_cache = os.path.join(hf_cache_dir, "hub")
     os.makedirs(forced_hub_cache, exist_ok=True)
@@ -127,7 +134,7 @@ def _patch_huggingface_hub(hf_cache_dir: str) -> None:
         huggingface_hub.constants.HUGGINGFACE_HUB_CACHE = forced_hub_cache
 
     # Patch hf_hub_download
-    _original_hf_hub_download = huggingface_hub.file_download.hf_hub_download
+    _original_hf_hub_download = file_download.hf_hub_download
 
     def _patched_hf_hub_download(*args, **kwargs):
         if "use_auth_token" in kwargs:
@@ -135,19 +142,18 @@ def _patch_huggingface_hub(hf_cache_dir: str) -> None:
         kwargs["cache_dir"] = forced_hub_cache
         return _original_hf_hub_download(*args, **kwargs)
 
-    huggingface_hub.file_download.hf_hub_download = _patched_hf_hub_download
+    file_download.hf_hub_download = _patched_hf_hub_download
     huggingface_hub.hf_hub_download = _patched_hf_hub_download
 
     # Patch HfApi.model_info
-    if hasattr(huggingface_hub, "hf_api"):
-        _HfApi = huggingface_hub.hf_api.HfApi
-        _original_model_info = _HfApi.model_info
+    _HfApi = hf_api.HfApi
+    _original_model_info = _HfApi.model_info
 
-        def _patched_model_info(self, *args, **kwargs):
-            if "use_auth_token" in kwargs:
-                kwargs["token"] = kwargs.pop("use_auth_token")
-            return _original_model_info(self, *args, **kwargs)
+    def _patched_model_info(self, *args, **kwargs):
+        if "use_auth_token" in kwargs:
+            kwargs["token"] = kwargs.pop("use_auth_token")
+        return _original_model_info(self, *args, **kwargs)
 
-        _HfApi.model_info = _patched_model_info
+    _HfApi.model_info = _patched_model_info
 
     logger.info(f"Patched huggingface_hub (cache -> {forced_hub_cache})")

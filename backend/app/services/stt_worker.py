@@ -7,6 +7,7 @@ from app.models.database import engine as default_engine
 from app.models.schemas import Task, Meeting
 from app.services.mom_synthesizer import synthesize_mom_sync
 from app.services.nim_client import get_hf_token
+from app.services.audio_normalizer import normalized_audio_for_diarization
 from app.core.config import STORAGE_DIR
 
 logger = logging.getLogger(__name__)
@@ -133,7 +134,10 @@ def run_stt_task(
                     import torch
                     pipeline.to(torch.device("cpu"))
                     
-                    diarization = pipeline(meeting.audio_file_path)
+                    with normalized_audio_for_diarization(
+                        meeting.audio_file_path, STORAGE_DIR
+                    ) as normalized_audio_path:
+                        diarization = pipeline(str(normalized_audio_path))
                     transcript_lines = align_speakers(raw_segments, diarization)
                 except Exception as py_err:
                     import traceback
