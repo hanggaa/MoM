@@ -149,10 +149,15 @@ def run_stt_task(
                     huggingface_hub.constants.HUGGINGFACE_HUB_CACHE = os.path.join(hf_cache_dir, "hub")
                     
                     _original_hf_hub_download = huggingface_hub.file_download.hf_hub_download
+                    _forced_cache_dir = os.path.join(hf_cache_dir, "hub")
+                    os.makedirs(_forced_cache_dir, exist_ok=True)
                     
                     def _patched_hf_hub_download(*args, **kwargs):
                         if "use_auth_token" in kwargs:
                             kwargs["token"] = kwargs.pop("use_auth_token")
+                        # Always force cache_dir to our writable storage location,
+                        # regardless of what huggingface_hub constants say
+                        kwargs["cache_dir"] = _forced_cache_dir
                         return _original_hf_hub_download(*args, **kwargs)
                     
                     huggingface_hub.file_download.hf_hub_download = _patched_hf_hub_download
