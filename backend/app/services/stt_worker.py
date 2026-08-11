@@ -157,6 +157,14 @@ def run_stt_task(
                     if hf_token:
                         os.environ["HF_TOKEN"] = hf_token
                     
+                    # Redirect HuggingFace cache to writable storage dir
+                    # (www-data user cannot write to /var/www/.cache)
+                    hf_cache_dir = str(STORAGE_DIR / ".hf_cache")
+                    os.makedirs(hf_cache_dir, exist_ok=True)
+                    os.environ["HF_HOME"] = hf_cache_dir
+                    os.environ["HUGGINGFACE_HUB_CACHE"] = os.path.join(hf_cache_dir, "hub")
+                    os.environ["TORCH_HOME"] = os.path.join(hf_cache_dir, "torch")
+                    
                     from pyannote.audio import Pipeline
                     pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
                     
