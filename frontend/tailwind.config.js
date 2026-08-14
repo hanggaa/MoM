@@ -7,48 +7,51 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#F7F6F3", // Warm Bone Canvas
-        card: "#FFFFFF",       // Pure White Surface
-        border: "#EAEAEA",     // Ultra Light Gray Divider
-        primary: "#111111",    // Off-Black Text/UI Solid
-        accent: "#787774",     // Muted Gray Secondary
-        muted: "#787774",
+        background: "#050505", // Deep OLED Black
+        card: "rgba(10, 10, 10, 0.6)", // Vantablack glass
+        border: "rgba(255, 255, 255, 0.08)", // Thin white hairline
+        primary: "#FFFFFF",    // Solid pure white
+        accent: "#3b82f6",     // Premium blue
+        muted: "#8e8e93",      // Apple-like muted grey
         pastel: {
           red: {
-            bg: "#FDEBEC",
-            text: "#9F2F2D",
+            bg: "rgba(239, 68, 68, 0.1)",
+            text: "#FCA5A5",
           },
           blue: {
-            bg: "#E1F3FE",
-            text: "#1F6C9F",
+            bg: "rgba(59, 130, 246, 0.1)",
+            text: "#93C5FD",
           },
           green: {
-            bg: "#EDF3EC",
-            text: "#346538",
+            bg: "rgba(16, 185, 129, 0.1)",
+            text: "#6EE7B7",
           },
           yellow: {
-            bg: "#FBF3DB",
-            text: "#956400",
+            bg: "rgba(245, 158, 11, 0.15)",
+            text: "#FDE047",
           }
         }
       },
       fontFamily: {
-        sans: ['SF Pro Display', 'system-ui', 'sans-serif'],
-        serif: ['Instrument Serif', 'Playfair Display', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
+        sans: ['Plus Jakarta Sans', 'SF Pro Display', 'system-ui', 'sans-serif'],
+        serif: ['Instrument Serif', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {
-        'sm': '4px',
-        'md': '6px',
-        'lg': '8px',
-        'xl': '12px',
-        '2xl': '16px',
-        '3xl': '24px',
+        'sm': '6px',
+        'md': '10px',
+        'lg': '16px',
+        'xl': '24px',
+        '2xl': '32px',
+        '3xl': '40px',
         'full': '9999px',
       },
       boxShadow: {
-        'glow': 'none',
-        'card': '0 2px 8px rgba(0, 0, 0, 0.03)',
+        'glow': '0 0 50px rgba(59, 130, 246, 0.15)',
+        'card': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+      },
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.32, 0.72, 0, 1)',
       }
     },
   },

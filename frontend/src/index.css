@@ -4,55 +4,60 @@
 
 @layer base {
   body {
-    @apply bg-background text-primary antialiased selection:bg-primary selection:text-white min-h-screen overflow-x-hidden font-sans;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+    @apply bg-background text-primary antialiased selection:bg-white selection:text-black min-h-screen overflow-x-hidden font-sans;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.99' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
   }
 }
 
 @layer utilities {
-  /* Redefine glass-panel as a clean, warm-white document-style card */
+  /* Premium Glass Panel with backdrop blur and concentric inner border shadow */
   .glass-panel {
-    @apply bg-card border border-border shadow-card rounded-xl;
+    @apply bg-card border border-border shadow-card backdrop-blur-2xl rounded-xl;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
   
-  /* Redefine glass-button as an outline/clean minimal button */
+  /* Premium interactive Glass Button with custom bezier springs */
   .glass-button {
-    @apply relative overflow-hidden bg-card border border-border text-primary hover:bg-background transition-all duration-200 rounded-md font-sans text-xs font-semibold py-2 px-4 select-none cursor-pointer;
+    @apply relative overflow-hidden bg-white/5 border border-border text-primary hover:bg-white/10 hover:border-white/20 transition-all duration-500 ease-spring rounded-lg font-sans text-xs font-semibold py-2.5 px-4 select-none cursor-pointer;
   }
   
-  /* Active pressed state */
+  /* Active pressed spring animation */
   .glass-button:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
   }
 
   /* Telemetry tags & badges */
   .telemetry-tag {
-    @apply font-mono text-[10px] tracking-wider text-accent uppercase;
+    @apply font-mono text-[10px] tracking-widest text-accent uppercase font-semibold;
   }
 }
 
-/* Minimalist light-theme scrollbar */
+/* Minimalist dark-theme scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F7F6F3;
+  background: #050505;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #EAEAEA;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 9999px;
+  border: 1px solid transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #787774;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Clean micro-kbd tag */
 kbd {
-  @apply font-mono text-[10px] border border-border px-1.5 py-0.5 rounded bg-background text-primary select-none;
+  @apply font-mono text-[10px] border border-border px-1.5 py-0.5 rounded bg-white/5 text-primary select-none;
 }
 
 
