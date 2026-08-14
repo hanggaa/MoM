@@ -7,51 +7,52 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#050505", // Deep OLED Black
-        card: "rgba(10, 10, 10, 0.6)", // Vantablack glass
-        border: "rgba(255, 255, 255, 0.08)", // Thin white hairline
-        primary: "#FFFFFF",    // Solid pure white
-        accent: "#3b82f6",     // Premium blue
-        muted: "#8e8e93",      // Apple-like muted grey
+        background: "#0A0A0A", // Deactivated CRT Black
+        card: "#121212",       // Terminal Box Dark
+        border: "rgba(255, 255, 255, 0.12)", // Rigid framing lines
+        primary: "#EAEAEA",    // White Phosphor Foreground
+        accent: "#FF2A2A",     // Aviation/Hazard Red
+        muted: "#666666",      // Muted matrix gray
+        green: "#4AF626",      // Terminal Phosphor Green
         pastel: {
           red: {
-            bg: "rgba(239, 68, 68, 0.1)",
-            text: "#FCA5A5",
+            bg: "rgba(255, 42, 42, 0.1)",
+            text: "#FF2A2A",
           },
           blue: {
-            bg: "rgba(59, 130, 246, 0.1)",
-            text: "#93C5FD",
+            bg: "rgba(234, 234, 234, 0.08)",
+            text: "#EAEAEA",
           },
           green: {
-            bg: "rgba(16, 185, 129, 0.1)",
-            text: "#6EE7B7",
+            bg: "rgba(74, 246, 38, 0.1)",
+            text: "#4AF626",
           },
           yellow: {
-            bg: "rgba(245, 158, 11, 0.15)",
-            text: "#FDE047",
+            bg: "rgba(255, 200, 0, 0.1)",
+            text: "#FFC800",
           }
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'SF Pro Display', 'system-ui', 'sans-serif'],
-        serif: ['Instrument Serif', 'Georgia', 'serif'],
+        sans: ['JetBrains Mono', 'monospace'],
         mono: ['JetBrains Mono', 'monospace'],
+        serif: ['Times New Roman', 'Georgia', 'serif'],
       },
       borderRadius: {
-        'sm': '6px',
-        'md': '10px',
-        'lg': '16px',
-        'xl': '24px',
-        '2xl': '32px',
-        '3xl': '40px',
-        'full': '9999px',
+        'sm': '0px',
+        'md': '0px',
+        'lg': '0px',
+        'xl': '0px',
+        '2xl': '0px',
+        '3xl': '0px',
+        'full': '9999px', // preserve only for avatar/perfect circles if any, but elements should be square
       },
       boxShadow: {
-        'glow': '0 0 50px rgba(59, 130, 246, 0.15)',
-        'card': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        'glow': '0 0 12px rgba(255, 42, 42, 0.25)',
+        'card': 'none',
       },
       transitionTimingFunction: {
-        'spring': 'cubic-bezier(0.32, 0.72, 0, 1)',
+        'spring': 'linear', // brutalist transitions are instantaneous or linear
       }
     },
   },

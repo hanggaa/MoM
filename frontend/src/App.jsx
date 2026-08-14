@@ -70,45 +70,39 @@ export default function App() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
         {/* Hero Welcome Banner */}
         {!viewingMeeting && (
-          <div className="p-2 bg-white/5 border border-white/10 rounded-[2.5rem] shadow-card">
-            <div className="relative overflow-hidden bg-card p-8 sm:p-12 rounded-[calc(2.5rem-0.5rem)] shadow-inner">
-              {/* Minimal ambient light spot */}
-              <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-b from-blue-500/10 to-transparent pointer-events-none opacity-40 blur-3xl" />
+          <div className="relative border-2 border-border bg-card p-6 sm:p-10 select-none">
+            {/* Structural top-border warning lines */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 warning-stripes" />
 
-              <div className="relative z-10 space-y-6">
-                <div className="inline-flex items-center gap-1.5 bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 px-3.5 py-1 text-[9px] font-mono font-bold uppercase tracking-wider rounded-full select-none">
-                  <Lock size={10} strokeWidth={2.5} />
-                  <span>100% Self-Hosted & Local Audio Privacy</span>
-                </div>
+            <div className="space-y-6 pt-4">
+              <div className="inline-flex items-center gap-2 border border-accent/30 bg-[#1a0505] text-accent px-3.5 py-1 text-[9px] font-bold uppercase tracking-wider font-mono">
+                // SYSTEM STATE: SECURE_LOCAL_CPU_VAULT
+              </div>
 
-                <h1 className="text-4xl sm:text-5xl font-serif text-white tracking-tight leading-[1.1]">
-                  Executive STT & <span className="italic font-normal text-blue-400">AI MoM Synthesis</span>
-                </h1>
+              <h1 className="text-3xl sm:text-5xl font-mono font-black text-white tracking-tighter leading-none uppercase">
+                // STT_TRANSCRIPTION &<br />
+                <span className="text-accent">AI_MOM_SYNTHESIS_ENGINE</span>
+              </h1>
 
-                <p className="text-sm text-muted leading-relaxed max-w-2xl font-sans font-light">
-                  Automate multi-hour meeting documentation without sacrificing confidential company secrets. Local <code className="bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 px-2 py-0.5 rounded font-mono text-xs">faster-whisper INT8</code> transcription combined with server-side <code className="bg-pastel-blue-bg text-pastel-blue-text border border-pastel-blue-text/10 px-2 py-0.5 rounded font-mono text-xs">NVIDIA Nemotron-3</code> executive reasoning.
-                </p>
+              <p className="text-xs text-primary leading-relaxed max-w-2xl font-mono">
+                PRIVACY COMPLIANT LOCAL COMPILATION. AUDIO CHUNKING SCHEDULER SEGMENTS BINARY STREAM TO BYPASS NETWORK LIMITS. LOCAL FASTER-WHISPER INT8 CORE WIRE-TAP TO SERVER-VAULT BYOK NVIDIA NEMOTRON-3 EXECUTIVE GENERATOR.
+              </p>
 
-                <div className="pt-2 flex flex-wrap gap-4 select-none">
-                  {!byokStatus.is_set && (
-                    <button
-                      onClick={() => setIsSettingsOpen(true)}
-                      className="group inline-flex items-center gap-2.5 px-6 py-3 bg-white hover:bg-zinc-200 text-black font-bold text-xs uppercase tracking-wider transition-all duration-500 ease-spring rounded-full active:scale-98"
-                    >
-                      <AlertTriangle size={14} className="text-amber-500" />
-                      <span>Configure AI Engine Settings</span>
-                      <div className="w-6 h-6 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                        <ArrowRight size={12} strokeWidth={2.5} />
-                      </div>
-                    </button>
-                  )}
-                  {byokStatus.is_set && (
-                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-pastel-green-bg text-pastel-green-text border border-pastel-green-text/20 text-xs font-mono tracking-wide rounded-full">
-                      <CheckCircle2 size={12} strokeWidth={2.5} />
-                      <span>AI Engine Active & Secure</span>
-                    </div>
-                  )}
-                </div>
+              <div className="pt-2 flex flex-wrap gap-4 select-none font-mono">
+                {!byokStatus.is_set && (
+                  <button
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="group glass-button inline-flex items-center gap-2 px-5 py-3 border border-accent bg-[#2a0505] text-accent font-bold text-xs tracking-wider"
+                  >
+                    <span>[ RUN_ENGINE_INITIALIZATION ]</span>
+                    <span className="text-accent group-hover:translate-x-1 transition-transform">&gt;&gt;&gt;</span>
+                  </button>
+                )}
+                {byokStatus.is_set && (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-green/30 bg-green/5 text-green text-[10px] font-bold tracking-wider">
+                    <span>VAULT_STATUS: SECURE_AND_ACTIVE</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -144,63 +138,57 @@ export default function App() {
 
         {/* Phase Roadmap Status Grid */}
         {!viewingMeeting && (
-          <div className="space-y-8 pt-10 border-t border-border">
-            <div className="flex items-center justify-between font-sans">
-              <h2 className="text-xl font-serif text-white font-semibold tracking-tight">
-                System Architecture Readiness
+          <div className="space-y-8 pt-10 border-t-2 border-border">
+            <div className="flex items-center justify-between font-mono">
+              <h2 className="text-sm font-bold text-white tracking-widest uppercase">
+                // SYSTEM_MODULE_MAP
               </h2>
-              <span className="text-[10px] text-muted tracking-widest uppercase font-mono font-bold select-none">Roadmap Status</span>
+              <span className="text-[9px] text-muted tracking-widest uppercase font-bold select-none">[ ROADMAP_DENSITY: HIGH ]</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 select-none">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-1 bg-border select-none border border-border">
               {/* Feature Card 1 */}
-              <div className="p-1.5 bg-white/5 border border-white/10 rounded-2xl shadow-card hover:border-white/15 transition-all duration-500 ease-spring">
-                <div className="p-6 bg-card rounded-[calc(1rem-0.375rem)] space-y-4 flex flex-col justify-between h-full">
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-mono text-muted font-bold">PHASE 01</div>
-                    <h3 className="text-sm font-bold text-white font-sans tracking-tight">Monorepo Foundation & SQLite</h3>
-                    <p className="text-xs text-muted leading-relaxed font-sans font-light">
-                      Layered backend engine initialized with FastAPI, SQLModel tables (<code className="text-muted font-mono bg-white/5 px-1 py-0.5 rounded border border-border">AppSettings</code>, <code className="text-muted font-mono bg-white/5 px-1 py-0.5 rounded border border-border">Meeting</code>), and secure server-side BYOK vault.
-                    </p>
-                  </div>
-                  <div className="pt-4 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider border-t border-border mt-auto">
-                    <span className="bg-pastel-green-bg text-pastel-green-text border border-pastel-green-text/20 px-2.5 py-0.5 rounded-full font-bold font-mono">Active</span>
-                    <span className="text-muted">Foundation</span>
-                  </div>
+              <div className="p-6 bg-card space-y-4 flex flex-col justify-between h-full">
+                <div className="space-y-3 font-mono">
+                  <div className="text-[9px] text-muted font-bold">MODULE_ID // 01</div>
+                  <h3 className="text-xs font-bold text-white tracking-wider uppercase">SQLite & Core Tables</h3>
+                  <p className="text-[10px] text-muted leading-relaxed font-light">
+                    FastAPI middleware maps data to local SQLite schema. Handles persistent tokens, meeting profiles, and settings schemas.
+                  </p>
+                </div>
+                <div className="pt-4 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider border-t border-border/40 mt-auto">
+                  <span className="text-green font-bold">[ COMPILING ]</span>
+                  <span className="text-muted">VAULT</span>
                 </div>
               </div>
 
               {/* Feature Card 2 */}
-              <div className="p-1.5 bg-white/5 border border-white/10 rounded-2xl shadow-card hover:border-white/15 transition-all duration-500 ease-spring">
-                <div className="p-6 bg-card rounded-[calc(1rem-0.375rem)] space-y-4 flex flex-col justify-between h-full">
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-mono text-muted font-bold">PHASE 02</div>
-                    <h3 className="text-sm font-bold text-white font-sans tracking-tight">Chunked Audio & STT Pipeline</h3>
-                    <p className="text-xs text-muted leading-relaxed font-sans font-light">
-                      Resilient slice upload bypassing Cloudflare 100MB body limits, wired to asynchronous <code className="text-muted font-mono bg-white/5 px-1 py-0.5 rounded border border-border">faster-whisper INT8</code> worker in FastAPI.
-                    </p>
-                  </div>
-                  <div className="pt-4 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider border-t border-border mt-auto">
-                    <span className="bg-pastel-green-bg text-pastel-green-text border border-pastel-green-text/20 px-2.5 py-0.5 rounded-full font-bold font-mono">Active</span>
-                    <span className="text-muted">Transcriber</span>
-                  </div>
+              <div className="p-6 bg-card space-y-4 flex flex-col justify-between h-full">
+                <div className="space-y-3 font-mono">
+                  <div className="text-[9px] text-muted font-bold">MODULE_ID // 02</div>
+                  <h3 className="text-xs font-bold text-white tracking-wider uppercase">Quantized STT Pipeline</h3>
+                  <p className="text-[10px] text-muted leading-relaxed font-light">
+                    Asynchronous local worker streams binary files chunk-by-chunk to run Whisper INT8 transcription with bias dictionary support.
+                  </p>
+                </div>
+                <div className="pt-4 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider border-t border-border/40 mt-auto">
+                  <span className="text-green font-bold">[ COMPILING ]</span>
+                  <span className="text-muted">WORKER</span>
                 </div>
               </div>
 
               {/* Feature Card 3 */}
-              <div className="p-1.5 bg-white/5 border border-white/10 rounded-2xl shadow-card hover:border-white/15 transition-all duration-500 ease-spring">
-                <div className="p-6 bg-card rounded-[calc(1rem-0.375rem)] space-y-4 flex flex-col justify-between h-full">
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-mono text-muted font-bold">PHASE 03</div>
-                    <h3 className="text-sm font-bold text-white font-sans tracking-tight">Nemotron-3 Executive MoM</h3>
-                    <p className="text-xs text-muted leading-relaxed font-sans font-light">
-                      AI synthesis extracting structured Action Items, PICs, and deadlines with one-click Markdown copy and PDF print stylesheet.
-                    </p>
-                  </div>
-                  <div className="pt-4 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider border-t border-border mt-auto">
-                    <span className="bg-pastel-green-bg text-pastel-green-text border border-pastel-green-text/20 px-2.5 py-0.5 rounded-full font-bold font-mono">Active</span>
-                    <span className="text-muted">Synthesis</span>
-                  </div>
+              <div className="p-6 bg-card space-y-4 flex flex-col justify-between h-full">
+                <div className="space-y-3 font-mono">
+                  <div className="text-[9px] text-muted font-bold">MODULE_ID // 03</div>
+                  <h3 className="text-xs font-bold text-white tracking-wider uppercase">Nemotron MoM Synthesis</h3>
+                  <p className="text-[10px] text-muted leading-relaxed font-light">
+                    Extracts structured summaries, owners, dates, and sentiment analytics via isolated server-side NVIDIA NIM API client.
+                  </p>
+                </div>
+                <div className="pt-4 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider border-t border-border/40 mt-auto">
+                  <span className="text-green font-bold">[ COMPILING ]</span>
+                  <span className="text-muted">SYNTH</span>
                 </div>
               </div>
             </div>
